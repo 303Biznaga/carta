@@ -1,0 +1,948 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+<title>El Tarot · Historia de la Humanidad</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cinzel:wght@400;600&family=IM+Fell+English:ital@0;1&display=swap');
+:root{
+  --void:#02050a;--gold:#c8a84b;--goldlt:#e2c97e;--goldd:#6a5020;
+  --sage:#4e9e68;--foam:#cce4d8;--smoke:#4a6a58;--cyan:#5ab8d4;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{width:100%;height:100%;overflow:hidden;background:var(--void);}
+body{font-family:'IM Fell English',Georgia,serif;color:var(--foam);touch-action:manipulation;user-select:none;}
+#grain{position:fixed;inset:0;z-index:9999;pointer-events:none;opacity:.28;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.13'/%3E%3C/svg%3E");
+  mix-blend-mode:overlay;}
+#main-canvas{position:fixed;inset:0;width:100%;height:100%;}
+#dots{position:fixed;right:14px;top:50%;transform:translateY(-50%);
+  display:flex;flex-direction:column;gap:7px;z-index:100;}
+.dot{width:5px;height:5px;border-radius:50%;background:rgba(200,168,75,.18);
+  cursor:pointer;transition:all .3s;}
+.dot.active{background:rgba(200,168,75,.75);transform:scale(1.4);}
+#step-wrapper{position:fixed;inset:0;display:flex;flex-direction:column;
+  justify-content:flex-end;pointer-events:none;z-index:50;}
+#step-panel{padding:0 0 clamp(26px,5.5vh,48px);pointer-events:all;
+  opacity:1;transition:opacity .5s ease;}
+#step-panel.hiding{opacity:0;}
+.step-era{text-align:center;font-family:'Cinzel',serif;font-size:clamp(7px,1.8vw,9px);
+  letter-spacing:.55em;text-transform:uppercase;color:rgba(200,168,75,.35);margin-bottom:10px;}
+.step-title{text-align:center;font-family:'Cinzel Decorative',serif;
+  font-size:clamp(15px,4.8vw,27px);font-weight:400;color:var(--foam);
+  letter-spacing:.06em;line-height:1.2;margin-bottom:4px;padding:0 24px;}
+.step-author{text-align:center;font-family:'Cinzel',serif;font-size:clamp(8px,2.2vw,10px);
+  letter-spacing:.4em;text-transform:uppercase;color:var(--goldd);margin-bottom:18px;}
+.voices{display:grid;grid-template-columns:1fr 1fr;gap:0;border-top:1px solid rgba(200,168,75,.1);}
+.voice-left{font-family:'IM Fell English',serif;font-style:italic;
+  font-size:clamp(11px,3vw,13px);color:rgba(204,228,216,.65);line-height:1.7;
+  letter-spacing:.03em;padding:13px 15px 13px 20px;border-right:1px solid rgba(200,168,75,.08);}
+.voice-right{font-family:'Cinzel',serif;font-weight:400;font-size:clamp(7.5px,2vw,10px);
+  text-transform:uppercase;letter-spacing:.12em;color:rgba(90,184,212,.55);
+  line-height:1.85;padding:13px 20px 13px 15px;}
+.nav-hint{text-align:center;margin-top:13px;font-family:'Cinzel',serif;
+  font-size:6.5px;letter-spacing:.5em;color:rgba(200,168,75,.2);text-transform:uppercase;}
+#intro-wrap{position:fixed;inset:0;z-index:60;pointer-events:none;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  transition:opacity .6s;}
+.i-inner{position:relative;z-index:2;display:flex;flex-direction:column;
+  align-items:center;text-align:center;padding:0 32px;}
+.i-glyph{font-family:'Times New Roman',serif;font-size:clamp(52px,15vw,88px);
+  color:rgba(200,168,75,.2);line-height:1;margin-bottom:16px;letter-spacing:.08em;
+  transition:opacity .3s;}
+.i-title{font-family:'Cinzel Decorative',serif;font-size:clamp(24px,7vw,40px);
+  color:var(--foam);letter-spacing:.07em;margin-bottom:8px;}
+.i-sub{font-family:'IM Fell English',serif;font-style:italic;
+  font-size:clamp(12px,3.2vw,15px);color:var(--smoke);letter-spacing:.07em;margin-bottom:6px;}
+.i-count{font-family:'Cinzel',serif;font-size:7px;letter-spacing:.5em;
+  color:rgba(200,168,75,.28);text-transform:uppercase;margin-bottom:36px;}
+.i-cta{font-family:'Cinzel',serif;font-size:7.5px;letter-spacing:.5em;
+  text-transform:uppercase;color:rgba(200,168,75,.4);
+  animation:pulse 2.2s ease-in-out infinite;}
+@keyframes pulse{0%,100%{opacity:.28;}50%{opacity:.72;}}
+#final-screen{position:fixed;inset:0;z-index:200;background:var(--void);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  opacity:0;pointer-events:none;transition:opacity .8s ease;text-align:center;padding:40px;}
+#final-screen.show{opacity:1;pointer-events:all;}
+.final-inner{position:relative;z-index:2;max-width:320px;margin:0 auto;}
+.final-title{font-family:'Cinzel Decorative',serif;font-size:clamp(20px,6vw,32px);
+  color:var(--foam);margin-bottom:16px;line-height:1.3;}
+.final-text{font-family:'IM Fell English',serif;font-style:italic;
+  font-size:clamp(13px,3.5vw,16px);color:var(--smoke);line-height:1.82;margin-bottom:40px;}
+.final-btn{background:transparent;border:1px solid rgba(200,168,75,.2);
+  font-family:'Cinzel',serif;font-size:7.5px;letter-spacing:.45em;
+  text-transform:uppercase;color:var(--smoke);padding:14px 28px;cursor:pointer;transition:all .22s;}
+.final-btn:active{color:var(--foam);border-color:rgba(200,168,75,.5);}
+</style>
+</head>
+<body>
+<div id="grain"></div>
+<canvas id="main-canvas"></canvas>
+
+<div id="intro-wrap">
+  <div class="i-inner">
+    <div class="i-glyph" id="intro-glyph">☿</div>
+    <div class="i-title">El Tarot</div>
+    <div class="i-sub">El espejo que muestra lo que ya sabes sin saber que lo sabes</div>
+    <div class="i-count">16 momentos · 78 cartas · un viaje completo</div>
+    <div class="i-cta">toca para comenzar</div>
+  </div>
+</div>
+
+<div id="dots"></div>
+
+<div id="step-wrapper" style="display:none;">
+  <div id="step-panel">
+    <div class="step-era" id="s-era"></div>
+    <div class="step-title" id="s-title"></div>
+    <div class="step-author" id="s-author"></div>
+    <div class="voices">
+      <div class="voice-left" id="s-left"></div>
+      <div class="voice-right" id="s-right"></div>
+    </div>
+    <div class="nav-hint" id="s-nav"></div>
+  </div>
+</div>
+
+<div id="final-screen">
+  <div class="final-inner">
+    <div class="final-title">La carta<br>no dice lo que pasará.<br>Dice lo que eres.</div>
+    <div class="final-text">El Tarot funciona no porque contenga magia sino porque contiene arquetipos — y los arquetipos son estructuras de la psique. Al elegir una carta "al azar", la mente inconsciente selecciona la imagen que corresponde a lo que ya está ocurriendo en su interior. La carta es el espejo. El adivino eres tú.</div>
+    <button class="final-btn" onclick="window.location.href='index.html'">volver al espejo</button>
+  </div>
+</div>
+
+<script>
+/* ═══════════════════════════════════════
+   SÍNTESIS SONORA — cada carta tiene su tono
+   basado en correspondencias planetarias/elementales
+═══════════════════════════════════════ */
+let AC = null;
+function getAC(){ return AC||(AC=new(window.AudioContext||window.webkitAudioContext)()); }
+
+function makeReverb(ac,dur=2,decay=2.5){
+  const len=ac.sampleRate*dur;
+  const buf=ac.createBuffer(2,len,ac.sampleRate);
+  for(let c=0;c<2;c++){
+    const d=buf.getChannelData(c);
+    for(let i=0;i<len;i++) d[i]=(Math.random()*2-1)*Math.pow(1-i/len,decay);
+  }
+  const conv=ac.createConvolver(); conv.buffer=buf; return conv;
+}
+
+function playCard(id){
+  try{
+    const ac=getAC(); if(ac.state==='suspended') ac.resume();
+    const now=ac.currentTime;
+    const rev=makeReverb(ac,2.2,2.8);
+    const mg=ac.createGain(); mg.gain.value=.48; rev.connect(mg); mg.connect(ac.destination);
+    const dry=ac.createGain(); dry.gain.value=.36; dry.connect(ac.destination);
+
+    function t(freq,type,start,dur,gain,vib=0){
+      const osc=ac.createOscillator(), g=ac.createGain();
+      osc.type=type||'sine'; osc.frequency.value=freq;
+      if(vib>0){
+        const lfo=ac.createOscillator(),lg=ac.createGain();
+        lfo.frequency.value=5.5; lg.gain.value=vib;
+        lfo.connect(lg); lg.connect(osc.frequency);
+        lfo.start(now+start); lfo.stop(now+start+dur+.1);
+      }
+      g.gain.setValueAtTime(0,now+start);
+      g.gain.linearRampToValueAtTime(gain,now+start+Math.min(.07,dur*.12));
+      g.gain.setValueAtTime(gain,now+start+dur*.6);
+      g.gain.exponentialRampToValueAtTime(.0001,now+start+dur);
+      osc.connect(g); g.connect(rev); g.connect(dry);
+      osc.start(now+start); osc.stop(now+start+dur+.1);
+    }
+
+    const sounds={
+      origen:   ()=>{ t(110,'sine',0,3.5,.4); t(220,'sine',.1,3,.18); t(55,'sine',0,3.5,.25); },
+      loco:     ()=>{ [261.6,329.6,392,523.3,659.3].forEach((f,i)=>t(f,'triangle',i*.1,.35,.28)); t(196,'sine',0,1.8,.15); },
+      mago:     ()=>{ t(384,'sine',0,3,.38,3); t(576,'sine',.15,2.5,.2); t(192,'sine',.05,3,.15); },
+      sacerdotisa:()=>{ t(210,'sine',0,3.5,.38,2); t(315,'sine',.1,3,.2); t(420,'sine',.2,2.5,.1); },
+      emperatriz:()=>{ t(221.2,'sine',0,3,.4,4); t(442.4,'sine',.08,2.8,.2); t(110.6,'sine',0,3,.18); },
+      emperador: ()=>{ t(194.2,'sine',0,3,.42); t(291.3,'sine',.1,2.8,.22); t(97.1,'sine',0,3.5,.2); },
+      jerofante: ()=>{ t(172.1,'sine',0,3,.35); t(258,'sine',.12,2.8,.22); t(344,'sine',.06,2.5,.12); t(86,'sine',0,3.5,.18); },
+      rueda:    ()=>{ [164.8,220,261.6,329.6,220].forEach((f,i)=>t(f,'sine',i*.3,.55,.3)); },
+      colgado:  ()=>{ t(136.1,'sine',0,3.5,.35,2); t(272.2,'sine',.08,3,.18); t(408,'sine',.2,2.5,.1); },
+      muerte:   ()=>{ t(116.5,'sawtooth',0,2.5,.28); t(146.8,'sine',.1,2.2,.2); t(58.3,'sine',0,3,.22); },
+      torre:    ()=>{ t(100,'sawtooth',0,.8,.5); t(150,'sawtooth',.05,.6,.4); t(200,'sawtooth',.12,.5,.3);
+                      const buf=ac.createBuffer(1,ac.sampleRate*.4,ac.sampleRate);
+                      const d=buf.getChannelData(0); for(let i=0;i<d.length;i++) d[i]=Math.random()*2-1;
+                      const src=ac.createBufferSource(); src.buffer=buf;
+                      const g2=ac.createGain(); g2.gain.setValueAtTime(.35,now); g2.gain.exponentialRampToValueAtTime(.0001,now+.4);
+                      src.connect(g2); g2.connect(dry); src.start(now); },
+      estrella: ()=>{ t(480,'sine',0,3,.35,3); t(720,'sine',.1,2.8,.18); t(360,'sine',.05,3,.15); t(240,'sine',0,3,.12); },
+      luna:     ()=>{ t(210,'sine',0,3.5,.32,5); t(315,'sine',.2,3,.18,4); t(105,'sine',0,3.5,.2,2); },
+      sol:      ()=>{ t(194.2,'sine',0,3,.38); t(291.3,'sine',.06,2.8,.28); t(388.4,'sine',.12,2.6,.18); t(97.1,'sine',0,3.5,.2); },
+      mundo:    ()=>{ [130.8,164.8,196,261.6,329.6,392,523.3].forEach((f,i)=>t(f,'sine',i*.1,3-.08*i,.22-i*.02,1.5)); },
+      menores:  ()=>{ t(174.6,'sine',0,2.5,.32); t(261.6,'sine',.1,2,.22); t(349.2,'sine',.2,1.8,.15); t(523,'sine',.3,1.5,.1); },
+    };
+
+    (sounds[id]||sounds.origen)();
+  }catch(e){ console.log('tarot sound:',e); }
+}
+
+/* Intro — las cartas barajándose */
+function playIntro(){
+  try{
+    const ac=getAC(); if(ac.state==='suspended') ac.resume();
+    const now=ac.currentTime;
+    const rev=makeReverb(ac,2.5,3); const mg=ac.createGain(); mg.gain.value=.44;
+    rev.connect(mg); mg.connect(ac.destination);
+    const dry=ac.createGain(); dry.gain.value=.3; dry.connect(ac.destination);
+    // Acorde misterioso — Am7
+    [[110,.35],[164.8,.3],[220,.28],[261.6,.25],[329.6,.2]].forEach(([f,g],i)=>{
+      const osc=ac.createOscillator(),gg=ac.createGain();
+      osc.type='sine'; osc.frequency.value=f;
+      gg.gain.setValueAtTime(0,now); gg.gain.linearRampToValueAtTime(g,now+.2+i*.12);
+      gg.gain.setValueAtTime(g,now+2.5); gg.gain.exponentialRampToValueAtTime(.0001,now+4.2);
+      osc.connect(gg); gg.connect(rev); gg.connect(dry); osc.start(now+i*.08); osc.stop(now+4.4);
+    });
+  }catch(e){}
+}
+
+const CARD_SOUNDS=['origen','loco','mago','sacerdotisa','emperatriz','emperador',
+  'jerofante','rueda','colgado','muerte','torre','estrella','luna','sol','mundo',
+  'menores'];
+
+/* ═══════════════════════════════════════
+   LOS 16 PASOS
+═══════════════════════════════════════ */
+const STEPS=[
+  {
+    era:'Italia · Siglo XV',
+    title:'El Origen del Tarot',
+    author:'De los juegos de corte al espejo del alma',
+    left:'El Tarot nace en el norte de Italia en el siglo XV como juego de cartas para la aristocracia. Las primeras barajas — los Tarocchi milaneses — tienen 78 cartas: cuatro palos de catorce cartas cada uno, más 22 triunfos con imágenes alegóricas. Es un juego, no un instrumento oracular. Nadie lo usa para adivinar durante sus primeros tres siglos de existencia. La transformación ocurre en el siglo XVIII cuando ocultistas franceses "descubren" en sus imágenes un sistema simbólico antiguo. El Tarot se reinventa como sabiduría primordial — y esa reinvención resulta más interesante que el juego original.',
+    right:'Las primeras barajas documentadas: Tarocchi di Milano (~1450), comisionados por los Visconti-Sforza. Antoine Court de Gébelin (1781): declara el Tarot de origen egipcio — sin evidencia, pero influyente. Etteilla (1783): primer Tarot diseñado específicamente para adivinación. Arthur Edward Waite y Pamela Colman Smith (1909): el Tarot Rider-Waite, el más reproducido. Aleister Crowley y Frieda Harris (1944): el Thoth Tarot. Los 78 arcanos: 22 Mayores (el Viaje del Loco) + 56 Menores (4 palos × 14 cartas).',
+    draw:drawOrigin
+  },
+  {
+    era:'Arcano Mayor · 0',
+    title:'El Loco',
+    author:'El que camina al borde del abismo',
+    left:'El Loco lleva el número 0 — o ningún número, según las tradiciones. Es el principio sin principio, el alma que comienza el viaje sin saber adónde va. En la imagen clásica, un joven camina al borde de un precipicio mirando al cielo, con una bolsa pequeña y un perro que le ladra o le acompaña. No mira donde pone los pies porque confía en el paso. El Loco no es el que no sabe — es el que sabe que no saber es la única forma de comenzar algo verdadero. Todo viaje iniciático requiere primero hacerse el loco.',
+    right:'El Loco: Arcano 0 (o XXII en algunas tradiciones). Planeta: Urano. Elemento: Aire. Letra hebrea: Aleph (א) — el buey, primer sonido. Numerología: 0 como potencial puro antes de la manifestación. En el Árbol de la Vida: el sendero 11, entre Keter y Chokmah. El "salto cuántico": el colapso de superposición al tomar una dirección. Arquetipos relacionados: el Puer Aeternus, el "Mente de Principiante" zen, el bobo de los cuentos que resulta ser el sabio. Invertido: imprudencia sin sabiduría, negativa a crecer.',
+    draw:drawFool
+  },
+  {
+    era:'Arcano Mayor · I',
+    title:'El Mago',
+    author:'La voluntad que transforma la materia',
+    left:'El Mago tiene ante sí los cuatro elementos — la Copa, la Espada, el Bastón, el Pentáculo — y los señala con una mano al cielo y otra a la tierra. "Como arriba, así abajo." Es el mediador entre los planos, el que transforma la intención en acto. Su número es el 1 — la primera manifestación, el paso del potencial a la acción. Pero hay una trampa en el Mago: puede ser el manipulador tanto como el maestro. La misma habilidad que sirve para crear sirve para engañar. El Mago es el poder sin garantía moral.',
+    right:'El Mago: Arcano I. Planeta: Mercurio (☿). Letra hebrea: Beth (ב) — la casa. Sendero 12 en el Árbol de la Vida: Keter → Binah. Los cuatro instrumentos: Copa (Agua/Copas/emoción), Espada (Aire/Espadas/intelecto), Bastón (Fuego/Bastos/voluntad), Pentáculo (Tierra/Oros/materia). El lemniscato (∞) sobre su cabeza: el flujo infinito de energía. Correspondencia alquímica: Mercurio = el principio activo de transformación. En Jung: el Mago como aspecto del arquetipo del Sí-mismo orientado a la acción.',
+    draw:drawMagician
+  },
+  {
+    era:'Arcano Mayor · II',
+    title:'La Sacerdotisa',
+    author:'El misterio que guarda silencio',
+    left:'La Sacerdotisa está sentada entre dos columnas — B y J, Boaz y Jakin, las columnas del Templo de Salomón, la dualidad que toda iniciación atraviesa. Sostiene un rollo enrollado, parcialmente oculto. Lo que sabe no se dice — se guarda. Hay un conocimiento que no puede transmitirse con palabras: solo puede vivirse. La Sacerdotisa es el arquetipo de todo lo que existe más allá del lenguaje, en el espacio entre las columnas, en la membrana entre el mundo visible y el invisible. Es la Anima en su forma más alta, la Sofía, la sabiduría que precede al pensamiento.',
+    right:'La Sacerdotisa: Arcano II. Planeta: Luna (☽). Letra hebrea: Gimel (ג) — el camello. Sendero 13: Keter → Tiferet. Las columnas B(oaz) y J(akin): los pilares del Templo de Salomón — poder y establecimiento, pasivo y activo. El velo de granada detrás: el velo del inconsciente, del misterio eleusino. El rollo Torah: el conocimiento que espera a ser leído. La media luna a sus pies. La corona de Isis: los cuernos de la luna llena. Correspondencia con Isis, Perséfone, Hécate, la Shejiná cabalística — la presencia divina femenina que mora entre los humanos.',
+    draw:drawPriestess
+  },
+  {
+    era:'Arcanos Mayores · III y IV',
+    title:'La Emperatriz y el Emperador',
+    author:'La fuerza que nutre y la que ordena',
+    left:'La Emperatriz es Venus — la naturaleza abundante, el campo que da frutos, el amor que se expande sin condición. Está rodeada de trigo maduro, lleva en su escudo el símbolo de Venus, está embarazada o acaba de parir. Es la madre terrestre, el principio de crecimiento y placer. El Emperador la sigue: el Padre, la ley, el orden construido, el trono de piedra que resiste. Los dos son necesarios y limitantes el uno sin el otro. Sin el Emperador, la Emperatriz crece hasta el caos. Sin la Emperatriz, el Emperador se petrifica.',
+    right:'Emperatriz (III): Venus (♀), letra Dalet (ד — la puerta), sendero 14 Chokmah→Binah. Siete estrellas: los siete planetas clásicos. El campo de trigo: Deméter/Ceres. Símbolo alquímico: la nigredo que se convierte en oro. Emperador (IV): Aries/Marte (♂), letra He (ה — la ventana), sendero 15 Chokmah→Tiferet. El orbe y el cetro: los atributos del poder temporal. Las cuatro R en su trono: realeza, dominio, razón, rendición. La montaña al fondo: el mundo construido sobre fundamento rígido. Juntos: la dualidad padre-madre, eros-logos, naturaleza-cultura.',
+    draw:drawEmperors
+  },
+  {
+    era:'Arcanos Mayores · V al VIII',
+    title:'El Sumo Sacerdote, los Enamorados,\nel Carro y la Fuerza',
+    author:'La ley, la elección, la voluntad, el dominio',
+    left:'El Hierofante o Sumo Sacerdote es la tradición encarnada — el puente entre lo divino y lo humano, la doctrina que preserva lo sagrado en formas que el tiempo puede transmitir. Los Enamorados no son solo el amor romántico: son la Elección fundamental, el momento en que el alma elige su camino. El Carro es la voluntad que domina los contrarios — dos esfinges tirando en direcciones opuestas, controladas solo por la fuerza del pensamiento. La Fuerza muestra a una mujer que abre la boca a un león sin luchar con él: la fuerza verdadera es el dominio que no necesita violencia.',
+    right:'Hierofante (V): Tauro/Venus, letra Vau (ו), sendero 16. La mano en bendición papal: tres dedos al cielo, dos a la tierra. Los Enamorados (VI): Géminis/Mercurio, letra Zain (ז), sendero 17. El ángel Raphael sobre la pareja: la decisión consciente. El Carro (VII): Cáncer/Luna, letra Cheth (ח), sendero 18. El guerrero inmóvil: la victoria por concentración, no acción. La Fuerza (VIII en Waite, XI en Marsella): Leo/Sol, letra Teth (ט), sendero 19. El lemniscato sobre la mujer: el poder del amor sobre la bestia. El dominio de lo instintivo sin reprimirlo.',
+    draw:drawMiddleArcana
+  },
+  {
+    era:'Arcano Mayor · IX',
+    title:'El Ermitaño',
+    author:'La luz que se lleva sola',
+    left:'El Ermitaño camina solo por la montaña con una lámpara en la mano. No ilumina el horizonte — ilumina solo el paso siguiente. Esta es la enseñanza: no se necesita ver todo el camino para comenzar. La lámpara del Ermitaño es la conciencia interior, suficiente para el siguiente paso y solo para ese. Su número es el 9 — el número de la compleción antes del 10, la víspera del ciclo siguiente. El Ermitaño ha recorrido el mundo y ha regresado al silencio. No porque el mundo no valga, sino porque descubrió que lo que buscaba afuera solo podía encontrarse adentro.',
+    right:'El Ermitaño: Arcano IX. Planeta: Saturno/Mercurio. Letra: Yod (י) — la mano. Sendero 20: Chesed → Tiferet. La estrella de seis puntas en la lámpara: el Sello de Salomón, la integración de los opuestos. El bastón como tercer ojo: el apoyo en la tradición mientras se camina hacia adelante. Saturno como maestro: el tiempo como iniciador. El 9: en numerología, el número de la sabiduría ganada por experiencia. El arquetipo: el senex jungiano, el buda que regresa como boddhisatva, el maestro que no enseña con palabras sino con su presencia.',
+    draw:drawHermit
+  },
+  {
+    era:'Arcano Mayor · X',
+    title:'La Rueda de la Fortuna',
+    author:'El tiempo que gira y no se detiene',
+    left:'La Rueda gira. En la cima, la esfinge — el misterio del destino. En el lado ascendente, Anubis — la inteligencia que sube con el ciclo. En el lado descendente, el Set-Tifón — la serpiente que cae. Todo lo que está arriba bajará. Todo lo que está abajo subirá. La Rueda no es cruel ni benévola — simplemente gira. Lo que cambia es la relación del yo con la rueda: el que se identifica con su posición en ella sufre invariablemente. El que aprende a identificarse con el centro — el eje inmóvil alrededor del cual todo gira — encuentra la ecuanimidad.',
+    right:'La Rueda de la Fortuna: Arcano X. Planeta: Júpiter (♃). Letra: Caph (כ) — la palma de la mano. Sendero 21: Chesed → Netzach. Los cuatro seres en las esquinas: el águila (Escorpio/Agua), el toro (Tauro/Tierra), el hombre (Acuario/Aire), el león (Leo/Fuego) — los cuatro evangelistas, los cuatro querubines de Ezequiel. TARO en la rueda (o ROTA, TORA, ORAT). La rueda en el budismo: el Dharmachakra, la rueda del karma y la liberación. El Sefiroth Chesed: la expansión jupiteriana del ciclo.',
+    draw:drawWheel
+  },
+  {
+    era:'Arcanos Mayores · XI–XIII',
+    title:'La Justicia, el Colgado\ny la Muerte',
+    author:'El equilibrio, la inversión, la transformación',
+    left:'La Justicia sostiene la espada y la balanza — no promete que el mundo sea justo, sino que hay una ley de correspondencia que no puede violarse sin consecuencias. El Colgado pende de un pie de un árbol — suspendido voluntariamente, mirando el mundo al revés. Lo que parecía pérdida revela ser ganancia cuando se mira desde otro ángulo. El mundo invertido es el mundo visto desde la iniciación. La Muerte tiene el número 13 — el número que el pensamiento supersticioso declara nefasto. Pero en el Tarot, la Muerte nunca mata personas: mata situaciones, roles, etapas. Es la carta de la transformación más radical.',
+    right:'Justicia (XI/VIII): Libra/Venus, letra Lamed (ל), sendero 22. La espada: el corte que separa. La balanza: la medida precisa. Colgado (XII): Neptuno/Agua, letra Mem (מ), sendero 23: Gevurah → Hod. El árbol vivo (no muerto): la suspensión voluntaria, no el fracaso. El nimbo luminoso: la iluminación que viene de la suspensión. Muerte (XIII): Escorpio/Marte-Plutón, letra Nun (נ), sendero 24. La bandera blanca con rosa: la pureza en la transformación. El caballero negro: el agente imparcial del cambio. Ningún personaje en la carta está muerto — todos están ante la transformación.',
+    draw:drawTransformation
+  },
+  {
+    era:'Arcanos Mayores · XIV–XVI',
+    title:'La Templanza, el Diablo\ny La Torre',
+    author:'El equilibrio, la cadena y la liberación',
+    left:'La Templanza vierte agua entre dos copas sin derramar — el arte del equilibrio dinámico, la alquimia que mezcla opuestos sin que ninguno anule al otro. El Diablo muestra a dos figuras encadenadas, pero las cadenas son holgadas: podrían quitárselas ellas mismas. El Diablo no encadena — muestra las cadenas que uno mismo se pone. La Torre es el rayo que destruye la estructura construida sobre fundamentos falsos. Es la carta que más teme quien la saca — y la que más liberación trae en la práctica. Lo que el rayo destruye no podía sostenerse. La pregunta es qué queda en pie después.',
+    right:'Templanza (XIV): Sagitario/Júpiter, letra Samech (ס), sendero 25: Yesod → Tiferet. El ángel androgino: la integración de los opuestos. El triángulo en el círculo en la toga: el fuego (voluntad) contenido en la materia. Diablo (XV): Capricornio/Saturno, letra Ayin (ע — el ojo), sendero 26: Hod → Tiferet. Las figuras son Adán y Eva: la sombra de los Enamorados. La Torre (XVI): Marte (♂), letra Pe (פ — la boca), sendero 27: Hod → Netzach. El rayo: la energía divina que derrumba las estructuras del ego. La corona que cae: el fin de la identificación con el poder.',
+    draw:drawDevil
+  },
+  {
+    era:'Arcanos Mayores · XVII–XIX',
+    title:'La Estrella, la Luna\ny el Sol',
+    author:'La esperanza, la ilusión y la luz plena',
+    left:'Después de la destrucción de la Torre, la Estrella: una mujer desnuda vierte agua sobre la tierra y el agua. La desnudez no es vulnerabilidad sino autenticidad — sin armadura, sin máscara, abierta al cosmos. La Luna ilumina el camino con luz prestada, ambigua, que muestra formas inquietantes emergiendo del agua. Es el arquetipo del inconsciente que envía mensajes deformados. El Sol es la conciencia plena — dos niños bailando, la energía vital sin restricción, la alegría del ser consciente de sí mismo. Es la carta más inequívocamente positiva del mazo.',
+    right:'Estrella (XVII): Acuario/Urano, letra He (ה), sendero 28. La estrella de ocho puntas: Venus/Ishtar. Siete estrellas menores: los chakras o planetas. La renovación después de la crisis. Luna (XVIII): Piscis/Neptuno, letra Qoph (ק), sendero 29: Malkut → Netzach. El cangrejo emergiendo: lo pre-consciente. El perro y el lobo: lo domesticado y lo salvaje. Las torres gemelas: los umbrales de lo conocido. Sol (XIX): ☉ Sol, letra Resh (ר), sendero 30: Hod → Yesod. El girasol: el heliotropismo, la orientación hacia la luz. El niño en el caballo: la conciencia liberada de la armadura.',
+    draw:drawStarMoonSun
+  },
+  {
+    era:'Arcanos Mayores · XX–XXI',
+    title:'El Juicio y El Mundo',
+    author:'La llamada y la totalidad alcanzada',
+    left:'El Juicio muestra figuras emergiendo de sus tumbas al sonido de una trompeta. No es el Juicio Final teológico — es el momento de escuchar la llamada verdadera de la propia vida y responder a ella. Cuántas personas viven enteras dentro de la tumba de sus roles y sus miedos, sin escuchar esa trompeta. El Mundo es la carta final del viaje: una figura andrógina danza dentro de una corona de laurel sostenida por los cuatro elementos. La danza es el movimiento en la plenitud — no llegar a algún lugar sino ser completamente donde se está. El Loco ha completado su círculo.',
+    right:'Juicio (XX): Saturno/Plutón, letra Shin (ש — el fuego), sendero 31: Malkut → Hod. El ángel Gabriel con la trompeta: la voz que convoca desde el inconsciente. Los tres en la tumba: el trío ego/anima/self. El Mundo (XXI): Saturno/Tierra, letra Tau (ת — la cruz), sendero 32: Malkut → Yesod. El último sendero: el más cercano a la materia, el más cercano al origen. La figura en el laurel: el andrógino primordial, la totalidad integrada. Los cuatro querubines en las esquinas: la totalidad de los elementos contenida. La vara en ambas manos: el mago completado — el Arcano I visto desde el otro lado del viaje.',
+    draw:drawJudgmentWorld
+  },
+  {
+    era:'Los Arcanos Menores · Los cuatro palos',
+    title:'Bastos, Copas, Espadas y Oros',
+    author:'Los cuatro mundos de la experiencia',
+    left:'Los 56 Arcanos Menores son la vida cotidiana — no la gran travesía mítica sino los días, las semanas, las decisiones concretas. Cuatro palos de catorce cartas cada uno: Bastos es el fuego, la voluntad, la acción creadora; Copas es el agua, la emoción, las relaciones, los sueños; Espadas es el aire, el pensamiento, el conflicto, la verdad que corta; Oros o Pentáculos es la tierra, el cuerpo, el dinero, lo que se construye con las manos. Los cuatro palos corresponden a los cuatro elementos, las cuatro funciones psicológicas de Jung, los cuatro mundos cabalísticos, las cuatro castas de la India.',
+    right:'Los cuatro palos y sus correspondencias: Bastos (Fuego, Atziluth, Intuición jungiana, Cítara india), Copas (Agua, Briah, Sentimiento, Brahmin), Espadas (Aire, Yetzirah, Pensamiento, Kshatriya), Oros/Pentáculos (Tierra, Assiah, Sensación, Vaishya). Las 14 cartas de cada palo: As (1) → 10, luego Paje, Caballero, Reina, Rey. El As: la esencia pura del elemento. El 10: la sobreabundancia o la culminación. La Corte: los cuatro aspectos de cada elemento manifestados como personas. Los cuatro ases como las cuatro raíces de los mundos en la Cábala.',
+    draw:drawMinorArcana
+  },
+  {
+    era:'Cábala y Tarot · El sistema',
+    title:'El Árbol de la Vida y los 78 Arcanos',
+    author:'El mapa de la conciencia completa',
+    left:'La conexión entre el Tarot y la Cábala fue formalizada en el siglo XIX por los ocultistas de la Orden Hermética de la Aurora Dorada. Pero la correspondencia es demasiado precisa para ser arbitraria. Los 22 Arcanos Mayores corresponden a los 22 senderos del Árbol de la Vida y a las 22 letras del alfabeto hebreo. Los 10 arcanos numéricos de cada palo corresponden a las 10 sefirot. Los 4 palos corresponden a los 4 mundos. Los 16 arcanos de la Corte corresponden a combinaciones elementales. El Tarot no fue diseñado como sistema cabalístico — fue reconocido como tal. La pregunta es si el reconocimiento fue una proyección o un descubrimiento.',
+    right:'La atribución Tarot-Cábala (Golden Dawn, ~1888): 22 Arcanos Mayores = 22 senderos = 22 letras. 3 letras madres (א מ ש): El Loco (Aire), La Colgada (Agua), El Juicio (Fuego). 7 letras dobles (ב ג ד כ פ ר ת): El Mago al Mundo (7 planetas). 12 letras simples: El Hierofante a La Luna (12 signos). Los 40 arcanos numéricos (As-10 × 4 palos) = 4 mundos × 10 sefirot. Los 16 arcanos de la Corte = 16 combinaciones elementales. El Árbol como clave de lectura: la posición de cada carta en el Árbol revela su función en la psique.',
+    draw:drawKabbalah
+  },
+  {
+    era:'Jung · Psicología · Siglo XX',
+    title:'El Tarot como Herramienta Psicológica',
+    author:'Las 78 cartas como mapa de la psique',
+    left:'Jung nunca escribió un libro sobre el Tarot, pero sus escritos sobre sincronicidad, arquetipos e imaginación activa crean el marco teórico que hace inteligible su uso psicológico. Las 78 cartas son 78 arquetipos — no predicen el futuro, mapean el inconsciente. Al elegir una carta "al azar" en un momento de pregunta genuina, la atención consciente colabora con el inconsciente para seleccionar la imagen que corresponde al estado interior. No es magia — es sincronicidad. La imagen activa la imaginación y la imaginación activa la capacidad de ver lo que ya está ocurriendo pero no ha sido nombrado.',
+    right:'Mary K. Greer ("Tarot for Your Self", 1984): el Tarot como herramienta de autoexploración, no de predicción. El método psicológico: la carta como proyección, no como respuesta. Los estudios académicos: Sallie Nichols ("Jung and Tarot", 1980). El Tarot en psicoterapia: usado como proyectivo, como sueño activo. La crítica escéptica: el efecto Barnum/Forer — las descripciones genéricas se sienten personales. La respuesta jungiana: la especificidad viene de la resonancia del cliente, no del lector. El tarot como journaling: llevar un diario de las cartas como registro del proceso psíquico.',
+    draw:drawJung
+  },
+  {
+    era:'El retorno · ahora mismo',
+    title:'La Tirada',
+    author:'El espejo que responde',
+    left:'La tirada no revela el futuro. Revela el presente con tanta claridad que el futuro se vuelve visible — porque el futuro es la consecuencia natural de lo que está ocurriendo ahora, si nada cambia. Y si algo cambia, el futuro cambia. La carta que sale "al azar" en una tirada genuina no es aleatoria para la psique: es la imagen que el inconsciente necesitaba ver en ese momento. El Tarot es el sueño que puedes provocar estando despierto. La pregunta real nunca es ¿qué va a pasar? La pregunta real es ¿qué está pasando que no estás viendo?',
+    right:'La tirada de tres cartas: pasado/presente/futuro, o situación/obstáculo/consejo. La Cruz Celta (10 cartas): la tirada más completa del sistema Waite. La tirada del Árbol de la Vida: 10 cartas en las posiciones de las sefirot. El significado de las cartas invertidas: energía bloqueada, aspecto en sombra, o potencial no manifestado. La lectura como conversación, no como oráculo: el lector como facilitador, no como profeta. Las 78 cartas como 78 facetas de la experiencia humana completa. La pregunta con la que termina todo: ¿qué carta eres tú en este momento?',
+    draw:drawReturn
+  }
+];
+
+/* ═══════════════════════════════════════
+   ESTADO Y NAVEGACIÓN
+═══════════════════════════════════════ */
+let currentStep=-1,isAnimating=false;
+const canvas=document.getElementById('main-canvas');
+const ctx=canvas.getContext('2d');
+const DPR=window.devicePixelRatio||1;
+let W,H,CX,CY,animFrame,t=0;
+
+function resize(){
+  W=window.innerWidth;H=window.innerHeight;
+  canvas.width=W*DPR;canvas.height=H*DPR;
+  canvas.style.width=W+'px';canvas.style.height=H+'px';
+  CX=canvas.width/2;CY=canvas.height/2;
+}
+resize();window.addEventListener('resize',resize);
+
+const dotsEl=document.getElementById('dots');
+STEPS.forEach((_,i)=>{
+  const d=document.createElement('div');
+  d.className='dot';d.onclick=()=>goTo(i);dotsEl.appendChild(d);
+});
+function updateDots(){
+  document.querySelectorAll('.dot').forEach((d,i)=>d.classList.toggle('active',i===currentStep));
+}
+
+// Intro glyph rotation
+const introGlyphs='☿ ☽ ♀ ♂ ♃ ♄ ☉ ✦ ⊕'.split(' ');
+let introGlyphIdx=0;
+setInterval(()=>{
+  introGlyphIdx=(introGlyphIdx+1)%introGlyphs.length;
+  const el=document.getElementById('intro-glyph');
+  if(el&&currentStep===-1){el.style.opacity='0';setTimeout(()=>{el.textContent=introGlyphs[introGlyphIdx];el.style.opacity='1';},200);}
+},1800);
+
+document.addEventListener('touchstart',()=>{try{getAC().resume();}catch(e){}},{once:true});
+document.addEventListener('click',()=>{try{getAC().resume();}catch(e){}},{once:true});
+
+function goTo(idx){
+  if(isAnimating)return;
+  if(idx>=STEPS.length){showFinal();return;}
+  if(idx<0){showIntro();return;}
+  isAnimating=true;
+  const panel=document.getElementById('step-panel');
+  panel.classList.add('hiding');
+  setTimeout(()=>{
+    currentStep=idx;const s=STEPS[idx];
+    playCard(CARD_SOUNDS[idx]);
+    document.getElementById('s-era').textContent=s.era;
+    document.getElementById('s-title').textContent=s.title;
+    document.getElementById('s-author').textContent=s.author;
+    document.getElementById('s-left').textContent=s.left;
+    document.getElementById('s-right').textContent=s.right;
+    document.getElementById('s-nav').textContent=
+      idx<STEPS.length-1?'· toca para continuar ·':'· toca para cerrar ·';
+    document.getElementById('step-wrapper').style.display='block';
+    const intro=document.getElementById('intro-wrap');
+    intro.style.opacity='0';intro.style.pointerEvents='none';
+    t=0;if(animFrame)cancelAnimationFrame(animFrame);
+    startAnim(s.draw);
+    panel.classList.remove('hiding');updateDots();isAnimating=false;
+  },400);
+}
+function showIntro(){
+  currentStep=-1;
+  document.getElementById('step-wrapper').style.display='none';
+  const intro=document.getElementById('intro-wrap');
+  intro.style.opacity='1';intro.style.pointerEvents='all';
+  t=0;if(animFrame)cancelAnimationFrame(animFrame);
+  startAnim(drawIntroAnim);updateDots();
+  setTimeout(()=>playIntro(),300);
+}
+function showFinal(){
+  if(animFrame)cancelAnimationFrame(animFrame);
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  document.getElementById('final-screen').classList.add('show');
+  document.getElementById('step-wrapper').style.display='none';
+  setTimeout(()=>playCard('mundo'),200);
+}
+function restart(){
+  document.getElementById('final-screen').classList.remove('show');
+  setTimeout(()=>showIntro(),300);
+}
+function next(){
+  if(currentStep===-1){goTo(0);return;}
+  if(currentStep>=STEPS.length-1){showFinal();return;}
+  goTo(currentStep+1);
+}
+function prev(){
+  if(currentStep<=0){showIntro();return;}
+  goTo(currentStep-1);
+}
+document.addEventListener('click',()=>next());
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowRight'||e.key===' ')next();
+  if(e.key==='ArrowLeft')prev();
+});
+let tx0=0;
+document.addEventListener('touchstart',e=>{tx0=e.touches[0].clientX;},{passive:true});
+document.addEventListener('touchend',e=>{
+  const dx=e.changedTouches[0].clientX-tx0;
+  if(Math.abs(dx)<30)next();else if(dx>60)prev();
+},{passive:true});
+
+function startAnim(fn){
+  function loop(){t+=.011;ctx.clearRect(0,0,canvas.width,canvas.height);fn();animFrame=requestAnimationFrame(loop);}
+  animFrame=requestAnimationFrame(loop);
+}
+
+/* HELPERS */
+function dot(x,y,r,col){ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fillStyle=col;ctx.fill();}
+function circ(x,y,r,col,lw){ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.strokeStyle=col;ctx.lineWidth=lw||.8;ctx.stroke();}
+function ln(x1,y1,x2,y2,col,lw){ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.strokeStyle=col;ctx.lineWidth=lw||.8;ctx.stroke();}
+function glow(x,y,r,col){
+  const g=ctx.createRadialGradient(x,y,0,x,y,r);
+  g.addColorStop(0,col.replace(/[\d.]+\)$/,'.18)'));
+  g.addColorStop(1,col.replace(/[\d.]+\)$/,'0)'));
+  ctx.fillStyle=g;ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fill();
+}
+function txt(s,x,y,col,size,align){
+  ctx.save();ctx.font=`italic ${size||9*DPR}px 'Times New Roman'`;
+  ctx.fillStyle=col||'rgba(200,168,75,.25)';ctx.textAlign=align||'center';
+  ctx.fillText(s,x,y);ctx.restore();
+}
+
+/* Dibuja una carta de Tarot estilizada */
+function drawCard(cx,cy,w,h,symbol,name,col,rotAngle=0,glowing=false){
+  ctx.save();ctx.translate(cx,cy);ctx.rotate(rotAngle);
+  // Marco de la carta
+  ctx.beginPath();ctx.roundRect(-w/2,-h/2,w,h,w*.06);
+  ctx.fillStyle='rgba(8,12,18,.88)';ctx.fill();
+  ctx.strokeStyle=col.replace(/[\d.]+\)$/,'.45)');ctx.lineWidth=1;ctx.stroke();
+  // Borde interior
+  ctx.beginPath();ctx.roundRect(-w/2+w*.06,-h/2+h*.05,w*.88,h*.9,w*.04);
+  ctx.strokeStyle=col.replace(/[\d.]+\)$/,'.18)');ctx.lineWidth=.5;ctx.stroke();
+  // El símbolo central
+  if(glowing){
+    const gg=ctx.createRadialGradient(0,0,0,0,0,w*.35);
+    gg.addColorStop(0,col.replace(/[\d.]+\)$/,'.12)'));gg.addColorStop(1,'rgba(0,0,0,0)');
+    ctx.fillStyle=gg;ctx.beginPath();ctx.arc(0,0,w*.35,0,Math.PI*2);ctx.fill();
+  }
+  ctx.font=`${w*.45}px 'Times New Roman'`;
+  ctx.fillStyle=col.replace(/[\d.]+\)$/,'.72)');
+  ctx.textAlign='center';ctx.textBaseline='middle';
+  ctx.fillText(symbol,0,-h*.05);
+  // Nombre
+  ctx.font=`${w*.12}px 'Cinzel',serif`;
+  ctx.fillStyle=col.replace(/[\d.]+\)$/,'.45)');
+  ctx.fillText(name,0,h*.36);
+  ctx.restore();
+}
+
+/* ═══════════════════════════════════════
+   ANIMACIONES
+═══════════════════════════════════════ */
+
+function drawIntroAnim(){
+  const R=Math.min(W,H)*.3*DPR;
+  // Cartas barajándose en espiral
+  const nCards=22;
+  for(let i=0;i<nCards;i++){
+    const phase=(t*.08+i/nCards)%1;
+    const angle=i/nCards*Math.PI*6+t*.15;
+    const r=R*(phase*.8+.1);
+    const x=CX+Math.cos(angle)*r, y=CY+Math.sin(angle)*r;
+    const cardW=R*.28, cardH=R*.42;
+    const alpha=(.06+phase*.08)*(1-phase*.5);
+    ctx.save();ctx.translate(x,y);ctx.rotate(angle+Math.PI/2);
+    ctx.beginPath();ctx.roundRect(-cardW/2,-cardH/2,cardW,cardH,cardW*.06);
+    ctx.strokeStyle=`rgba(200,168,75,${alpha})`;ctx.lineWidth=.5;ctx.stroke();
+    ctx.restore();
+  }
+  // El punto central — el consultante
+  dot(CX,CY,4*DPR,'rgba(200,168,75,.8)');
+  glow(CX,CY,R*.15,'rgba(200,168,75,.8)');
+}
+
+/* 0: ORIGEN */
+function drawOrigin(){
+  const R=Math.min(W,H)*.27*DPR;
+  const cw=R*.58,ch=R*.88;
+  // Las 78 cartas como colección
+  for(let i=0;i<12;i++){
+    const col=Math.floor(i/4),row=i%4;
+    const x=CX-R*.85+col*R*.58, y=CY-R*.62+row*R*.42;
+    const alpha=.04+Math.sin(i+t*.3)*.02;
+    const isLit=i===Math.floor(t*.4)%12;
+    ctx.beginPath();ctx.roundRect(x,y,cw*.6,ch*.58,3);
+    ctx.strokeStyle=`rgba(200,168,75,${isLit?.4:alpha*4})`;ctx.lineWidth=isLit?.8:.4;ctx.stroke();
+    if(isLit) glow(x+cw*.3,y+ch*.29,R*.12,'rgba(200,168,75,.7)');
+  }
+  // Las tres categorías
+  const cats=['22\nMayores','40\nNuméricos','16\nCorte'];
+  const cols2=['rgba(200,168,75,','rgba(90,184,212,','rgba(78,158,104,'];
+  cats.forEach((c,i)=>{
+    txt(c.replace('\n',' '),CX-R*.55+i*R*.55,CY+R*.72,cols2[i]+'.35)',9*DPR);
+  });
+  txt('Italia · siglo XV · juego de corte → espejo del alma',CX,CY+R*.92,'rgba(200,168,75,.2)',8.5*DPR);
+}
+
+/* 1: EL LOCO */
+function drawFool(){
+  const R=Math.min(W,H)*.28*DPR;
+  const cw=R*.9,ch=R*1.35;
+  drawCard(CX,CY,cw,ch,'🌟','EL LOCO','rgba(200,168,75,',Math.sin(t*.1)*.02,true);
+  // El precipicio
+  ln(CX+cw*.6,CY+ch*.5,CX+R*1.1,CY+ch*.5,'rgba(200,168,75,.15)',1);
+  // El paso al vacío
+  const step=(Math.sin(t*.4)*.5+.5)*R*.15;
+  dot(CX+cw*.48+step,CY+ch*.52,3*DPR,'rgba(200,168,75,.55)');
+  // El 0
+  ctx.save();ctx.font=`${R*.18}px 'Cinzel Decorative',serif`;
+  ctx.fillStyle='rgba(200,168,75,.25)';ctx.textAlign='left';ctx.textBaseline='top';
+  ctx.fillText('0',CX-R*1.05,CY-ch*.52);ctx.restore();
+  // Las estrellas
+  for(let i=0;i<8;i++){
+    const a=i/8*Math.PI*2+t*.04;
+    const r=R*(.55+Math.sin(t*.3+i)*.08);
+    dot(CX+Math.cos(a)*r,CY+Math.sin(a)*r,(.8+Math.sin(t+i))*.8*DPR,'rgba(200,168,75,.25)');
+  }
+  txt('Aleph · א · Aire · Urano',CX,CY+ch*.72,'rgba(200,168,75,.28)',8.5*DPR);
+}
+
+/* 2: EL MAGO */
+function drawMagician(){
+  const R=Math.min(W,H)*.28*DPR;
+  const cw=R*.9,ch=R*1.35;
+  drawCard(CX,CY,cw,ch,'☿','EL MAGO','rgba(200,168,75,',Math.sin(t*.08)*.015,true);
+  // Los cuatro instrumentos
+  const instruments=[
+    {sym:'⚗',label:'Copa',x:-.65,y:-.25,col:'rgba(90,184,212,'},
+    {sym:'⚔',label:'Espada',x:.65,y:-.25,col:'rgba(200,168,75,'},
+    {sym:'🌿',label:'Bastón',x:-.65,y:.35,col:'rgba(78,158,104,'},
+    {sym:'⬡',label:'Oros',x:.65,y:.35,col:'rgba(200,168,75,'},
+  ];
+  instruments.forEach(({sym,label,x,y,col},i)=>{
+    const isLit=i===Math.floor(t*.5)%4;
+    ctx.save();ctx.font=`${(isLit?14:11)*DPR}px 'Times New Roman'`;
+    ctx.fillStyle=col+(isLit?.65:.3)+')';ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText(sym,CX+x*R,CY+y*R);ctx.restore();
+    txt(label,CX+x*R,CY+y*R+R*.18,col+(isLit?.4:.2)+')',7.5*DPR);
+    if(isLit) glow(CX+x*R,CY+y*R,R*.12,col+'.8)');
+  });
+  // El lemniscato
+  ctx.save();ctx.translate(CX,CY-ch*.65);
+  ctx.beginPath();
+  for(let i=0;i<=100;i++){
+    const a=i/100*Math.PI*2;
+    const r=R*.1;
+    const x2=r*Math.cos(a)/(1+Math.sin(a)*Math.sin(a));
+    const y2=r*Math.sin(a)*Math.cos(a)/(1+Math.sin(a)*Math.sin(a));
+    i===0?ctx.moveTo(x2,y2):ctx.lineTo(x2,y2);
+  }
+  ctx.strokeStyle='rgba(200,168,75,.35)';ctx.lineWidth=.8;ctx.stroke();
+  ctx.restore();
+  txt('Beth · ב · Mercurio · Como arriba así abajo',CX,CY+ch*.72,'rgba(200,168,75,.28)',8.5*DPR);
+}
+
+/* 3: LA SACERDOTISA */
+function drawPriestess(){
+  const R=Math.min(W,H)*.28*DPR;
+  const cw=R*.9,ch=R*1.35;
+  drawCard(CX,CY,cw,ch,'☽','LA SACERDOTISA','rgba(90,184,212,',Math.sin(t*.06)*.01,true);
+  // Las dos columnas
+  const colW=R*.08,colH=R*.65;
+  [[CX-cw*.55,'B','rgba(200,168,75,'],[CX+cw*.55,'J','rgba(200,168,75,']].forEach(([cx2,label,col])=>{
+    ctx.beginPath();ctx.rect(cx2-colW/2,CY-colH/2,colW,colH);
+    ctx.fillStyle=col+'0.06)';ctx.fill();
+    ctx.strokeStyle=col+'0.3)';ctx.lineWidth=.8;ctx.stroke();
+    txt(label,cx2,CY-colH/2-R*.1,col+'0.5)',11*DPR);
+  });
+  // El velo entre las columnas
+  ctx.save();
+  for(let i=0;i<12;i++){
+    const x=CX-cw*.46+i*R*.08;
+    const wave=Math.sin(i*.8+t*.5)*R*.04;
+    ln(x,CY-colH/2,x+wave,CY+colH/2,'rgba(90,184,212,.06)',.4);
+  }
+  ctx.restore();
+  // El rollo
+  ctx.beginPath();ctx.roundRect(CX-R*.12,CY+R*.05,R*.24,R*.32,R*.02);
+  ctx.strokeStyle='rgba(200,168,75,.25)';ctx.lineWidth=.7;ctx.stroke();
+  txt('TORA',CX,CY+R*.26,'rgba(200,168,75,.25)',7.5*DPR);
+  // La luna a sus pies
+  ctx.beginPath();ctx.arc(CX,CY+ch*.48,R*.1,Math.PI,Math.PI*2);
+  ctx.strokeStyle='rgba(90,184,212,.3)';ctx.lineWidth=.8;ctx.stroke();
+  txt('Gimel · ג · Luna · el misterio que no se dice',CX,CY+ch*.72,'rgba(90,184,212,.28)',8.5*DPR);
+}
+
+/* 4: EMPERATRIZ Y EMPERADOR */
+function drawEmperors(){
+  const R=Math.min(W,H)*.27*DPR;
+  const cw=R*.7,ch=R*1.05;
+  const lit=Math.floor(t*.3)%2;
+  // La Emperatriz
+  drawCard(CX-R*.58,CY-R*.08,cw,ch,'♀','EMPERATRIZ','rgba(78,158,104,',Math.sin(t*.08)*.015,lit===0);
+  // El Emperador
+  drawCard(CX+R*.58,CY+R*.08,cw,ch,'♂','EMPERADOR','rgba(200,168,75,',Math.sin(t*.08+1)*.015,lit===1);
+  // La línea de tensión entre ellos
+  ctx.save();ctx.setLineDash([3,6]);
+  ln(CX-R*.23,CY,CX+R*.23,CY,'rgba(200,168,75,.12)',.8);
+  ctx.setLineDash([]);ctx.restore();
+  // Los símbolos de Venus/Marte
+  txt('Venus · Dalet · ד',CX-R*.58,CY-ch*.62,'rgba(78,158,104,.3)',8*DPR);
+  txt('Marte · He · ה',CX+R*.58,CY+ch*.62+R*.08,'rgba(200,168,75,.3)',8*DPR);
+  txt('eros · logos · la dualidad que sostiene el mundo',CX,CY+R*.82,'rgba(200,168,75,.2)',8.5*DPR);
+}
+
+/* 5: ARCANOS MEDIOS */
+function drawMiddleArcana(){
+  const R=Math.min(W,H)*.27*DPR;
+  const cards=[
+    {sym:'✦',name:'HIEROFANTE',col:'rgba(200,168,75,',x:-.72},
+    {sym:'♡',name:'ENAMORADOS',col:'rgba(196,122,106,',x:-.24},
+    {sym:'⊕',name:'EL CARRO',col:'rgba(90,184,212,',x:.24},
+    {sym:'∞',name:'LA FUERZA',col:'rgba(78,158,104,',x:.72},
+  ];
+  const cw=R*.55,ch=R*.82;
+  const lit=Math.floor(t*.35)%4;
+  cards.forEach(({sym,name,col,x},i)=>{
+    drawCard(CX+x*R,CY,cw,ch,sym,name,col,Math.sin(t*.08+i*.5)*.015,i===lit);
+  });
+  txt('V · VI · VII · VIII — la ley · la elección · la voluntad · el dominio',CX,CY+ch*.52+R*.18,'rgba(200,168,75,.2)',8*DPR);
+}
+
+/* 6: EL ERMITAÑO */
+function drawHermit(){
+  const R=Math.min(W,H)*.28*DPR;
+  const cw=R*.9,ch=R*1.35;
+  drawCard(CX,CY,cw,ch,'✦','EL ERMITAÑO','rgba(200,168,75,',Math.sin(t*.06)*.01,true);
+  // La lámpara
+  const lampX=CX+cw*.28,lampY=CY-ch*.1;
+  glow(lampX,lampY,R*.2,'rgba(200,168,75,.7)');
+  for(let i=0;i<6;i++){
+    const a=i/6*Math.PI*2+t*.05;
+    const r1=R*.06,r2=R*(.1+Math.sin(i)*.04);
+    ln(lampX+Math.cos(a)*r1,lampY+Math.sin(a)*r1,
+       lampX+Math.cos(a)*r2,lampY+Math.sin(a)*r2,
+       `rgba(200,168,75,${.25+Math.sin(t+i)*.08})`,.7);
+  }
+  dot(lampX,lampY,3*DPR,'rgba(200,168,75,.9)');
+  // La estrella de seis puntas en la lámpara
+  for(let tri=0;tri<2;tri++){
+    ctx.beginPath();
+    for(let k=0;k<3;k++){
+      const a=k/3*Math.PI*2+tri*Math.PI/3;
+      const r=R*.06;
+      k===0?ctx.moveTo(lampX+Math.cos(a)*r,lampY+Math.sin(a)*r):
+             ctx.lineTo(lampX+Math.cos(a)*r,lampY+Math.sin(a)*r);
+    }
+    ctx.closePath();ctx.strokeStyle='rgba(200,168,75,.3)';ctx.lineWidth=.5;ctx.stroke();
+  }
+  // La montaña
+  ctx.beginPath();ctx.moveTo(CX-cw*.5,CY+ch*.48);
+  ctx.lineTo(CX-cw*.2,CY+ch*.1);ctx.lineTo(CX+cw*.1,CY+ch*.48);
+  ctx.strokeStyle='rgba(200,168,75,.12)';ctx.lineWidth=.7;ctx.stroke();
+  txt('Yod · י · Saturno · la luz que alcanza solo el paso siguiente',CX,CY+ch*.72,'rgba(200,168,75,.28)',8.5*DPR);
+}
+
+/* 7: LA RUEDA */
+function drawWheel(){
+  const R=Math.min(W,H)*.28*DPR;
+  const cw=R*.9,ch=R*1.35;
+  drawCard(CX,CY,cw,ch,'','LA RUEDA','rgba(200,168,75,',0,false);
+  // La rueda girando
+  const wheelR=R*.38;
+  circ(CX,CY-R*.05,wheelR,'rgba(200,168,75,.35)',1.2);
+  circ(CX,CY-R*.05,wheelR*.6,'rgba(200,168,75,.2)',.8);
+  circ(CX,CY-R*.05,wheelR*.15,'rgba(200,168,75,.3)',.7);
+  // Los radios
+  for(let i=0;i<8;i++){
+    const a=i/8*Math.PI*2+t*.12;
+    ln(CX+Math.cos(a)*wheelR*.15,CY-R*.05+Math.sin(a)*wheelR*.15,
+       CX+Math.cos(a)*wheelR*.6,CY-R*.05+Math.sin(a)*wheelR*.6,
+       'rgba(200,168,75,.22)',.7);
+  }
+  // Las letras TARO
+  const letters='TARO';
+  letters.split('').forEach((l,i)=>{
+    const a=i/4*Math.PI*2-Math.PI/2+t*.12;
+    const r=wheelR*.38;
+    ctx.save();ctx.font=`${9*DPR}px 'Cinzel',serif`;
+    ctx.fillStyle='rgba(200,168,75,.4)';
+    ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText(l,CX+Math.cos(a)*r,CY-R*.05+Math.sin(a)*r);ctx.restore();
+  });
+  // Los cuatro seres en las esquinas
+  const creatures=[['♌',cw*.4,-ch*.4],['♉',-cw*.4,-ch*.4],['♏',cw*.4,ch*.4],['♒',-cw*.4,ch*.4]];
+  creatures.forEach(([sym,dx,dy])=>{
+    ctx.save();ctx.font=`${11*DPR}px 'Times New Roman'`;
+    ctx.fillStyle='rgba(200,168,75,.35)';ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText(sym,CX+dx,CY+dy);ctx.restore();
+  });
+  txt('Caph · כ · Júpiter · el eje inmóvil en el centro',CX,CY+ch*.72,'rgba(200,168,75,.28)',8.5*DPR);
+}
+
+/* 8: TRANSFORMACIÓN */
+function drawTransformation(){
+  const R=Math.min(W,H)*.27*DPR;
+  const cw=R*.68,ch=R*1.02;
+  const cards=[
+    {sym:'⚖',name:'JUSTICIA',col:'rgba(200,168,75,',x:-.7},
+    {sym:'∩',name:'EL COLGADO',col:'rgba(90,184,212,',x:0},
+    {sym:'☽',name:'LA MUERTE',col:'rgba(78,158,104,',x:.7},
+  ];
+  const lit=Math.floor(t*.35)%3;
+  cards.forEach(({sym,name,col,x},i)=>{
+    drawCard(CX+x*R,CY,cw,ch,sym,name,col,Math.sin(t*.06+i*.8)*.015,i===lit);
+  });
+  txt('XI · XII · XIII — el equilibrio · la inversión · la transformación',CX,CY+ch*.52+R*.18,'rgba(200,168,75,.2)',8*DPR);
+}
+
+/* 9: EL DIABLO Y LA TORRE */
+function drawDevil(){
+  const R=Math.min(W,H)*.27*DPR;
+  const cw=R*.68,ch=R*1.02;
+  const cards=[
+    {sym:'⌛',name:'TEMPLANZA',col:'rgba(78,158,104,',x:-.7},
+    {sym:'♈',name:'EL DIABLO',col:'rgba(196,122,106,',x:0},
+    {sym:'⚡',name:'LA TORRE',col:'rgba(200,168,75,',x:.7},
+  ];
+  const lit=Math.floor(t*.35)%3;
+  cards.forEach(({sym,name,col,x},i)=>{
+    drawCard(CX+x*R,CY,cw,ch,sym,name,col,Math.sin(t*.06+i*.8)*.015,i===lit);
+  });
+  // El rayo sobre la Torre
+  if(lit===2){
+    ctx.save();
+    ctx.strokeStyle='rgba(200,168,75,.7)';ctx.lineWidth=1.5;
+    ctx.beginPath();
+    const tx2=CX+.7*R+cw*.15,ty2=CY-ch*.48;
+    ctx.moveTo(tx2,ty2);ctx.lineTo(tx2-R*.05,ty2+R*.12);ctx.lineTo(tx2+R*.05,ty2+R*.2);
+    ctx.lineTo(tx2-R*.02,ty2+R*.35);ctx.stroke();ctx.restore();
+    glow(tx2,ty2+R*.18,R*.1,'rgba(200,168,75,.9)');
+  }
+  txt('XIV · XV · XVI — el equilibrio · la cadena · la liberación',CX,CY+ch*.52+R*.18,'rgba(200,168,75,.2)',8*DPR);
+}
+
+/* 10: ESTRELLA, LUNA, SOL */
+function drawStarMoonSun(){
+  const R=Math.min(W,H)*.27*DPR;
+  const cw=R*.68,ch=R*1.02;
+  const cards=[
+    {sym:'✦',name:'LA ESTRELLA',col:'rgba(90,184,212,',x:-.7},
+    {sym:'☽',name:'LA LUNA',col:'rgba(200,168,75,',x:0},
+    {sym:'☉',name:'EL SOL',col:'rgba(200,168,75,',x:.7},
+  ];
+  const lit=Math.floor(t*.35)%3;
+  cards.forEach(({sym,name,col,x},i)=>{
+    drawCard(CX+x*R,CY,cw,ch,sym,name,col,Math.sin(t*.06+i*.8)*.015,i===lit);
+    if(i===2&&lit===2){
+      // Los rayos del sol
+      for(let r=0;r<12;r++){
+        const a=r/12*Math.PI*2+t*.03;
+        const r1=R*.12,r2=R*(.18+Math.sin(r*.7)*.03);
+        ln(CX+.7*R+Math.cos(a)*r1,CY+Math.sin(a)*r1,
+           CX+.7*R+Math.cos(a)*r2,CY+Math.sin(a)*r2,'rgba(200,168,75,.35)',.8);
+      }
+    }
+  });
+  txt('XVII · XVIII · XIX — esperanza · ilusión · conciencia plena',CX,CY+ch*.52+R*.18,'rgba(200,168,75,.2)',8*DPR);
+}
+
+/* 11: EL JUICIO Y EL MUNDO */
+function drawJudgmentWorld(){
+  const R=Math.min(W,H)*.27*DPR;
+  const cw=R*.72,ch=R*1.08;
+  const lit=Math.floor(t*.3)%2;
+  drawCard(CX-R*.55,CY,cw,ch,'☿','EL JUICIO','rgba(200,168,75,',Math.sin(t*.06)*.015,lit===0);
+  drawCard(CX+R*.55,CY,cw,ch,'⊕','EL MUNDO','rgba(78,158,104,',Math.sin(t*.06+1)*.015,lit===1);
+  // El laurel del Mundo
+  if(lit===1){
+    circ(CX+R*.55,CY,R*.38,'rgba(78,158,104,.2)',.8);
+    for(let i=0;i<16;i++){
+      const a=i/16*Math.PI*2+t*.04;
+      const r=R*.38;
+      dot(CX+R*.55+Math.cos(a)*r,CY+Math.sin(a)*r,1.5*DPR,'rgba(78,158,104,.3)');
+    }
+  }
+  txt('XX · XXI — la llamada · la totalidad alcanzada',CX,CY+ch*.52+R*.18,'rgba(200,168,75,.2)',8.5*DPR);
+  txt('el Loco ha completado su círculo',CX,CY+ch*.52+R*.34,'rgba(200,168,75,.15)',8*DPR);
+}
+
+/* 12: ARCANOS MENORES */
+function drawMinorArcana(){
+  const R=Math.min(W,H)*.27*DPR;
+  const suits=[
+    {name:'BASTOS',sym:'🌿',col:'rgba(196,122,106,',label:'Fuego · Atziluth'},
+    {name:'COPAS',sym:'⚗',col:'rgba(90,184,212,',label:'Agua · Briah'},
+    {name:'ESPADAS',sym:'⚔',col:'rgba(200,168,75,',label:'Aire · Yetzirah'},
+    {name:'OROS',sym:'⬡',col:'rgba(78,158,104,',label:'Tierra · Assiah'},
+  ];
+  const cw=R*.52,ch=R*.78;
+  const lit=Math.floor(t*.4)%4;
+  suits.forEach(({name,sym,col,label},i)=>{
+    const x=[-R*.72,-R*.24,R*.24,R*.72][i];
+    drawCard(CX+x,CY-R*.08,cw,ch,sym,name,col,Math.sin(t*.06+i*.8)*.015,i===lit);
+    txt(label,CX+x,CY+ch*.44+R*.22,col+(i===lit?.35:.18)+')',7.5*DPR);
+  });
+  txt('14 cartas × 4 palos = 56 arcanos menores',CX,CY+R*.9,'rgba(200,168,75,.2)',8.5*DPR);
+}
+
+/* 13: CÁBALA Y TAROT */
+function drawKabbalah(){
+  const R=Math.min(W,H)*.28*DPR;
+  const seph=[
+    {name:'Keter',x:0,y:-.88,col:'rgba(200,168,75,.7)',card:'El Loco'},
+    {name:'Chokmah',x:.38,y:-.52,col:'rgba(200,168,75,.6)',card:'El Mago'},
+    {name:'Binah',x:-.38,y:-.52,col:'rgba(90,184,212,.55)',card:'La Sac.'},
+    {name:'Chesed',x:.38,y:-.02,col:'rgba(90,184,212,.5)',card:'El Hierof.'},
+    {name:'Gevurah',x:-.38,y:-.02,col:'rgba(196,122,106,.5)',card:'La Fuerza'},
+    {name:'Tiferet',x:0,y:.22,col:'rgba(200,168,75,.65)',card:'El Sol'},
+    {name:'Netzach',x:.38,y:.52,col:'rgba(78,158,104,.5)',card:'La Emperatriz'},
+    {name:'Hod',x:-.38,y:.52,col:'rgba(200,168,75,.45)',card:'El Mago'},
+    {name:'Yesod',x:0,y:.78,col:'rgba(200,168,75,.5)',card:'La Luna'},
+    {name:'Malkut',x:0,y:1.02,col:'rgba(78,158,104,.45)',card:'El Mundo'},
+  ];
+  const paths=[[0,1],[0,2],[0,5],[1,2],[1,3],[1,5],[2,4],[2,5],[3,4],[3,5],[3,6],[4,5],[4,7],[5,6],[5,7],[5,8],[6,7],[6,8],[7,8],[8,9]];
+  const litPath=Math.floor(t*.4)%paths.length;
+  paths.forEach(([a,b],i)=>{
+    const sa=seph[a],sb=seph[b];
+    ln(CX+sa.x*R,CY+sa.y*R*.8,CX+sb.x*R,CY+sb.y*R*.8,
+      `rgba(200,168,75,${i===litPath?.32:.07})`,i===litPath?1:.4);
+  });
+  const litS=Math.floor(t*.35)%10;
+  seph.forEach(({name,x,y,col,card},i)=>{
+    const px=CX+x*R,py=CY+y*R*.8;
+    const isLit=i===litS;
+    circ(px,py,R*.09,col.replace(/[\d.]+\)$/,(isLit?.4:.15)+')'),.7);
+    if(isLit){glow(px,py,R*.16,col);txt(card,px,py-R*.16,col.replace(/[\d.]+\)$/,'.5)'),8.5*DPR);}
+    dot(px,py,(isLit?4:2.5)*DPR,col.replace(/[\d.]+\)$/,(isLit?.85:.45)+')'));
+    if(isLit) txt(name,px,py+R*.14,col.replace(/[\d.]+\)$/,'.4)'),7.5*DPR);
+  });
+  txt('22 senderos = 22 Arcanos Mayores',CX,CY+R*1.0,'rgba(200,168,75,.22)',8.5*DPR);
+}
+
+/* 14: JUNG Y EL TAROT */
+function drawJung(){
+  const R=Math.min(W,H)*.28*DPR;
+  // El consultante — el punto consciente
+  dot(CX,CY,4*DPR,'rgba(200,168,75,.8)');
+  glow(CX,CY,R*.18,'rgba(200,168,75,.8)');
+  txt('yo consciente',CX,CY-R*.22,'rgba(200,168,75,.3)',8.5*DPR);
+  // La carta seleccionada
+  const cw=R*.65,ch=R*.98;
+  const cardAngle=Math.sin(t*.3)*.03;
+  drawCard(CX+R*.62,CY-R*.15,cw,ch,'?','·','rgba(200,168,75,',cardAngle,true);
+  // La flecha — la sincronicidad
+  ctx.save();ctx.setLineDash([4,6]);
+  ctx.beginPath();ctx.moveTo(CX+R*.18,CY-R*.05);ctx.lineTo(CX+R*.32,CY-R*.1);
+  ctx.strokeStyle='rgba(200,168,75,.3)';ctx.lineWidth=.8;ctx.stroke();
+  ctx.setLineDash([]);ctx.restore();
+  txt('sincronicidad',CX+R*.25,CY-R*.22,'rgba(200,168,75,.22)',7.5*DPR);
+  // El inconsciente
+  for(let i=0;i<5;i++){
+    const ph=(t*.3+i/5)%1;
+    circ(CX,CY,ph*R*.55,`rgba(200,168,75,${(1-ph)*.1})`,.6);
+  }
+  // Los arquetipos emergiendo
+  const archs=['Sombra','Anima','Self','Héroe','Madre'];
+  archs.forEach((a,i)=>{
+    const angle=i/5*Math.PI*2+t*.04;
+    const r=R*.52;
+    txt(a,CX+Math.cos(angle)*r,CY+Math.sin(angle)*r,'rgba(200,168,75,.18)',7.5*DPR);
+  });
+  txt('la carta activa lo que ya estaba operando',CX,CY+R*.82,'rgba(200,168,75,.2)',8.5*DPR);
+}
+
+/* 15: EL RETORNO — LA TIRADA */
+function drawReturn(){
+  const R=Math.min(W,H)*.29*DPR;
+  // La tirada de tres cartas
+  const positions=[
+    {x:-.62,label:'pasado',card:'☽'},
+    {x:0,label:'presente',card:'☉'},
+    {x:.62,label:'futuro',card:'✦'},
+  ];
+  const cw=R*.62,ch=R*.95;
+  const lit=Math.floor(t*.4)%3;
+  positions.forEach(({x,label,card},i)=>{
+    const isLit=i===lit;
+    drawCard(CX+x*R,CY-R*.08,cw,ch,card,'',
+      isLit?'rgba(200,168,75,':'rgba(200,168,75,',
+      Math.sin(t*.06+i)*.015,isLit);
+    txt(label,CX+x*R,CY+ch*.48+R*.12,
+      `rgba(200,168,75,${isLit?.4:.2})`,(isLit?9:8)*DPR);
+  });
+  // La pregunta
+  ctx.save();ctx.font=`italic ${11*DPR}px 'Times New Roman'`;
+  ctx.fillStyle=`rgba(200,168,75,${.2+Math.sin(t*.5)*.06})`;
+  ctx.textAlign='center';
+  ctx.fillText('¿qué está pasando que no estás viendo?',CX,CY+R*.85);
+  ctx.restore();
+  // Los puntos — el barajado del destino
+  for(let i=0;i<20;i++){
+    const a=i/20*Math.PI*2+t*.06;
+    const r=R*(1.05+Math.sin(t*.3+i)*.04);
+    dot(CX+Math.cos(a)*r,CY+Math.sin(a)*r,.8*DPR,'rgba(200,168,75,.12)');
+  }
+}
+
+showIntro();
+</script>
+</body>
+</html>
