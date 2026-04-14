@@ -16,9 +16,3 @@
 - **Conexiones aleatorias** entre cartas para enriquecer la interpretación.
 - **Botones de acción**: tirada aleatoria, limpiar posición, lectura completa.
 - **Modal de significado** al hacer clic sobre cualquier carta ya colocada.
-
-## 🛠️ Instalación y uso local
-
-1. Clona el repositorio:
-   ```bash
-   git clone https://github.com/tuusuario/biznaga-restaurante-tarot.git
