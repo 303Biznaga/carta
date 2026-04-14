@@ -1,0 +1,1015 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+<title>Los Números · Historia de la Humanidad</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cinzel:wght@400;600&family=IM+Fell+English:ital@0;1&display=swap');
+:root{
+  --void:#03060a;--gold:#c8a84b;--goldlt:#e2c97e;--goldd:#6a5020;
+  --sage:#4e9e68;--foam:#cce4d8;--smoke:#4a6a58;--cyan:#5ab8d4;--rose:#c47a6a;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{width:100%;height:100%;overflow:hidden;background:var(--void);}
+body{font-family:'IM Fell English',Georgia,serif;color:var(--foam);touch-action:manipulation;user-select:none;}
+#grain{position:fixed;inset:0;z-index:9999;pointer-events:none;opacity:.28;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.13'/%3E%3C/svg%3E");
+  mix-blend-mode:overlay;}
+#main-canvas{position:fixed;inset:0;width:100%;height:100%;}
+#dots{position:fixed;right:14px;top:50%;transform:translateY(-50%);
+  display:flex;flex-direction:column;gap:7px;z-index:100;}
+.dot{width:5px;height:5px;border-radius:50%;background:rgba(200,168,75,.18);
+  cursor:pointer;transition:all .3s;}
+.dot.active{background:rgba(200,168,75,.75);transform:scale(1.4);}
+#step-wrapper{position:fixed;inset:0;display:flex;flex-direction:column;
+  justify-content:flex-end;pointer-events:none;z-index:50;}
+#step-panel{padding:0 0 clamp(26px,5.5vh,48px);pointer-events:all;
+  opacity:1;transition:opacity .5s ease;}
+#step-panel.hiding{opacity:0;}
+.step-era{text-align:center;font-family:'Cinzel',serif;font-size:clamp(7px,1.8vw,9px);
+  letter-spacing:.55em;text-transform:uppercase;color:rgba(200,168,75,.35);margin-bottom:10px;}
+.step-title{text-align:center;font-family:'Cinzel Decorative',serif;
+  font-size:clamp(15px,4.8vw,27px);font-weight:400;color:var(--foam);
+  letter-spacing:.06em;line-height:1.2;margin-bottom:4px;padding:0 24px;}
+.step-author{text-align:center;font-family:'Cinzel',serif;font-size:clamp(8px,2.2vw,10px);
+  letter-spacing:.4em;text-transform:uppercase;color:var(--goldd);margin-bottom:18px;}
+.voices{display:grid;grid-template-columns:1fr 1fr;gap:0;border-top:1px solid rgba(200,168,75,.1);}
+.voice-left{font-family:'IM Fell English',serif;font-style:italic;
+  font-size:clamp(11px,3vw,13px);color:rgba(204,228,216,.65);line-height:1.7;
+  letter-spacing:.03em;padding:13px 15px 13px 20px;border-right:1px solid rgba(200,168,75,.08);}
+.voice-right{font-family:'Cinzel',serif;font-weight:400;font-size:clamp(7.5px,2vw,10px);
+  text-transform:uppercase;letter-spacing:.12em;color:rgba(90,184,212,.55);
+  line-height:1.85;padding:13px 20px 13px 15px;}
+.nav-hint{text-align:center;margin-top:13px;font-family:'Cinzel',serif;
+  font-size:6.5px;letter-spacing:.5em;color:rgba(200,168,75,.2);text-transform:uppercase;}
+#intro-wrap{position:fixed;inset:0;z-index:60;pointer-events:none;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  transition:opacity .6s;}
+.i-inner{position:relative;z-index:2;display:flex;flex-direction:column;
+  align-items:center;text-align:center;padding:0 32px;}
+.i-num{font-family:'Cinzel Decorative',serif;font-size:clamp(80px,22vw,130px);
+  color:rgba(200,168,75,.18);line-height:1;margin-bottom:18px;
+  transition:opacity .35s;}
+.i-title{font-family:'Cinzel Decorative',serif;font-size:clamp(22px,6.5vw,36px);
+  color:var(--foam);letter-spacing:.07em;margin-bottom:8px;}
+.i-sub{font-family:'IM Fell English',serif;font-style:italic;
+  font-size:clamp(12px,3.2vw,15px);color:var(--smoke);letter-spacing:.07em;margin-bottom:6px;}
+.i-count{font-family:'Cinzel',serif;font-size:7px;letter-spacing:.5em;
+  color:rgba(200,168,75,.28);text-transform:uppercase;margin-bottom:36px;}
+.i-cta{font-family:'Cinzel',serif;font-size:7.5px;letter-spacing:.5em;
+  text-transform:uppercase;color:rgba(200,168,75,.4);
+  animation:pulse 2.2s ease-in-out infinite;}
+@keyframes pulse{0%,100%{opacity:.28;}50%{opacity:.72;}}
+#final-screen{position:fixed;inset:0;z-index:200;background:var(--void);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  opacity:0;pointer-events:none;transition:opacity .8s ease;text-align:center;padding:40px;}
+#final-screen.show{opacity:1;pointer-events:all;}
+.final-inner{position:relative;z-index:2;display:flex;flex-direction:column;
+  align-items:center;padding:0 32px;}
+.final-title{font-family:'Cinzel Decorative',serif;font-size:clamp(20px,6vw,32px);
+  color:var(--foam);margin-bottom:16px;line-height:1.3;}
+.final-text{font-family:'IM Fell English',serif;font-style:italic;
+  font-size:clamp(13px,3.5vw,16px);color:var(--smoke);line-height:1.82;
+  max-width:300px;margin:0 auto 40px;}
+.final-btn{background:transparent;border:1px solid rgba(200,168,75,.2);
+  font-family:'Cinzel',serif;font-size:7.5px;letter-spacing:.45em;
+  text-transform:uppercase;color:var(--smoke);padding:14px 28px;cursor:pointer;transition:all .22s;}
+.final-btn:active{color:var(--foam);border-color:rgba(200,168,75,.5);}
+</style>
+</head>
+<body>
+<div id="grain"></div>
+<canvas id="main-canvas"></canvas>
+
+<div id="intro-wrap">
+  <div class="i-inner">
+    <div class="i-num" id="i-num-display">1</div>
+    <div class="i-title">Los Números</div>
+    <div class="i-sub">La única cosa que descubrimos y que también inventamos</div>
+    <div class="i-count">16 momentos · 30,000 años</div>
+    <div class="i-cta">toca para comenzar</div>
+  </div>
+</div>
+
+<div id="dots"></div>
+
+<div id="step-wrapper" style="display:none;">
+  <div id="step-panel">
+    <div class="step-era" id="s-era"></div>
+    <div class="step-title" id="s-title"></div>
+    <div class="step-author" id="s-author"></div>
+    <div class="voices">
+      <div class="voice-left" id="s-left"></div>
+      <div class="voice-right" id="s-right"></div>
+    </div>
+    <div class="nav-hint" id="s-nav"></div>
+  </div>
+</div>
+
+<div id="final-screen">
+  <div class="final-inner">
+    <div class="final-title">¿Los números<br>se descubren<br>o se inventan?</div>
+    <div class="final-text">Platón decía que los números existen independientemente de la mente humana — que los descubrimos. Kant decía que son estructuras que la mente impone al mundo. Treinta siglos de debate sin resolución. La pregunta sigue abierta. Y los números siguen funcionando.</div>
+    <button class="final-btn" onclick="window.location.href='index.html'">volver al silencio</button>
+  </div>
+</div>
+
+<script>
+/* ════════════════════════════════
+   DATOS — 16 PASOS
+════════════════════════════════ */
+const STEPS = [
+  {
+    era: 'Prehistoria · 30,000 a.C.',
+    title: 'Uno, Dos, Muchos',
+    author: 'El hueso de Lebombo',
+    left: 'Los primeros números que el ser humano usó no eran abstractos — eran muescas. El hueso de Lebombo, 43,000 años de antigüedad, tiene 29 marcas. El hueso de Ishango, 25,000 años, tiene series que sugieren aritmética primitiva. Antes de que existiera la palabra "tres", existía la experiencia de tres. El número nace como cicatriz en el hueso del tiempo.',
+    right: 'Los sistemas de conteo más primitivos: uno, dos, muchos. Muchas lenguas tribales del amazonas y australia no tienen palabras para números mayores que cinco. El número como abstracción: separar "tres" de "tres ovejas" o "tres días". La cardinalidad: propiedad común de todos los conjuntos de tres elementos. El número como invariante perceptual.',
+    draw: drawBone, freq: 136
+  },
+  {
+    era: 'Mesopotamia · 3000 a.C.',
+    title: 'El Sistema Sexagesimal',
+    author: 'Por qué el día tiene 60 minutos',
+    left: 'Los sumerios cuentan en base 60. No por capricho: 60 es divisible entre 2, 3, 4, 5, 6, 10, 12, 15, 20 y 30. Es el número más pequeño con tantos divisores. Cuatro mil años después seguimos usando su sistema: 60 segundos, 60 minutos, 360 grados. El número 60 fue tan práctico que sobrevivió a todo lo que lo usó. Los sumerios desaparecieron. El 60 permanece.',
+    right: 'Base 60 (sexagesimal): posición del dedo pulgar contando las falanges de los otros cuatro dedos (3×4=12) multiplicado por las 5 posiciones de la mano opuesta (12×5=60). Divisores de 60: 1,2,3,4,5,6,10,12,15,20,30,60 — doce divisores. Comparación: base 10 tiene seis divisores. El número de Hamming: altamente compuesto, óptimo para cálculo sin fracciones.',
+    draw: drawSexagesimal, freq: 144
+  },
+  {
+    era: 'India · Siglo VII',
+    title: 'El Cero',
+    author: 'Brahmagupta · 628 d.C.',
+    left: 'El cero es el número más extraño que existe. No es la ausencia de número — es un número que representa la ausencia. Brahmagupta es el primero en tratarlo con precisión: define las operaciones con cero, advierte que la división por cero no está definida. El cero tardó 30,000 años en ser inventado después de que el ser humano aprendió a contar. Lo más difícil no fue contar lo que hay — fue nombrar lo que no hay.',
+    right: 'Brahmagupta (628): a + 0 = a; a × 0 = 0; 0/0 = 0 (error que fue corregido). El cero como número posicional: permite al 1 en "10" valer diez. Sin cero: el 1 de "1" y el 1 de "10" son indistinguibles sin marcadores posicionales. El concepto llegó a Europa vía Al-Juarismi (~820). El número más tardío y más revolucionario. Sin él: sin álgebra, sin cálculo, sin computación.',
+    draw: drawZero, freq: 192
+  },
+  {
+    era: 'Grecia · Siglo V a.C.',
+    title: 'Los Números Irracionales',
+    author: 'El escándalo de √2',
+    left: 'Los pitagóricos creían que todo en el universo podía expresarse como razón de números enteros. Entonces uno de ellos — la tradición dice que Hipaso — demostró que √2 no puede expresarse así. La diagonal del cuadrado de lado 1 es un número que no puede escribirse como fracción. La historia dice que los pitagóricos lo arrojaron al mar para silenciarlo. El número irracional fue tan incómodo que se intentó ahogar.',
+    right: 'Demostración: suponer √2 = p/q irreducible. Entonces 2q² = p², p es par, p=2k, 2q² = 4k², q² = 2k², q es par. Contradicción: p/q no es irreducible. Los irracionales: números cuya expansión decimal no termina ni se repite. Hay más irracionales que racionales: |ℝ\ℚ| = |ℝ| > |ℚ| = |ℕ|. El continuo está hecho casi completamente de irracionales.',
+    draw: drawIrrational, freq: 216
+  },
+  {
+    era: 'India · Siglo III a.C.',
+    title: 'Los Números Negativos',
+    author: 'La deuda como número',
+    left: 'Los matemáticos indios son los primeros en usar números negativos sistemáticamente. Los llaman "números de deuda" en contraste con los "números de riqueza". Brahmagupta establece sus reglas: deuda menos deuda, riqueza menos riqueza, el producto de dos deudas es riqueza. Los matemáticos europeos medievales los rechazaron durante siglos — llamaban a los números negativos "absurdos" o "ficticios". La deuda era una experiencia real pero el número que la describía no les parecía real.',
+    right: 'Números negativos en India: "धन" (fortuna) y "ऋण" (deuda). Brahmagupta: (-a)×(-b) = ab. Los negativos en Europa: rechazados hasta el siglo XVII. Descartes los llamó "raíces falsas". La recta numérica como modelo geométrico que los naturaliza. Aplicaciones: temperatura, altitud, carga eléctrica, potencial, deuda financiera. El número negativo como extensión del concepto de dirección.',
+    draw: drawNegative, freq: 256
+  },
+  {
+    era: 'Islam · Siglo IX',
+    title: 'El Álgebra',
+    author: 'Al-Juarismi · Al-Kitāb al-mukhtaṣar',
+    left: 'Al-Juarismi escribe el primer tratado sistemático de álgebra. La palabra "álgebra" viene del árabe "al-jabr" — la reunión, la restauración. El álgebra es el arte de tratar el número desconocido como si fuera conocido y resolver la ecuación que lo contiene. Antes del álgebra, los problemas matemáticos eran casos particulares. Después, son familias de casos descritos por una sola ecuación. El número se vuelve variable.',
+    right: 'Al-jabr: "completar" — mover términos negativos al otro lado. Al-muqabala: "reducir" — cancelar términos similares. La ecuación cuadrática general: ax² + bx + c = 0. Al-Juarismi la resuelve geométricamente. La fórmula general (Bhaskara II, 1114): x = (-b ± √(b²-4ac)) / 2a. La letra x como incógnita: introducida por Descartes (~1637) — la letra más usada del alfabeto matemático.',
+    draw: drawAlgebra, freq: 288
+  },
+  {
+    era: 'Fibonacci · 1202',
+    title: 'Los Números de Arabia',
+    author: 'Liber Abaci · Los números que usamos',
+    left: 'Fibonacci regresa de sus viajes por el norte de África y publica el Liber Abaci. Explica a la Europa medieval el sistema de numeración posicional indio-árabe: 0, 1, 2, 3, 4, 5, 6, 7, 8, 9. Con solo diez símbolos y la posición como portadora de valor, cualquier número puede escribirse. Los mercaderes italianos lo adoptan inmediatamente porque hace los cálculos comerciales incomparablemente más simples. Los números que usas para leer esto llegaron en ese libro.',
+    right: 'Numeración posicional: el valor de cada dígito depende de su posición. "321" = 3×10² + 2×10¹ + 1×10⁰. En contraste, CCCXXI romano no es posicional — no hay forma de calcular con él directamente. La multiplicación romana requería un ábaco. La multiplicación arábiga: algoritmo directo. La revolución del comercio medieval: doble entrada contable (Paccioli, 1494) requiere el cero posicional.',
+    draw: drawArabic, freq: 324
+  },
+  {
+    era: 'Cardano · 1545',
+    title: 'Los Números Imaginarios',
+    author: 'Ars Magna · √−1',
+    left: 'Cardano necesita resolver ecuaciones cúbicas. El método funciona pero en ciertos pasos aparece √−1 — la raíz cuadrada de un número negativo. Ningún número real satisface esto. Cardano los llama "sofísticos" pero los usa de todas formas, obteniendo respuestas reales correctas. Dos siglos después, Euler le da el nombre definitivo: i. El número imaginario no es imaginario — es tan real como cualquier otro. Solo es perpendicular.',
+    right: 'i = √(-1). i² = -1. Los números complejos: z = a + bi, plano de Gauss (1831). La multiplicación compleja = rotación + escala. |z₁z₂| = |z₁||z₂|, arg(z₁z₂) = arg(z₁)+arg(z₂). La fórmula de Euler: e^(iπ) + 1 = 0. Los números complejos en física: la mecánica cuántica los requiere fundamentalmente — la función de onda Ψ es compleja. La naturaleza necesita √(-1).',
+    draw: drawImaginary, freq: 341
+  },
+  {
+    era: 'Euclides · 300 a.C. / Euler · 1742',
+    title: 'Los Números Primos',
+    author: 'Los átomos del número',
+    left: 'Un número primo no puede dividirse entre ningún número excepto 1 y sí mismo. Euclides demuestra que hay infinitos primos. Euler descubre que la suma de los inversos de los primos diverge — hay "muchos más" primos que cuadrados perfectos, aunque ambos conjuntos sean infinitos. Los primos son los átomos del número: todo entero puede descomponerse en primos de una sola manera. Son el fundamento de la aritmética y, hoy, el fundamento de toda la seguridad digital.',
+    right: 'Teorema fundamental de la aritmética: factorización prima única. Teorema de Euclides: infinitos primos (demostración por contradicción, ~300 a.C.). Distribución asintótica: π(n) ~ n/ln(n) (teorema de los números primos, Hadamard/Vallée-Poussin, 1896). La hipótesis de Riemann: la distribución exacta de los primos — no demostrada. RSA: seguridad basada en la dificultad de factorizar productos de primos grandes.',
+    draw: drawPrimes, freq: 384
+  },
+  {
+    era: 'Newton · 1665',
+    title: 'El Continuo',
+    author: 'Los números reales y el cálculo',
+    left: 'Newton necesita calcular la velocidad instantánea — el movimiento en un instante, que dura cero tiempo. Para eso necesita números que estén infinitamente cerca de otros sin ser iguales. Los números reales — todos los puntos de la recta, racionales e irracionales — forman un continuo: entre cualquier dos números reales hay infinitos más. El cálculo es el arte de razonar sobre lo que ocurre cuando los números se acercan infinitamente sin tocarse.',
+    right: 'Los reales como completación de los racionales: todo límite de una sucesión de Cauchy existe en ℝ. La densidad: entre dos reales siempre hay otro racional y otro irracional. El teorema del valor intermedio: si f(a)<0<f(b), existe c∈(a,b) con f(c)=0. La construcción de Dedekind: cortaduras que definen cada real. La cardinalidad del continuo: 2^ℵ₀ > ℵ₀. El número de reales es inconmensurablemente mayor que el de enteros.',
+    draw: drawContinuum, freq: 432
+  },
+  {
+    era: 'Cantor · 1874',
+    title: 'Los Infinitos',
+    author: 'No todos los infinitos son iguales',
+    left: 'Cantor demuestra que hay distintos tamaños de infinito. El infinito de los números naturales — ℵ₀ — es menor que el infinito de los números reales — 2^ℵ₀. Hay una jerarquía infinita de infinitos. Cuando Cantor publicó esto, Kronecker lo llamó "corruptor de la juventud". Poincaré dijo que era una "enfermedad". Hilbert dijo que nadie podría expulsarnos del paraíso que Cantor había creado. Tenía razón.',
+    right: 'La diagonal de Cantor: no existe biyección entre ℕ y ℝ. Demostración: lista todos los reales → construye un real que difiere del n-ésimo en el n-ésimo decimal → ese real no está en la lista. Contradicción. |ℕ| = ℵ₀ < |ℝ| = 2^ℵ₀ = ℵ₁ (si se asume hipótesis del continuo). La hipótesis del continuo: independiente de los axiomas ZFC (Cohen, 1963). El infinito como objeto matemático legítimo.',
+    draw: drawInfinity, freq: 480
+  },
+  {
+    era: 'Euler · 1748',
+    title: 'e · El Número del Cambio',
+    author: 'La base del crecimiento natural',
+    left: 'e = 2.71828... Es el número tal que la función eˣ es su propia derivada. El único número cuya tasa de cambio en cualquier punto es exactamente igual a su valor. El dinero que crece con interés continuo, la población que crece sin límites, la radiactividad que decae, el calor que se disipa — todos siguen eˣ. e aparece en la distribución normal, en la función zeta, en la fórmula de Stirling. Es el número del cambio porque describe el cambio que se perpetúa a sí mismo.',
+    right: 'd/dx[eˣ] = eˣ. Definición: e = lím(1 + 1/n)^n cuando n→∞. Relación con el logaritmo natural: ln(e) = 1. La fórmula de Euler: e^(ix) = cos(x) + i·sin(x). Para x=π: e^(iπ) = -1. Los cinco números fundamentales: 0, 1, e, π, i, reunidos en una sola ecuación. El crecimiento exponencial: cualquier proceso de tasa proporcional a su tamaño obedece a eˣ.',
+    draw: drawE, freq: 528
+  },
+  {
+    era: 'Arquímedes · 250 a.C. / Lambert · 1761',
+    title: 'π · El Número del Círculo',
+    author: 'La razón que no termina',
+    left: 'π es la razón entre la circunferencia de cualquier círculo y su diámetro. Siempre. En cualquier círculo. Es el mismo número. No existe ninguna fracción que lo iguale exactamente — Lambert lo demuestra en 1761: π es irracional. Lindemann lo refina en 1882: π es trascendente. Sus decimales no tienen patrón, no se repiten, no terminan. Cuatro mil millones de decimales calculados y todavía no hay señal de orden. El círculo contiene, en su proporción más simple, el caos.',
+    right: 'π = 3.14159265358979... Irracional: no es p/q. Trascendente: no satisface ninguna ecuación polinómica. Fórmula de Leibniz: π/4 = 1 - 1/3 + 1/5 - 1/7... (converge lentísimo). Fórmula de Ramanujan: converge 8 decimales por término. π en física: aparece en la ley de Coulomb, en la constante gravitacional, en la distribución normal, en la mecánica cuántica. El número que la naturaleza usa para doblar el espacio.',
+    draw: drawPi, freq: 576
+  },
+  {
+    era: 'Cábala · Gematría',
+    title: 'Los Números como Nombres',
+    author: 'El lenguaje donde letra y número son lo mismo',
+    left: 'En el sistema de gematría hebreo-arameo, cada letra tiene un valor numérico. אלף — Aleph — vale 1. בית — Beth — vale 2. El nombre de Dios en cuatro letras — יהוה — suma 26. El texto sagrado es simultáneamente escritura y cálculo. Dos palabras que suman lo mismo comparten una esencia. El universo fue creado con letras que son también números. En la Cábala, la diferencia entre nombre y número no existe.',
+    right: 'Gematría: א=1, ב=2, ג=3, ד=4, ה=5, ו=6, ז=7, ח=8, ט=9, י=10, כ=20... יהוה = 10+5+6+5 = 26. "אהבה" (amor) = 1+5+2+5 = 13. "אחד" (uno/unidad) = 1+8+4 = 13. Amor = Unidad. El Tetragrámaton 26 = 2×13. El Séfer Yetzirá: el universo creado con 32 caminos de sabiduría = 10 sefirot + 22 letras. El número como lenguaje del ser.',
+    draw: drawGematria, freq: 639
+  },
+  {
+    era: 'Planck · 1900 / Heisenberg · 1927',
+    title: 'Los Números Cuánticos',
+    author: 'El universo que cuenta en enteros',
+    left: 'Planck descubre que la energía no es continua — viene en paquetes. Cada paquete es un múltiplo entero de una cantidad mínima: ħ. El universo, en su escala más pequeña, cuenta en números enteros. El espín del electrón es ½ o -½ — no puede ser 0.3 ni 0.7. La carga eléctrica es múltiplo de e. La naturaleza, en el fondo, es discreta. Después de 2500 años intentando describir la realidad con números continuos, descubrimos que la realidad cuenta.',
+    right: 'Los números cuánticos del electrón: n (principal, entero ≥1), l (angular, 0 a n-1), m_l (magnético, -l a +l), m_s (espín, ±½). La cuantización: E_n = -13.6 eV/n². Los operadores escalera: crean y destruyen cuantos. La estadística de Bose-Einstein (enteros): fotones. La estadística de Fermi-Dirac (semienteros): electrones. El universo como sistema discreto que emerge de reglas continuas.',
+    draw: drawQuantum, freq: 672
+  },
+  {
+    era: 'El retorno',
+    title: '∞',
+    author: 'Ahora mismo',
+    left: 'Llevas 30,000 años contando. Primero con huesos, luego con arcilla, luego con papel, luego con silicio. Y todavía no sabes si los números que usas existen fuera de ti o los estás creando al usarlos. Pero el universo obedece ecuaciones que nadie escribió antes de descubrirlas. Y los primos no cambian aunque nadie los cuente. Quizás la pregunta es equivocada. Quizás descubrir e inventar son el mismo acto cuando el que inventa es parte de lo que descubre.',
+    right: 'El problema de Platón-Kant: ¿son los números objetos abstractos (platonismo) o construcciones mentales (intuicionismo)? El programa de Hilbert: axiomatizar toda la matemática. El teorema de Gödel (1931): en todo sistema axiomático suficientemente potente hay verdades que no pueden demostrarse dentro del sistema. Los números se escapan de cualquier descripción completa de sí mismos. El número, como el universo, es más grande que cualquier teoría que lo contenga.',
+    draw: drawReturn, freq: 720
+  }
+];
+
+/* ════════════════════════════════
+   ESTADO
+════════════════════════════════ */
+let currentStep=-1, isAnimating=false;
+const canvas=document.getElementById('main-canvas');
+const ctx=canvas.getContext('2d');
+const DPR=window.devicePixelRatio||1;
+let W,H,CX,CY,animFrame,t=0;
+
+function resize(){
+  W=window.innerWidth; H=window.innerHeight;
+  canvas.width=W*DPR; canvas.height=H*DPR;
+  canvas.style.width=W+'px'; canvas.style.height=H+'px';
+  CX=canvas.width/2; CY=canvas.height/2;
+}
+resize(); window.addEventListener('resize',resize);
+
+const dotsEl=document.getElementById('dots');
+STEPS.forEach((_,i)=>{
+  const d=document.createElement('div');
+  d.className='dot'; d.onclick=()=>goTo(i); dotsEl.appendChild(d);
+});
+function updateDots(){
+  document.querySelectorAll('.dot').forEach((d,i)=>d.classList.toggle('active',i===currentStep));
+}
+
+/* INTRO — números que rotan */
+const introNums='0 1 2 3 5 8 ∞ π e i φ ℵ₀ √2 -1 ħ 42'.split(' ');
+let introIdx=0;
+setInterval(()=>{
+  introIdx=(introIdx+1)%introNums.length;
+  const el=document.getElementById('i-num-display');
+  if(el){el.style.opacity='0';setTimeout(()=>{el.textContent=introNums[introIdx];el.style.opacity='1';},180);}
+},1400);
+
+let AC=null;
+function getAC(){return AC||(AC=new(window.AudioContext||window.webkitAudioContext)());}
+function playTone(freq){
+  try{
+    const ac=getAC(); if(ac.state==='suspended')ac.resume();
+    const now=ac.currentTime;
+    const osc=ac.createOscillator(),g=ac.createGain();
+    osc.type='sine';
+    osc.frequency.setValueAtTime(freq*.95,now);
+    osc.frequency.exponentialRampToValueAtTime(freq,now+.2);
+    g.gain.setValueAtTime(0,now); g.gain.linearRampToValueAtTime(.12,now+.12);
+    g.gain.exponentialRampToValueAtTime(.0001,now+2.5);
+    osc.connect(g); g.connect(ac.destination); osc.start(now); osc.stop(now+2.7);
+    const o2=ac.createOscillator(),g2=ac.createGain();
+    o2.type='sine'; o2.frequency.value=freq*1.5;
+    g2.gain.setValueAtTime(0,now+.1); g2.gain.linearRampToValueAtTime(.03,now+.22);
+    g2.gain.exponentialRampToValueAtTime(.0001,now+1.7);
+    o2.connect(g2); g2.connect(ac.destination); o2.start(now+.1); o2.stop(now+1.8);
+  }catch(e){}
+}
+document.addEventListener('touchstart',()=>{try{getAC().resume();}catch(e){}},{once:true});
+
+function goTo(idx){
+  if(isAnimating)return;
+  if(idx>=STEPS.length){showFinal();return;}
+  if(idx<0){showIntro();return;}
+  isAnimating=true;
+  const panel=document.getElementById('step-panel');
+  panel.classList.add('hiding');
+  setTimeout(()=>{
+    currentStep=idx; const s=STEPS[idx]; playTone(s.freq);
+    document.getElementById('s-era').textContent=s.era;
+    document.getElementById('s-title').textContent=s.title;
+    document.getElementById('s-author').textContent=s.author;
+    document.getElementById('s-left').textContent=s.left;
+    document.getElementById('s-right').textContent=s.right;
+    document.getElementById('s-nav').textContent=
+      idx<STEPS.length-1?'· toca para continuar ·':'· toca para cerrar ·';
+    document.getElementById('step-wrapper').style.display='block';
+    const intro=document.getElementById('intro-wrap');
+    intro.style.opacity='0'; intro.style.pointerEvents='none';
+    t=0; if(animFrame)cancelAnimationFrame(animFrame);
+    startAnim(s.draw);
+    panel.classList.remove('hiding'); updateDots(); isAnimating=false;
+  },400);
+}
+function showIntro(){
+  currentStep=-1;
+  document.getElementById('step-wrapper').style.display='none';
+  const intro=document.getElementById('intro-wrap');
+  intro.style.opacity='1'; intro.style.pointerEvents='all';
+  t=0; if(animFrame)cancelAnimationFrame(animFrame);
+  startAnim(drawIntroAnim); updateDots();
+}
+function showFinal(){
+  if(animFrame)cancelAnimationFrame(animFrame);
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  document.getElementById('final-screen').classList.add('show');
+  document.getElementById('step-wrapper').style.display='none';
+}
+function restart(){
+  document.getElementById('final-screen').classList.remove('show');
+  setTimeout(()=>showIntro(),300);
+}
+function next(){
+  if(currentStep===-1){goTo(0);return;}
+  if(currentStep>=STEPS.length-1){showFinal();return;}
+  goTo(currentStep+1);
+}
+function prev(){
+  if(currentStep<=0){showIntro();return;}
+  goTo(currentStep-1);
+}
+document.addEventListener('click',()=>next());
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowRight'||e.key===' ')next();
+  if(e.key==='ArrowLeft')prev();
+});
+let tx0=0;
+document.addEventListener('touchstart',e=>{tx0=e.touches[0].clientX;},{passive:true});
+document.addEventListener('touchend',e=>{
+  const dx=e.changedTouches[0].clientX-tx0;
+  if(Math.abs(dx)<30)next(); else if(dx>60)prev();
+},{passive:true});
+
+function startAnim(fn){
+  function loop(){t+=.011; ctx.clearRect(0,0,canvas.width,canvas.height); fn(); animFrame=requestAnimationFrame(loop);}
+  animFrame=requestAnimationFrame(loop);
+}
+
+/* HELPERS */
+function ln(x1,y1,x2,y2,col,lw){ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.strokeStyle=col;ctx.lineWidth=lw||.8;ctx.stroke();}
+function dot(x,y,r,col){ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fillStyle=col;ctx.fill();}
+function circ(x,y,r,col,lw){ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.strokeStyle=col;ctx.lineWidth=lw||.8;ctx.stroke();}
+function txt(s,x,y,col,size,align){
+  ctx.save();ctx.font=`italic ${size||9*DPR}px 'Times New Roman'`;
+  ctx.fillStyle=col||'rgba(200,168,75,.3)';ctx.textAlign=align||'center';
+  ctx.fillText(s,x,y);ctx.restore();
+}
+function txtC(s,x,y,col,size){
+  ctx.save();ctx.font=`${size||10*DPR}px 'Cinzel Decorative',serif`;
+  ctx.fillStyle=col||'rgba(200,168,75,.35)';ctx.textAlign='center';ctx.textBaseline='middle';
+  ctx.fillText(s,x,y);ctx.restore();
+}
+
+/* ════════════════════════════════
+   INTRO ANIM
+════════════════════════════════ */
+function drawIntroAnim(){
+  const R=Math.min(W,H)*.32*DPR;
+  // Números flotando en órbita
+  const nums=['1','2','3','5','8','13','21','∞','π','e','i','0'];
+  nums.forEach((n,i)=>{
+    const a=i/nums.length*Math.PI*2+t*.08;
+    const r=R*(.4+Math.sin(i*.7+t*.3)*.15);
+    const x=CX+Math.cos(a)*r, y=CY+Math.sin(a)*r;
+    ctx.save();
+    ctx.font=`${(12+i%4*3)*DPR}px 'Cinzel Decorative',serif`;
+    ctx.fillStyle=`rgba(200,168,75,${.12+Math.sin(t*.5+i)*.06})`;
+    ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText(n,x,y);ctx.restore();
+  });
+  // Recta numérica
+  const lineY=CY+R*.55;
+  ln(CX-R*.8,lineY,CX+R*.8,lineY,'rgba(200,168,75,.12)',.7);
+  for(let i=-4;i<=4;i++){
+    const x=CX+i*R*.2;
+    ln(x,lineY-4*DPR,x,lineY+4*DPR,`rgba(200,168,75,${i===0?.3:.12})`,.7);
+  }
+  // Punto en la recta numérica
+  const npx=CX+Math.sin(t*.5)*R*.75;
+  dot(npx,lineY,3.5*DPR,'rgba(200,168,75,.8)');
+  // Glow central
+  const g=ctx.createRadialGradient(CX,CY,0,CX,CY,R*.2);
+  g.addColorStop(0,'rgba(200,168,75,.06)');g.addColorStop(1,'rgba(200,168,75,0)');
+  ctx.fillStyle=g;ctx.beginPath();ctx.arc(CX,CY,R*.2,0,Math.PI*2);ctx.fill();
+}
+
+/* ════════════════════════════════
+   0: HUESO — CONTEO PRIMITIVO
+════════════════════════════════ */
+function drawBone(){
+  const R=Math.min(W,H)*.28*DPR;
+  // El hueso
+  ctx.save();ctx.translate(CX,CY);ctx.rotate(-Math.PI/7);
+  ctx.beginPath();
+  ctx.roundRect(-R*.07,-R*.75,R*.14,R*1.5,R*.07);
+  ctx.fillStyle='rgba(22,16,10,.7)';ctx.fill();
+  ctx.strokeStyle='rgba(200,168,75,.3)';ctx.lineWidth=1;ctx.stroke();
+  // Las muescas — grupos de 5
+  const groups=[[5,'rgba(200,168,75,.6)'],[5,'rgba(200,168,75,.55)'],[5,'rgba(90,184,212,.5)'],[5,'rgba(90,184,212,.45)'],[5,'rgba(78,158,104,.5)'],[4,'rgba(78,158,104,.45)']];
+  let y=-R*.62;
+  const lit=Math.floor(t*.4)%29;
+  let idx=0;
+  groups.forEach(([n,col])=>{
+    for(let m=0;m<n;m++){
+      const isLit=idx===lit;
+      ctx.beginPath();ctx.moveTo(-R*.03,y);ctx.lineTo(R*.05,y+R*.03);
+      ctx.strokeStyle=isLit?'rgba(200,168,75,.9)':col;
+      ctx.lineWidth=isLit?1.5:1;ctx.stroke();
+      y+=R*.08; idx++;
+    }
+    y+=R*.04;
+  });
+  ctx.restore();
+  txt('29 muescas · 43,000 años',CX,CY+R*.82,'rgba(200,168,75,.22)',9*DPR);
+}
+
+/* ════════════════════════════════
+   1: SEXAGESIMAL
+════════════════════════════════ */
+function drawSexagesimal(){
+  const R=Math.min(W,H)*.28*DPR;
+  // Reloj analógico — base 60
+  circ(CX,CY,R*.7,'rgba(200,168,75,.2)',1);
+  // 60 marcas
+  for(let i=0;i<60;i++){
+    const a=i/60*Math.PI*2-Math.PI/2;
+    const r1=R*(.62+(i%5===0?.06:.0));
+    const r2=R*.7;
+    const isLit=i===Math.floor(t*2)%60;
+    ln(CX+Math.cos(a)*r1,CY+Math.sin(a)*r1,
+       CX+Math.cos(a)*r2,CY+Math.sin(a)*r2,
+       isLit?'rgba(200,168,75,.8)':`rgba(200,168,75,${i%5===0?.3:.12})`,
+       isLit?1.5:i%5===0?.8:.5);
+  }
+  // Manecillas
+  const sec=t*.5%(Math.PI*2)-Math.PI/2;
+  const min=(t*.5/60)%(Math.PI*2)-Math.PI/2;
+  const hr=(t*.5/720)%(Math.PI*2)-Math.PI/2;
+  ln(CX,CY,CX+Math.cos(sec)*R*.58,CY+Math.sin(sec)*R*.58,'rgba(200,168,75,.55)',1.2);
+  ln(CX,CY,CX+Math.cos(min)*R*.48,CY+Math.sin(min)*R*.48,'rgba(200,168,75,.4)',1.8);
+  ln(CX,CY,CX+Math.cos(hr)*R*.32,CY+Math.sin(hr)*R*.32,'rgba(200,168,75,.35)',2.2);
+  dot(CX,CY,3*DPR,'rgba(200,168,75,.7)');
+  // Divisores del 60
+  const divs=[2,3,4,5,6,10,12,15,20,30,60];
+  ctx.save();ctx.font=`${7.5*DPR}px 'Cinzel',serif`;
+  ctx.fillStyle='rgba(200,168,75,.2)';ctx.textAlign='center';
+  ctx.fillText('÷ '+divs.join('  ÷ '),CX,CY+R*.92);ctx.restore();
+}
+
+/* ════════════════════════════════
+   2: EL CERO
+════════════════════════════════ */
+function drawZero(){
+  const R=Math.min(W,H)*.29*DPR;
+  // El cero — la forma del vacío
+  const pulse=1+Math.sin(t*.8)*.04;
+  circ(CX,CY,R*.45*pulse,'rgba(200,168,75,.45)',1.5);
+  // El interior — nada
+  const ig=ctx.createRadialGradient(CX,CY,0,CX,CY,R*.43);
+  ig.addColorStop(0,'rgba(3,6,10,.9)');ig.addColorStop(1,'rgba(3,6,10,.4)');
+  ctx.fillStyle=ig;ctx.beginPath();ctx.arc(CX,CY,R*.44,0,Math.PI*2);ctx.fill();
+  // El símbolo 0 sánscrito → árabe → nuestro
+  const symbols=[['०','Sánscrito'],['٠','Árabe'],['0','Nuestro']];
+  symbols.forEach(([s,label],i)=>{
+    const x=CX-R*.6+i*R*.6;
+    const isLit=i===Math.floor(t*.35)%3;
+    ctx.save();ctx.font=`${(isLit?22:16)*DPR}px 'Times New Roman'`;
+    ctx.fillStyle=`rgba(200,168,75,${isLit?.75:.3})`;
+    ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText(s,x,CY+R*.72);
+    ctx.font=`${7*DPR}px 'Cinzel',serif`;
+    ctx.fillStyle=`rgba(200,168,75,${isLit?.4:.18})`;
+    ctx.fillText(label,x,CY+R*.9);ctx.restore();
+  });
+  // Las operaciones con cero
+  const ops=['a + 0 = a','a × 0 = 0','a / 0 = ?'];
+  ops.forEach((op,i)=>{
+    const isLit=i===Math.floor(t*.4)%3;
+    txt(op,CX,CY-R*.35+i*R*.22,`rgba(200,168,75,${isLit?.55:.2})`,(isLit?10:9)*DPR);
+  });
+}
+
+/* ════════════════════════════════
+   3: IRRACIONALES — √2
+════════════════════════════════ */
+function drawIrrational(){
+  const R=Math.min(W,H)*.27*DPR;
+  const s=R*.65;
+  // El cuadrado unitario
+  ctx.beginPath();ctx.rect(CX-s/2,CY-s/2,s,s);
+  ctx.strokeStyle='rgba(200,168,75,.35)';ctx.lineWidth=1;ctx.stroke();
+  ctx.fillStyle='rgba(200,168,75,.03)';ctx.fill();
+  // Las diagonales
+  ln(CX-s/2,CY-s/2,CX+s/2,CY+s/2,'rgba(200,168,75,.5)',1.3);
+  ln(CX+s/2,CY-s/2,CX-s/2,CY+s/2,'rgba(200,168,75,.2)',.7);
+  // El punto viajando por la diagonal
+  const pp=Math.sin(t*.6)*.5+.5;
+  const dx=CX-s/2+pp*s, dy=CY-s/2+pp*s;
+  dot(dx,dy,4*DPR,'rgba(200,168,75,.9)');
+  // La expansión decimal de √2
+  const sqrt2='1.41421356237309504880168872...';
+  const visible=Math.floor(3+t*.8)%sqrt2.length+3;
+  const shown=sqrt2.slice(0,Math.min(visible,sqrt2.length));
+  txt(shown,CX,CY+R*.72,'rgba(200,168,75,.4)',9*DPR);
+  txt('√2 = ',CX-R*.55,CY+R*.72,'rgba(200,168,75,.35)',9*DPR,'left');
+  // Demostración visual
+  txt('∉ ℚ',CX,CY-R*.72,'rgba(200,168,75,.3)',11*DPR);
+  // Los vértices del cuadrado
+  [[CX-s/2,CY-s/2],[CX+s/2,CY-s/2],[CX+s/2,CY+s/2],[CX-s/2,CY+s/2]].forEach(([x,y])=>
+    dot(x,y,3*DPR,'rgba(200,168,75,.5)'));
+}
+
+/* ════════════════════════════════
+   4: NEGATIVOS — LA RECTA
+════════════════════════════════ */
+function drawNegative(){
+  const R=Math.min(W,H)*.28*DPR;
+  // La recta numérica extendida
+  ln(CX-R*.9,CY,CX+R*.9,CY,'rgba(200,168,75,.15)',.8);
+  // Marcas y números
+  for(let i=-4;i<=4;i++){
+    const x=CX+i*R*.2;
+    const isZero=i===0;
+    ln(x,CY-R*.06,x,CY+R*.06,`rgba(200,168,75,${isZero?.4:.18})`,isZero?1.2:.7);
+    ctx.save();ctx.font=`italic ${(isZero?11:9)*DPR}px 'Times New Roman'`;
+    ctx.fillStyle=`rgba(200,168,75,${i<0?.45:i===0?.55:.35})`;
+    ctx.textAlign='center';
+    ctx.fillText(i,x,CY+R*.2);ctx.restore();
+  }
+  // Punto moviéndose por la recta
+  const nx=Math.sin(t*.5)*R*.75;
+  const numVal=(nx/(R*.2)).toFixed(1);
+  dot(CX+nx,CY,4.5*DPR,'rgba(200,168,75,.85)');
+  txt(numVal,CX+nx,CY-R*.18,'rgba(200,168,75,.5)',10*DPR);
+  // Las operaciones que los generan
+  ctx.save();ctx.font=`italic ${10*DPR}px 'Times New Roman'`;
+  ctx.fillStyle='rgba(200,168,75,.3)';ctx.textAlign='center';
+  ctx.fillText('3 - 5 = -2',CX-R*.3,CY-R*.45);
+  ctx.fillStyle='rgba(90,184,212,.3)';
+  ctx.fillText('(-3) × (-2) = 6',CX+R*.3,CY-R*.45);
+  ctx.restore();
+  // Las palabras sánscritas
+  txt('धन (riqueza)',CX+R*.45,CY+R*.48,'rgba(200,168,75,.2)',8*DPR);
+  txt('ऋण (deuda)',CX-R*.45,CY+R*.48,'rgba(200,168,75,.2)',8*DPR);
+  // Flecha de negativos
+  const ag=ctx.createLinearGradient(CX-R*.9,CY,CX,CY);
+  ag.addColorStop(0,'rgba(200,168,75,0)');ag.addColorStop(1,'rgba(200,168,75,.12)');
+  ctx.fillStyle=ag;ctx.fillRect(CX-R*.9,CY-2,R*.9,4);
+}
+
+/* ════════════════════════════════
+   5: ÁLGEBRA — LA INCÓGNITA
+════════════════════════════════ */
+function drawAlgebra(){
+  const R=Math.min(W,H)*.28*DPR;
+  // La x que se despeja
+  const a=1, b=-5, c=6;
+  const disc=b*b-4*a*c;
+  const x1=(-b+Math.sqrt(disc))/(2*a);
+  const x2=(-b-Math.sqrt(disc))/(2*a);
+  // La parábola ax² + bx + c = 0
+  ctx.beginPath();let first=true;
+  for(let px=-R*.85;px<=R*.85;px+=2){
+    const xVal=px/(R*.2);
+    const y=CY-(a*xVal*xVal+b*xVal+c)*R*.065;
+    first?(ctx.moveTo(CX+px,y),first=false):ctx.lineTo(CX+px,y);
+  }
+  ctx.strokeStyle='rgba(200,168,75,.45)';ctx.lineWidth=1.2;ctx.stroke();
+  // Eje X
+  ln(CX-R*.9,CY,CX+R*.9,CY,'rgba(200,168,75,.12)',.7);
+  ln(CX,CY-R*.7,CX,CY+R*.4,'rgba(200,168,75,.08)',.6);
+  // Las raíces
+  [x1,x2].forEach((x,i)=>{
+    const px=x*R*.2;
+    dot(CX+px,CY,5*DPR,'rgba(200,168,75,.85)');
+    const glow=ctx.createRadialGradient(CX+px,CY,0,CX+px,CY,R*.12);
+    glow.addColorStop(0,'rgba(200,168,75,.12)');glow.addColorStop(1,'rgba(200,168,75,0)');
+    ctx.fillStyle=glow;ctx.beginPath();ctx.arc(CX+px,CY,R*.12,0,Math.PI*2);ctx.fill();
+    txt(`x=${x.toFixed(0)}`,CX+px,CY+R*.18,'rgba(200,168,75,.45)',10*DPR);
+  });
+  // La ecuación
+  txt(`x² - 5x + 6 = 0`,CX,CY-R*.68,'rgba(200,168,75,.4)',10*DPR);
+  // La fórmula general
+  txt('x = (−b ± √(b²−4ac)) / 2a',CX,CY+R*.48,'rgba(200,168,75,.2)',8.5*DPR);
+  // x como símbolo flotante
+  ctx.save();ctx.font=`italic ${(22+Math.sin(t*.8)*4)*DPR}px 'Times New Roman'`;
+  ctx.fillStyle=`rgba(200,168,75,${.08+Math.sin(t*.5)*.04})`;
+  ctx.textAlign='center';ctx.textBaseline='middle';
+  ctx.fillText('x',CX,CY);ctx.restore();
+}
+
+/* ════════════════════════════════
+   6: NÚMEROS ÁRABES — POSICIONAL
+════════════════════════════════ */
+function drawArabic(){
+  const R=Math.min(W,H)*.28*DPR;
+  // Los diez dígitos en evolución
+  const modern=['0','1','2','3','4','5','6','7','8','9'];
+  const arabic=['٠','١','٢','٣','٤','٥','٦','٧','٨','٩'];
+  const n=10, cell=R*.2;
+  const ox=CX-n*cell/2;
+  modern.forEach((d,i)=>{
+    const x=ox+i*cell+cell/2;
+    const isLit=i===Math.floor(t*.5)%10;
+    ctx.save();
+    ctx.font=`${(isLit?16:12)*DPR}px 'Times New Roman'`;
+    ctx.fillStyle=`rgba(200,168,75,${isLit?.75:.3})`;
+    ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText(arabic[i],x,CY-R*.35);
+    ctx.font=`${(isLit?18:14)*DPR}px 'Cinzel Decorative',serif`;
+    ctx.fillStyle=`rgba(200,168,75,${isLit?.85:.4})`;
+    ctx.fillText(d,x,CY-R*.05);ctx.restore();
+  });
+  // El número posicional en acción
+  const num=Math.floor(t*8)%10000;
+  const numStr=num.toString().padStart(4,'0');
+  ctx.save();ctx.font=`${20*DPR}px 'Cinzel Decorative',serif`;
+  ctx.textAlign='center';ctx.textBaseline='middle';
+  numStr.split('').forEach((d,i)=>{
+    const x=CX-(numStr.length/2-.5-i)*R*.2;
+    const power=numStr.length-1-i;
+    ctx.fillStyle=`rgba(200,168,75,${.3+power*.15})`;
+    ctx.fillText(d,x,CY+R*.32);
+    // La potencia
+    ctx.font=`${7*DPR}px 'Cinzel',serif`;
+    ctx.fillStyle=`rgba(200,168,75,${.15+power*.07})`;
+    ctx.fillText(`×10${power===0?'⁰':power===1?'¹':power===2?'²':'³'}`,x,CY+R*.52);
+    ctx.font=`${20*DPR}px 'Cinzel Decorative',serif`;
+  });
+  ctx.restore();
+  txt('10 símbolos · posición = valor',CX,CY+R*.75,'rgba(200,168,75,.2)',8.5*DPR);
+}
+
+/* ════════════════════════════════
+   7: IMAGINARIOS — PLANO COMPLEJO
+════════════════════════════════ */
+function drawImaginary(){
+  const R=Math.min(W,H)*.28*DPR;
+  // Plano complejo
+  ln(CX-R*.85,CY,CX+R*.85,CY,'rgba(200,168,75,.12)',.7);
+  ln(CX,CY-R*.85,CX,CY+R*.85,'rgba(200,168,75,.12)',.7);
+  txt('ℝ',CX+R*.8,CY-R*.1,'rgba(200,168,75,.25)',10*DPR,'right');
+  txt('i·ℝ',CX+R*.08,CY-R*.78,'rgba(90,184,212,.25)',10*DPR);
+  // El número complejo rotando
+  const angle=t*.5;
+  const r=R*.55;
+  const px=CX+Math.cos(angle)*r, py=CY-Math.sin(angle)*r;
+  // Las proyecciones
+  ln(px,CY,px,py,'rgba(200,168,75,.2)',.7);
+  ln(CX,py,px,py,'rgba(90,184,212,.2)',.7);
+  // El vector
+  ln(CX,CY,px,py,'rgba(200,168,75,.5)',1.2);
+  dot(px,py,5*DPR,'rgba(200,168,75,.9)');
+  // El arco del ángulo
+  ctx.beginPath();ctx.arc(CX,CY,R*.18,0,-angle,angle>0);
+  ctx.strokeStyle='rgba(200,168,75,.3)';ctx.lineWidth=.7;ctx.stroke();
+  // Coordenadas
+  const re=Math.cos(angle).toFixed(2),im=Math.sin(angle).toFixed(2);
+  txt(`z = ${re} + ${im}i`,CX,CY-R*.72,'rgba(200,168,75,.4)',9.5*DPR);
+  // Las cuatro potencias de i
+  [['i¹=i',.05,.5],['i²=-1',.5,.05],['i³=-i',-.5,.05],['i⁴=1',0,-.5]].forEach(([s,rx,ry])=>{
+    dot(CX+rx*R,CY-ry*R,3*DPR,'rgba(90,184,212,.45)');
+    txt(s,CX+rx*R*1.5,CY-ry*R*1.5,'rgba(90,184,212,.3)',8*DPR);
+  });
+  // La fórmula de Euler
+  txt('e^(iπ) + 1 = 0',CX,CY+R*.72,'rgba(200,168,75,.35)',10*DPR);
+}
+
+/* ════════════════════════════════
+   8: PRIMOS — CRIBA
+════════════════════════════════ */
+function drawPrimes(){
+  const R=Math.min(W,H)*.28*DPR;
+  const primes=new Set([2,3,5,7,11,13,17,19,23,29,31,37,41,43,47,53,59,61,67,71,73,79,83,89,97]);
+  const n=100, cols=10, cell=R*.18;
+  const ox=CX-cols*cell/2, oy=CY-cell*5;
+  const lit=Math.floor(t*.6)%(n-1)+2;
+  for(let i=1;i<=n;i++){
+    const c=(i-1)%cols, r=Math.floor((i-1)/cols);
+    const x=ox+c*cell+cell/2, y=oy+r*cell+cell/2;
+    const isPrime=primes.has(i);
+    const isLit=i===lit;
+    if(isPrime||isLit){
+      ctx.beginPath();ctx.arc(x,y,cell*.38,0,Math.PI*2);
+      ctx.fillStyle=isLit?'rgba(200,168,75,.18)':isPrime?'rgba(200,168,75,.06)':'rgba(3,6,10,.4)';
+      ctx.fill();
+    }
+    ctx.save();ctx.font=`${(isLit?9:7.5)*DPR}px 'Courier New'`;
+    ctx.fillStyle=isLit?'rgba(200,168,75,.9)':isPrime?'rgba(200,168,75,.55)':'rgba(200,168,75,.15)';
+    ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText(i,x,y);ctx.restore();
+  }
+  // π(n) ~ n/ln(n)
+  txt(`π(100) = 25 primos`,CX,oy+10*cell+R*.2,'rgba(200,168,75,.25)',9*DPR);
+}
+
+/* ════════════════════════════════
+   9: CONTINUO — LA RECTA REAL
+════════════════════════════════ */
+function drawContinuum(){
+  const R=Math.min(W,H)*.28*DPR;
+  // La recta real
+  const lineG=ctx.createLinearGradient(CX-R,CY,CX+R,CY);
+  lineG.addColorStop(0,'rgba(200,168,75,0)');
+  lineG.addColorStop(.1,'rgba(200,168,75,.4)');
+  lineG.addColorStop(.9,'rgba(200,168,75,.4)');
+  lineG.addColorStop(1,'rgba(200,168,75,0)');
+  ctx.beginPath();ctx.moveTo(CX-R,CY);ctx.lineTo(CX+R,CY);
+  ctx.strokeStyle=lineG;ctx.lineWidth=1;ctx.stroke();
+  // Zoom — entre dos puntos, siempre hay más
+  const zoom=1+Math.sin(t*.3)*.5;
+  const center=Math.sin(t*.2)*R*.3;
+  const gap=R*.25/zoom;
+  const a=CX+center-gap, b=CX+center+gap;
+  dot(a,CY,3.5*DPR,'rgba(200,168,75,.6)');
+  dot(b,CY,3.5*DPR,'rgba(200,168,75,.6)');
+  // Puntos entre a y b
+  for(let i=1;i<8;i++){
+    const x=a+(b-a)*i/8;
+    dot(x,CY,1.8*DPR,`rgba(200,168,75,${.2+i*.02})`);
+  }
+  // Lupa visual
+  ctx.beginPath();ctx.arc(CX+center,CY,gap*1.2,0,Math.PI*2);
+  ctx.strokeStyle='rgba(200,168,75,.15)';ctx.lineWidth=.7;ctx.stroke();
+  // Clasificación de números
+  const types=[
+    ['ℕ','1,2,3,4...','rgba(78,158,104,'],
+    ['ℤ','...−2,−1,0,1,2...','rgba(90,184,212,'],
+    ['ℚ','fracciones','rgba(200,168,75,'],
+    ['ℝ\\ℚ','irracionales','rgba(196,122,106,'],
+  ];
+  types.forEach(([s,label,col],i)=>{
+    const y=CY-R*.55+i*R*.2;
+    txt(s,CX-R*.65,y,col+'.55)',11*DPR,'left');
+    txt(label,CX-R*.48,y,col+'.3)',8*DPR,'left');
+  });
+  // ℝ contiene todos
+  txt('ℝ ⊃ ℚ ⊃ ℤ ⊃ ℕ',CX+R*.2,CY+R*.45,'rgba(200,168,75,.28)',9*DPR);
+}
+
+/* ════════════════════════════════
+   10: INFINITO — CANTOR
+════════════════════════════════ */
+function drawInfinity(){
+  const R=Math.min(W,H)*.28*DPR;
+  // La diagonal de Cantor — la demostración más elegante
+  const n=7;
+  const cell=R*.2;
+  const ox=CX-n*cell/2, oy=CY-n*cell/2-R*.1;
+  // La lista de reales (imposible)
+  for(let r=0;r<n;r++){
+    const y=oy+r*cell;
+    // Número en la lista
+    const digits='0123456789';
+    for(let c=0;c<n;c++){
+      const x=ox+c*cell;
+      const isDiag=r===c;
+      const d=((r*7+c*3+Math.floor(t*2))%10).toString();
+      ctx.save();ctx.font=`${(isDiag?11:8)*DPR}px 'Courier New'`;
+      ctx.fillStyle=isDiag?'rgba(200,168,75,.8)':'rgba(200,168,75,.2)';
+      ctx.textAlign='center';ctx.textBaseline='middle';
+      ctx.fillText(isDiag?String((parseInt(d)+1)%10):d,x+cell/2,y+cell/2);
+      ctx.restore();
+      if(isDiag){
+        ctx.beginPath();ctx.rect(x,y,cell,cell);
+        ctx.strokeStyle='rgba(200,168,75,.4)';ctx.lineWidth=.8;ctx.stroke();
+      }
+    }
+    // Índice de la fila
+    txt(`r${r+1}:`,ox-R*.12,y+cell/2,'rgba(200,168,75,.2)',8*DPR,'right');
+  }
+  // La diagonal — el número que no está en la lista
+  ctx.save();ctx.font=`${9*DPR}px 'Courier New'`;
+  ctx.fillStyle='rgba(200,168,75,.55)';ctx.textAlign='center';
+  ctx.fillText('d = 0.',CX-R*.5,oy+n*cell+R*.22);
+  for(let i=0;i<n;i++){
+    const d=((i*7+i*3+Math.floor(t*2)+1)%10).toString();
+    ctx.fillText(d,CX-R*.2+i*R*.12,oy+n*cell+R*.22);
+  }
+  ctx.fillText('... ∉ lista',CX+R*.3,oy+n*cell+R*.22);
+  ctx.restore();
+  txt('|ℕ| = ℵ₀  <  |ℝ| = 2^ℵ₀',CX,oy-R*.18,'rgba(200,168,75,.3)',9*DPR);
+}
+
+/* ════════════════════════════════
+   11: e — EL NÚMERO DEL CAMBIO
+════════════════════════════════ */
+function drawE(){
+  const R=Math.min(W,H)*.28*DPR;
+  // La función eˣ
+  ctx.beginPath();let first=true;
+  for(let px=-R*.8;px<=R*.6;px+=2){
+    const xVal=px/(R*.25);
+    const y=CY-Math.exp(xVal)*R*.15;
+    if(y<CY-R*.9||y>CY+R*.5){first=true;continue;}
+    first?(ctx.moveTo(CX+px,y),first=false):ctx.lineTo(CX+px,y);
+  }
+  ctx.strokeStyle='rgba(200,168,75,.55)';ctx.lineWidth=1.3;ctx.stroke();
+  // Ejes
+  ln(CX-R*.85,CY,CX+R*.85,CY,'rgba(200,168,75,.1)',.7);
+  ln(CX,CY+R*.5,CX,CY-R*.8,'rgba(200,168,75,.1)',.7);
+  // El punto en la curva
+  const xp=Math.sin(t*.4)*R*.5;
+  const yp=CY-Math.exp(xp/(R*.25))*R*.15;
+  if(yp>CY-R*.85){
+    // La tangente — pendiente = eˣ = valor de la función
+    const slope=Math.exp(xp/(R*.25))/(R*.25)*R*.15*(-1);
+    const tLen=R*.35;
+    const norm=Math.sqrt(1+slope*slope);
+    ln(CX+xp-tLen/norm,yp+slope*tLen/norm,CX+xp+tLen/norm,yp-slope*tLen/norm,'rgba(90,184,212,.45)',1);
+    dot(CX+xp,yp,4.5*DPR,'rgba(200,168,75,.9)');
+    txt(`y = e^x`,CX+xp+R*.12,yp-R*.08,'rgba(200,168,75,.4)',9*DPR,'left');
+  }
+  // e = 2.718...
+  txt('e = 2.71828182845904523536...',CX,CY+R*.62,'rgba(200,168,75,.3)',8.5*DPR);
+  txt("d/dx[eˣ] = eˣ",CX,CY-R*.75,'rgba(200,168,75,.3)',10*DPR);
+}
+
+/* ════════════════════════════════
+   12: π — LA BÚSQUEDA ETERNA
+════════════════════════════════ */
+function drawPi(){
+  const R=Math.min(W,H)*.28*DPR;
+  // El círculo
+  circ(CX,CY,R*.6,'rgba(200,168,75,.4)',1.3);
+  // El diámetro
+  ln(CX-R*.6,CY,CX+R*.6,CY,'rgba(200,168,75,.25)',.9);
+  dot(CX-R*.6,CY,3*DPR,'rgba(200,168,75,.5)');
+  dot(CX+R*.6,CY,3*DPR,'rgba(200,168,75,.5)');
+  // La circunferencia "desplegada"
+  const cLen=R*.6*2*Math.PI;
+  const phase=(t*.15)%1;
+  const deployY=CY+R*.72;
+  ln(CX-cLen/2,deployY,CX+cLen/2,deployY,'rgba(200,168,75,.25)',.8);
+  // El punto recorriendo la circunferencia
+  const angle=t*.5%(Math.PI*2);
+  const cpx=CX+Math.cos(angle)*R*.6, cpy=CY+Math.sin(angle)*R*.6;
+  dot(cpx,cpy,4*DPR,'rgba(200,168,75,.85)');
+  // Su proyección desplegada
+  const cx2=CX-cLen/2+angle/(Math.PI*2)*cLen;
+  dot(cx2,deployY,3*DPR,'rgba(200,168,75,.55)');
+  ln(cpx,cpy,cx2,deployY,'rgba(200,168,75,.12)',.5);
+  // π en las decimales
+  const piDigits='3.14159265358979323846264338327950288...';
+  const show=piDigits.slice(0,Math.floor(3+t*.6)%piDigits.length+3);
+  txt(show,CX,CY-R*.8,'rgba(200,168,75,.4)',9*DPR);
+  // La razón
+  txt('C / d = π  (siempre)',CX,CY+R*.9,'rgba(200,168,75,.22)',8.5*DPR);
+}
+
+/* ════════════════════════════════
+   13: GEMATRÍA
+════════════════════════════════ */
+function drawGematria(){
+  const R=Math.min(W,H)*.28*DPR;
+  const letters=[
+    {char:'א',val:1},{char:'ב',val:2},{char:'ג',val:3},{char:'ד',val:4},
+    {char:'ה',val:5},{char:'ו',val:6},{char:'ז',val:7},{char:'ח',val:8},
+    {char:'ט',val:9},{char:'י',val:10},{char:'כ',val:20},{char:'ל',val:30},
+    {char:'מ',val:40},{char:'נ',val:50},{char:'ס',val:60},{char:'ע',val:70},
+    {char:'פ',val:80},{char:'צ',val:90},{char:'ק',val:100},{char:'ר',val:200},
+    {char:'ש',val:300},{char:'ת',val:400},
+  ];
+  const cols=11, cell=R*.185;
+  const ox=CX-cols*cell/2, oy=CY-cell*1.1;
+  const lit=Math.floor(t*.5)%22;
+  letters.forEach(({char,val},i)=>{
+    const c=i%cols, r=Math.floor(i/cols);
+    const x=ox+c*cell+cell/2, y=oy+r*cell+cell/2;
+    const isLit=i===lit;
+    if(isLit){
+      ctx.beginPath();ctx.arc(x,y,cell*.42,0,Math.PI*2);
+      ctx.fillStyle='rgba(200,168,75,.1)';ctx.fill();
+    }
+    ctx.save();
+    ctx.font=`${(isLit?16:13)*DPR}px 'Times New Roman'`;
+    ctx.fillStyle=`rgba(200,168,75,${isLit?.85:.35})`;
+    ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.direction='rtl';
+    ctx.fillText(char,x,y-cell*.12);
+    ctx.font=`${(isLit?8:6.5)*DPR}px 'Courier New'`;
+    ctx.fillStyle=`rgba(200,168,75,${isLit?.55:.2})`;
+    ctx.direction='ltr';
+    ctx.fillText(val,x,y+cell*.28);ctx.restore();
+  });
+  // יהוה = 26
+  const yhwh='י ה ו ה';
+  txt('יהוה = 10+5+6+5 = 26',CX,oy+2*cell+R*.22,'rgba(200,168,75,.35)',10*DPR);
+  txt('אהבה (amor) = אחד (uno) = 13',CX,oy+2*cell+R*.4,'rgba(200,168,75,.22)',8.5*DPR);
+}
+
+/* ════════════════════════════════
+   14: NÚMEROS CUÁNTICOS
+════════════════════════════════ */
+function drawQuantum(){
+  const R=Math.min(W,H)*.28*DPR;
+  // El átomo de hidrógeno — niveles de energía cuantizados
+  const levels=[1,2,3,4];
+  levels.forEach(n=>{
+    const r=n*n*R*.15;
+    const energy=-13.6/(n*n);
+    const isLit=n===Math.floor(t*.3)%4+1;
+    circ(CX,CY,r,`rgba(200,168,75,${isLit?.35:.1})`,isLit?1.2:.6);
+    // El electrón en el nivel
+    if(isLit){
+      const a=t*2/n;
+      dot(CX+Math.cos(a)*r,CY+Math.sin(a)*r,4*DPR,'rgba(200,168,75,.85)');
+      // Estela
+      for(let i=1;i<=12;i++){
+        const pa=t*2/n-i*.08;
+        dot(CX+Math.cos(pa)*r,CY+Math.sin(pa)*r,(2.5-i*.15)*DPR,`rgba(200,168,75,${.4-i*.03})`);
+      }
+    }
+    txt(`n=${n}  E=${energy.toFixed(1)}eV`,CX+r+R*.05,CY-R*.04*(levels.length-n),`rgba(200,168,75,${isLit?.5:.2})`,8*DPR,'left');
+  });
+  dot(CX,CY,5*DPR,'rgba(200,168,75,.7)');
+  // Los números cuánticos
+  const qnums=['n = 1, 2, 3...','l = 0, 1, ..., n-1','mₗ = -l, ..., +l','mₛ = ±½'];
+  qnums.forEach((q,i)=>{
+    const isLit=Math.floor(t*.35)%4===i;
+    txt(q,CX-R*.05,CY+R*.58+i*R*.14,`rgba(200,168,75,${isLit?.5:.2})`,(isLit?9:8)*DPR);
+  });
+  // La energía cuantizada
+  txt('E_n = -13.6 / n²  eV',CX,CY-R*.75,'rgba(200,168,75,.3)',9*DPR);
+}
+
+/* ════════════════════════════════
+   15: RETORNO — ¿DESCUBIERTOS O INVENTADOS?
+════════════════════════════════ */
+function drawReturn(){
+  const R=Math.min(W,H)*.3*DPR;
+  // Los números como constelación
+  const keyNums=[
+    {s:'0',x:0,y:0,col:'rgba(200,168,75,'},
+    {s:'1',x:.6,y:-.3,col:'rgba(200,168,75,'},
+    {s:'∞',x:-.55,y:-.5,col:'rgba(200,168,75,'},
+    {s:'π',x:.4,y:.55,col:'rgba(200,168,75,'},
+    {s:'e',x:-.45,y:.4,col:'rgba(90,184,212,'},
+    {s:'i',x:.7,y:.2,col:'rgba(90,184,212,'},
+    {s:'φ',x:-.2,y:-.7,col:'rgba(78,158,104,'},
+    {s:'√2',x:.15,y:.72,col:'rgba(78,158,104,'},
+    {s:'ħ',x:-.7,y:.1,col:'rgba(196,122,106,'},
+    {s:'ℵ₀',x:.2,y:-.5,col:'rgba(196,122,106,'},
+  ];
+  // Líneas entre números — relaciones
+  for(let i=0;i<keyNums.length;i++){
+    for(let j=i+1;j<keyNums.length;j++){
+      if((i+j)%3===0){
+        const a=keyNums[i],b=keyNums[j];
+        ln(CX+a.x*R,CY+a.y*R,CX+b.x*R,CY+b.y*R,'rgba(200,168,75,.04)',.4);
+      }
+    }
+  }
+  // Los números
+  const litIdx=Math.floor(t*.3)%keyNums.length;
+  keyNums.forEach(({s,x,y,col},i)=>{
+    const isLit=i===litIdx;
+    const px=CX+x*R*(1+Math.sin(t*.15+i)*.03);
+    const py=CY+y*R*(1+Math.cos(t*.12+i)*.03);
+    if(isLit){
+      const g=ctx.createRadialGradient(px,py,0,px,py,R*.18);
+      g.addColorStop(0,col+'.12)');g.addColorStop(1,col+'0)');
+      ctx.fillStyle=g;ctx.beginPath();ctx.arc(px,py,R*.18,0,Math.PI*2);ctx.fill();
+    }
+    ctx.save();
+    ctx.font=`${(isLit?16:13)*DPR}px 'Cinzel Decorative',serif`;
+    ctx.fillStyle=col+(isLit?.8:.28)+')';
+    ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText(s,px,py);ctx.restore();
+  });
+}
+
+showIntro();
+</script>
+</body>
+</html>

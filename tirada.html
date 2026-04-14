@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>Tirada del Mundo · Tarot de Nicolas Conver</title>
+  <link rel="icon" href="favicon.ico">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cinzel:wght@400;600&family=IM+Fell+English:ital@0;1&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,600&display=swap');
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      user-select: none;
+    }
+
+    body {
+      background: #030605;
+      min-height: 100vh;
+      font-family: 'IM Fell English', serif;
+      color: #cce4d8;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #portada {
+      position: fixed;
+      inset: 0;
+      background: #030605;
+      z-index: 2000;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: opacity 0.5s;
+    }
+    .portada-carta {
+      width: 120px;
+      cursor: pointer;
+      transition: transform 0.2s, filter 0.2s;
+      border-radius: 12px;
+      box-shadow: 0 0 30px rgba(200,168,75,0.3);
+    }
+    .portada-carta:hover {
+      transform: scale(1.05);
+      filter: brightness(1.1);
+    }
+    .portada-texto {
+      margin-top: 30px;
+      font-family: 'Cinzel', serif;
+      font-size: 10px;
+      letter-spacing: 0.3em;
+      color: #7a6020;
+      text-align: center;
+    }
+    #portada.hidden { display: none; }
+
+    #barajado {
+      position: fixed;
+      inset: 0;
+      background: #030605;
+      z-index: 1500;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+    }
+    #barajado.visible { display: flex; }
+    .shuffle-card {
+      width: 120px;
+      height: 200px;
+      background: url('img/z0.jpg') center/cover;
+      border-radius: 16px;
+      box-shadow: 0 0 30px rgba(200,168,75,0.2);
+      animation: shuffle 0.3s infinite alternate;
+    }
+    @keyframes shuffle {
+      0% { transform: translateX(-15px) rotate(-3deg); }
+      100% { transform: translateX(15px) rotate(3deg); }
+    }
+    .shuffle-text {
+      margin-top: 40px;
+      font-family: 'Cinzel', serif;
+      letter-spacing: 0.3em;
+      font-size: 12px;
+      color: #7a6020;
+    }
+
+    #tirada-container {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 20px;
+      background: radial-gradient(circle at 30% 40%, rgba(78,158,104,0.05) 0%, transparent 60%);
+    }
+    #tirada-container.visible { display: flex; }
+
+    .tirada-grid {
+      display: grid;
+      grid-template-areas:
+        ". sup-izq . sup-der ."
+        ". centro centro centro ."
+        ". inf-izq . inf-der .";
+      gap: 20px;
+      justify-items: center;
+      align-items: center;
+      margin-bottom: 30px;
+      background: rgba(0,0,0,0.3);
+      padding: 30px;
+      border-radius: 60px;
+      border: 1px solid rgba(200,168,75,0.2);
+    }
+    .carta-tirada {
+      width: 120px;
+      cursor: pointer;
+      transition: transform 0.2s, filter 0.2s;
+      border-radius: 12px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+      background: #0f1a15;
+    }
+    .carta-tirada:hover {
+      transform: scale(1.05);
+      filter: brightness(1.1);
+      box-shadow: 0 0 20px rgba(200,168,75,0.4);
+    }
+    .carta-tirada img {
+      width: 100%;
+      display: block;
+      border-radius: 12px;
+    }
+    .pos-label {
+      font-family: 'Cinzel', serif;
+      font-size: 9px;
+      letter-spacing: 0.2em;
+      text-align: center;
+      margin-top: 8px;
+      color: #7a6020;
+    }
+    .sup-izq { grid-area: sup-izq; }
+    .sup-der { grid-area: sup-der; }
+    .centro { grid-area: centro; }
+    .inf-izq { grid-area: inf-izq; }
+    .inf-der { grid-area: inf-der; }
+
+    .botones-accion {
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+      margin-top: 20px;
+      flex-wrap: wrap;
+    }
+    .btn-historia {
+      background: transparent;
+      border: 2px solid #c8a84b;
+      color: #c8a84b;
+      font-family: 'Cinzel', serif;
+      font-size: 11px;
+      letter-spacing: 0.2em;
+      padding: 10px 20px;
+      border-radius: 40px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    .btn-historia:hover {
+      background: #c8a84b;
+      color: #030605;
+    }
+    .footer-marca {
+      text-align: center;
+      font-size: 8px;
+      letter-spacing: 0.2em;
+      color: #4a6a58;
+      margin-top: 40px;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.95);
+      backdrop-filter: blur(8px);
+      z-index: 3000;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+    .modal-contenido {
+      background: #0a1410;
+      border: 2px solid #c8a84b;
+      border-radius: 40px;
+      max-width: 650px;
+      width: 100%;
+      max-height: 85vh;
+      overflow-y: auto;
+      padding: 25px;
+      position: relative;
+    }
+    .modal-cerrar {
+      position: absolute;
+      top: 15px;
+      right: 20px;
+      font-size: 28px;
+      color: #c8a84b;
+      cursor: pointer;
+    }
+    .modal-titulo {
+      font-family: 'Cinzel Decorative', serif;
+      font-size: 22px;
+      color: #e2c97e;
+      margin-bottom: 15px;
+      padding-right: 30px;
+    }
+    .modal-imagen {
+      text-align: center;
+      margin: 15px 0;
+    }
+    .modal-imagen img {
+      max-width: 150px;
+      border-radius: 16px;
+      border: 1px solid rgba(200,168,75,0.3);
+    }
+    .lectura-contenido {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 15px;
+      line-height: 1.6;
+      color: #cce4d8;
+      margin-top: 10px;
+    }
+    .lectura-contenido p {
+      margin-bottom: 12px;
+    }
+    .lectura-contenido .mensaje {
+      font-style: italic;
+      color: #e2c97e;
+      margin-top: 12px;
+      border-top: 1px solid rgba(200,168,75,0.3);
+      padding-top: 12px;
+    }
+
+    .historia-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.96);
+      z-index: 4000;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+    .historia-contenido {
+      background: #0a1410;
+      border: 1px solid #c8a84b;
+      border-radius: 30px;
+      max-width: 550px;
+      padding: 30px;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 16px;
+      line-height: 1.7;
+      color: #cce4d8;
+      position: relative;
+    }
+    .historia-cerrar {
+      position: absolute;
+      top: 15px;
+      right: 20px;
+      font-size: 24px;
+      color: #c8a84b;
+      cursor: pointer;
+    }
+    .historia-contenido p {
+      margin-bottom: 15px;
+    }
+    .historia-contenido .cita {
+      font-style: italic;
+      border-left: 2px solid #c8a84b;
+      padding-left: 15px;
+      margin: 20px 0;
+      color: #e2c97e;
+    }
+    .btn-historia-nueva {
+      background: transparent;
+      border: 2px solid #c8a84b;
+      color: #c8a84b;
+      font-family: 'Cinzel', serif;
+      font-size: 11px;
+      letter-spacing: 0.2em;
+      padding: 8px 16px;
+      border-radius: 40px;
+      cursor: pointer;
+      transition: all 0.3s;
+      margin-top: 20px;
+      display: inline-block;
+    }
+    .btn-historia-nueva:hover {
+      background: #c8a84b;
+      color: #030605;
+    }
+
+    @media (max-width: 650px) {
+      .tirada-grid { gap: 10px; padding: 20px; }
+      .carta-tirada { width: 90px; }
+      .pos-label { font-size: 7px; }
+      .modal-contenido { max-width: 95%; padding: 15px; }
+    }
+  </style>
+</head>
+<body>
+
+<div id="portada">
+  <img src="img/enves.jpeg" alt="Carta de inicio" class="portada-carta">
+  <div class="portada-texto">✦ toca para comenzar ✦</div>
+</div>
+
+<div id="barajado">
+  <div class="shuffle-card"></div>
+  <div class="shuffle-text">✦ barajando ✦</div>
+</div>
+
+<div id="tirada-container">
+  <div class="tirada-grid" id="tirada-grid"></div>
+  <div class="botones-accion">
+    <button class="btn-historia" id="btn-historia">📜 Historia del mazo</button>
+  </div>
+  <div class="footer-marca">CVANTICVM · El espejo de 78 caras</div>
+</div>
+
+<div id="modal" class="modal">
+  <div class="modal-contenido">
+    <div class="modal-cerrar" id="modal-cerrar">&times;</div>
+    <div class="modal-titulo" id="modal-titulo">Carta</div>
+    <div class="modal-imagen" id="modal-imagen"></div>
+    <div class="lectura-contenido" id="modal-lectura"></div>
+  </div>
+</div>
+
+<div id="historia-modal" class="historia-modal">
+  <div class="historia-contenido">
+    <div class="historia-cerrar" id="historia-cerrar">&times;</div>
+    <div class="cita">“ En el París de 1760, un maestro impresor llamado Nicolas Conver tallaba en madera las imágenes que hoy sostienes en tus manos. No era mago, pero sus cartas terminaron siendo un espejo donde generaciones enteras han buscado respuestas. Esta es la historia de ese viaje... ”</div>
+    <p>En el taller de la calle de los Impresores, Nicolas Conver no sabía que estaba creando un mito. Sus matrices de madera, talladas a contraveta, producían líneas limpias que resistían cientos de impresiones. Sus colores, aplicados con plantillas de latón, respetaban los límites de cada figura como si un monje iluminador hubiera pasado horas sobre cada carta.</p>
+    <p>Durante casi dos siglos, el mazo de Conver durmió en los archivos. Hasta que, a mediados del siglo XX, dos hombres lo despertaron: Paul Marteau, que desveló la lógica secreta de las cartas, y un poeta chileno exiliado en París, Alejandro Jodorowsky, que junto a Philippe Camoin restauró los colores perdidos.</p>
+    <p>Hoy, esas imágenes viajan en el tiempo y llegan hasta ti. Cada carta guarda un eco del taller, del olor a tinta, de las manos que las sostuvieron antes. Cuando consultes el tarot, no estarás solo: contigo estarán Conver, sus aprendices, y todos los que buscaron respuestas en estos espejos de papel.</p>
+    <div style="text-align: center;">
+      <button class="btn-historia-nueva" id="btn-historia-nueva-tirada">✦ NUEVA TIRADA ✦</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ------------------------------------------------------------
+  // SIGNIFICADOS BASADOS EN "LA VÍA DEL TAROT" (Jodorowsky & Costa)
+  // Para el mazo restaurado de Nicolas Conver
+  // ------------------------------------------------------------
+
+  // Arcanos mayores
+  const significadosMayores = [
+    "El Loco (Le Mat) representa la energía primordial sin límites. Camina con paso resuelto, su hatillo iluminado guarda la esencia. Sus cascabeles son la armonía cósmica, el animal azul que lo empuja es su instinto espiritualizado. Palabras clave: libertad, viaje, búsqueda, energía fundamental. Mensaje: mantente en movimiento, confía en la espontaneidad.",
+    "El Mago (Le Bateleur) es la totalidad en potencia. Mesa de tres patas (la cuarta fuera). Los dados suman 21, todo el Tarot. Su 'sexto dedo' indica habilidad extraordinaria. En la vida: comienzo, herramientas a disposición, crear realidad con la mente. Mensaje: crea una nueva realidad, atrévete a empezar.",
+    "La Papisa (La Papesse) encarna la acumulación y gestación. Enclaustrada, incuba un huevo. Su libro de 17 líneas la conecta con La Estrella. Las tres cruces en el pecho indican pertenencia al espíritu. En la práctica: sabiduría, secretos, misterio, madre espiritual. Mensaje: saber establecer límites, confiar en la espera.",
+    "La Emperatriz (L'Impératrice) es el estallido creativo sin experiencia. Su cetro apoyado en el sexo muestra una hoja verde. Águila macho, serpiente blanca. Traje rojo en el centro, azul en extremidades. En lo humano: abundancia, maternidad, creatividad desbordante. Mensaje: actúa desde las entrañas, sin miedo a la pasión.",
+    "El Emperador (L'Empereur) simboliza la estabilidad y dominio de la materia. Águila hembra incuba un huevo. Piernas cruzadas forman un cuadrado blanco. Barba y cabello azules: experiencia espiritual. En la vida: logros prácticos, autoridad, figura paterna. Mensaje: muestra liderazgo y responsabilidad.",
+    "El Papa (Le Pape) es el puente entre cielo y tierra. Báculo de tres niveles, mitra de cuatro. Recibe de arriba y transmite abajo. Sus discípulos: vía seca (esfuerzo) y vía húmeda (recepción). En la lectura: maestro, educación, matrimonio. Mensaje: respeta el conocimiento, sé un puente.",
+    "El Enamorado (L'Amoureux) da el primer paso en el 'cuadrado cielo'. El sol blanco es el amor universal, el pequeño Eros su mensajero. Tierra labrada: trabajo previo. En lo práctico: amor, elección, desprenderse del pasado. Mensaje: sigue el camino del corazón, haz lo que te gusta.",
+    "El Carro (Le Chariot) es la acción en el mundo. El príncipe solo se ve de cintura para arriba. Caballos azules: energía espiritualizada. Gota verde: consciencia inmortal. Máscaras en hombros: pasado y futuro unidos. En la vida: victoria, ambición, viaje. Mensaje: atrévete a ganar.",
+    "La Justicia (La Justice) alcanza la perfección receptiva. Trono asimétrico (lo sagrado rechaza la simetría). Mano forma un mudra de unión. Balanza no nivelada: 'trampa' contra el perfeccionismo. En lo cotidiano: ley, equilibrio, conciencia. Mensaje: actúa con razón, date lo que mereces.",
+    "El Ermitaño (L'Hermite) es la crisis y el tránsito entre ciclos. Anda hacia atrás iluminando el pasado. Dos lunas naranja: receptividad. Barba y cabello azules: espiritualidad. En la práctica: búsqueda de verdad, soledad fecunda. Mensaje: busca la esencia, acepta la crisis.",
+    "La Rueda de Fortuna (La Roue de Fortune) cierra un ciclo y espera el siguiente. Tres animales: materia (carne), intelecto (amarillo), emoción (esfinge azul). Manivela espera ayuda externa. En lo humano: cambio, azar, adaptación. Mensaje: acepta los altibajos, todo ciclo termina.",
+    "La Fuerza (La Force) abre el segundo ciclo decimal. Trabaja de cintura hacia abajo. Sombrero con plumas de águila, seis dedos en el pie. Celosía en el pecho: cuatro trazos materiales + cinco espirituales. En la vida: coraje, control de impulsos, energía creativa. Mensaje: toma el control de ti mismo.",
+    "El Colgado (Le Pendu) es la parada y la meditación. Cuelga cabeza abajo como un feto. Manos a la espalda: no elige, no actúa. Diez botones: las sefirot. Cuerda con nudo triangular: ligado al espíritu. En lo práctico: sacrificio, punto de vista único. Mensaje: mira desde la perspectiva opuesta.",
+    "El Arcano sin nombre (XIII) es la transformación profunda. Esqueleto vivo de color carne, guadaña roja (acción vital) y azul (espiritualidad). Suelo negro: nigredo alquímica. Cráneo con Yod-He-Vav-He. En la vida: fin de algo, cambio radical. Mensaje: renuncia a lo superfluo, deja que lo viejo muera.",
+    "Templanza (Tempérance) es el equilibrio espiritual. Ángel con alas azules arraigado en tierra. Dos serpientes entrelazadas: caduceo. Cuatro triángulos y un círculo: los centros y la quintaesencia. En lo humano: salud, reconciliación, paciencia. Mensaje: encuentra el justo medio, deja fluir.",
+    "El Diablo (Le Diable) es la tentación y la creatividad profunda. Antorcha que da luz a las tinieblas. Figura andrógina (pechos y pene). Diablillos atados con cuerda floja. En la práctica: pasión, deseo, dinero, fuerzas oscuras. Mensaje: expresa tu pasión, no temas a tus deseos.",
+    "La Torre (La Maison Dieu) es la apertura de lo que estaba cerrado. Puerta y tres escalones iniciáticos. Los personajes emergen con alegría. Entidad llameante unida a corona. En la vida: ruptura de estructuras, liberación. Mensaje: regresa al suelo sólido, celebra la liberación.",
+    "La Estrella (L'Étoile) actúa en el mundo encontrando su lugar. Primera figura humana desnuda. Dos jarras: agua espiritual (amarilla) e instintiva (azul). Pájaro negro: parte oscura sublimada. En lo humano: pureza, generosidad, suerte. Mensaje: fluye desde una fuente pura, da sin medida.",
+    "La Luna (La Lune) es la potencia femenina receptiva. Luna creciente de perfil. Dos perros (espiritual y material) aúllan. Cangrejo con bola azul: ofrenda de las profundidades. En la lectura: intuición, madre cósmica, misterio. Mensaje: no temas ir a lo profundo, acepta la noche.",
+    "El Sol (Le Soleil) es la nueva construcción y el amor fraternal. Sol nos mira de frente. Dos gemelos: uno con cola animal, otro con tres puntos espirituales. Cruzan un río. En la vida: luz, calor, sanación, compañerismo. Mensaje: encuentra compañeros, construye desde el amor.",
+    "El Juicio (Le Jugement) es la nueva consciencia y el deseo irresistible. Ángel toca trompeta. Emergen hombre, mujer y niño andrógino. La mujer mira al hombre (amor humano), el hombre mira al ángel (amor divino). En lo práctico: revelación, iluminación. Mensaje: despierta, responde a la llamada.",
+    "El Mundo (Le Monde) es la realización total. Mujer desnuda danza en mandorla azul. En manos: vara activa y frasco receptivo. Cuatro figuras: ángel (Copas), águila (Espadas), león (Bastos), buey/caballo (Oros). En la vida: completación, logros, armonía. Mensaje: todo es perfecto como es."
+  ];
+
+  // Arcanos menores basados en "La vía del Tarot"
+  const espadas = {
+    1: "As de Espadas: Gran potencial intelectual, capacidad de decisión y victoria mediante la astucia. Es la mente que forja su propio camino, como el herrero que templa el acero. En lo cotidiano: comienzo de un proyecto mental, claridad para tomar postura. Atención a la agresión verbal o al exceso de racionalismo.",
+    2: "Dos de Espadas: Acumulación de pensamientos, ensoñación sin acción. La gran flor central indica un mundo interior rico pero aún sin manifestar. En la vida: preparación de ideas, necesidad de concentración. Cuidado con la mente perezosa o la dualidad paralizante.",
+    3: "Tres de Espadas: Estallido fanático de las primeras ideas. Es la pasión por aprender, el entusiasmo del estudiante. Sin embargo, la inexperiencia puede llevar al dogmatismo. En lo práctico: deseo de evolución intelectual, pero cuidado con la dispersión o la obstinación.",
+    4: "Cuatro de Espadas: Estabilización del pensamiento, racionalismo práctico. Es la mente cuadrada pero eficaz, capaz de organizar la realidad. En la vida: madurez intelectual, espíritu práctico. Peligro: rigidez, rechazo a la intuición.",
+    5: "Cinco de Espadas: Aparición de un nuevo ideal, un punto de vista más elevado. El pensamiento se vuelve más espiritual o profundo. En lo humano: nuevas maneras de ver el mundo, especialización. Riesgo: discordancia entre lo material y lo espiritual, dogmatismo.",
+    6: "Seis de Espadas: Primer paso en la alegría intelectual. Placer de pensar, belleza de las ideas, espíritu lúdico. Es el descubrimiento de la propia individualidad. En la vida: poesía, diálogo enriquecedor. Peligro: narcisismo intelectual o esteticismo vacío.",
+    7: "Siete de Espadas: El intelecto se vuelve extremadamente receptivo. Meditación activa al servicio del otro. Es el sabio que pone su ciencia al servicio de la humanidad. En lo práctico: pacificación mental, capacidad de abstraerse. Cuidado con el conocimiento usado con cinismo.",
+    8: "Ocho de Espadas: Perfección del intelecto: la vacuidad. La mente deja de identificarse con sus conceptos. Es la meditación profunda, el trance. En la vida: concentración, soluciones que surgen más allá del razonamiento. Peligro: bloqueo mental o miedo al vacío.",
+    9: "Nueve de Espadas: Iluminación y nueva comprensión. La espada amarilla indica una mutación mental, el fin de la dualidad. En lo humano: apertura a la escucha, desasimiento intelectual. Riesgo: crisis, incertidumbre, miedo a perder la individualidad.",
+    10: "Diez de Espadas: Mutación completa. Aparece una segunda espada: el pensamiento acepta al otro. Es la armonía con el corazón, el pensamiento andrógino. En la vida: madurez intelectual plena, visión total de la realidad. Peligro: rechazo del otro o conflicto intelectual.",
+    11: "Paje de Espadas: Joven intelectual que duda. Su espada aún no está afilada del todo. Representa al estudiante, al investigador novato. En la lectura: necesidad de aguzar la mente, de formarse. Negativo: mentira, confusión, verborrea.",
+    12: "Caballero de Espadas: Mensajero del intelecto. Caballo refinado y ágil; el Verbo se vuelve amor. Simboliza la transmisión de la esencia mental. En la vida: comunicación elevada, enseñanza. Peligro: dogmatismo inflexible o agresividad encubierta.",
+    13: "Reina de Espadas: Intelecto potente y bien defendido. Mira fijamente su espada roja. Es la mujer de ideas claras, obstinada en sus opiniones. En lo práctico: defensa de los propios ideales. Riesgo: rechazo al cuerpo o a la sexualidad, frigidez intelectual.",
+    14: "Rey de Espadas: Dirigente justo e ilustrado. Su unidad de medida tiene 22 trazos (los arcanos mayores). Controla el pensamiento y lo pone en acción. En la vida: jurista, profesor, político honesto. Peligro: calumnia, error judicial, discurso totalitario."
+  };
+
+  const copas = {
+    1: "As de Copas: Símbolo del amor en potencia. Es la catedral del corazón, el cáliz del Grial. Gran disposición a amar y ser amado. En lo cotidiano: inicio de una relación, apertura emocional, fe. Atención a los celos o a la afectividad agobiante.",
+    2: "Dos de Copas: Acumulación de ensoñaciones amorosas. Nace la sed de amar, el mito del alma gemela. En la vida: preparación para el amor, idealización. Peligro: inmadurez emocional, miedo al compromiso, pasividad.",
+    3: "Tres de Copas: Eclosión del primer amor. Frescura, inexperiencia, unión ferviente. Es el amor adolescente, la adoración. En lo humano: primeros pasos afectivos, romanticismo. Riesgo: idealización excesiva, erotomanía.",
+    4: "Cuatro de Copas: Amor establecido, seguro y sólido. Base de una familia. Confianza en uno mismo y en el otro. En la vida: matrimonio, hogar, estabilidad emocional. Peligro: dependencia, amor materialista o rutinario.",
+    5: "Cinco de Copas: Emergencia de nuevos sentimientos que pueden llegar al fanatismo. Es el descubrimiento de la fe o del amor incondicional. En lo práctico: entrega a un ideal, devoción. Cuidado: confianza ciega o decepción amarga.",
+    6: "Seis de Copas: Encuentro del alma gemela. Dos columnas de tres copas se miran como espejos. Es el amor que se refleja a sí mismo. En la vida: unión profunda, reciprocidad. Peligro: narcisismo en la pareja, dependencia mutua.",
+    7: "Siete de Copas: El amor actúa en el mundo. Obra humanitaria, generosidad sin límites. Es el fuego emocional que se vuelve acción. En lo humano: caridad, servicio, entrega. Riesgo: exceso de demanda o manipulación afectiva.",
+    8: "Ocho de Copas: Perfección del corazón: plenitud. El corazón está enteramente lleno en todos los niveles. Es la gracia, la armonía, la paz interior. En la vida: amor universal, santidad. Peligro: carencia encubierta o insatisfacción perpetua.",
+    9: "Nueve de Copas: Sacrificio de sentimientos que encadenan. Se abandonan las tres copas de abajo (el pasado) para elevarse. En lo práctico: desprendimiento, renuncia por amor. Riesgo: crisis perpetua, melancolía.",
+    10: "Diez de Copas: Nueve copas abiertas, una décima sellada. La demanda emocional se acaba; el corazón se convierte en potencia de acción. En la vida: amor realizado que espera ser donado. Peligro: bloqueo emocional o rechazo a dar.",
+    11: "Paje de Copas: Tímido, nunca ha amado fuera de la familia. Copa que no sabe si mantener abierta o cerrar. En la lectura: deseo de amar con miedo, descubrimiento emocional. Negativo: inmadurez afectiva, ensoñación excesiva.",
+    12: "Caballero de Copas: Gesto romántico, ofrecer el corazón. Es el amante que llega, la cortejo sincero. En la vida: propuesta amorosa, apertura del corazón. Peligro: superficialidad sentimental, actitud sobreoptimista.",
+    13: "Reina de Copas: Rostro vuelto hacia su copa cerrada. Defiende sus sentimientos con una espada de hoja sinuosa. En lo humano: amor familiar, bondad, buena madre. Riesgo: celos, posesividad, falsa caridad.",
+    14: "Rey de Copas: Gran experiencia afectiva. Su pecho es más ancho del lado del corazón. Dispensa amor consciente y serenidad. En la vida: terapeuta, consejero, ser bondadoso. Peligro: odio encubierto, alcoholismo, perversión narcisista."
+  };
+
+  const oros = {
+    1: "As de Oros: Energía material en potencia. El oro horizontal, como un loto que contiene el diamante de la consciencia. En lo cotidiano: cuerpo, salud, dinero, lugar en el mundo. Peligro: problemas financieros, negación de la materia, enfermedad.",
+    2: "Dos de Oros: Deseo de cerrar un contrato aún no concluido. Dos enormes monedas buscan la unión. En la vida: proyecto financiero gestándose, promesas. Riesgo: dificultad económica, pereza, actitud quimérica.",
+    3: "Tres de Oros: Inversión material que produce su primer beneficio o pérdida. Es la fecundación, el riesgo económico. En lo humano: nuevos negocios, apuestas, cirugía. Peligro: inversión apresurada, problemas de fertilidad.",
+    4: "Cuatro de Oros: Estabilidad material. El fénix arde en el centro, recordando que la seguridad requiere renovación. En la vida: hogar, salud, prosperidad estable. Riesgo: estancamiento, avaricia, encierro.",
+    5: "Cinco de Oros: Nuevo interés ligado a una dimensión espiritual o ecológica. En el centro de la estabilidad se abre un ideal. En la práctica: inversión ética, cambio de dieta, terapias alternativas. Peligro: revés de fortuna, estafa, depresión.",
+    6: "Seis de Oros: Plenitud material. Arraigo en la tierra y en el cielo. Es la generosidad, el placer corporal, la belleza del mundo. En la vida: disfrute del dinero, mecenazgo. Riesgo: narcisismo corporal, avaricia o complejos físicos.",
+    7: "Siete de Oros: Espiritualización de la materia. Triángulo central (espíritu) inscrito en un cuadrado (materia). En lo humano: ideas que generan dinero, proeza deportiva. Peligro: fractura cuerpo-espíritu, voracidad económica.",
+    8: "Ocho de Oros: Perfección de los Oros: abundancia próspera. Armonía y riqueza en todos los niveles. Es el paraíso en la Tierra, la salud plena. En la vida: equilibrio financiero, cuerpo sano. Riesgo: desequilibrio material o pobreza fatalista.",
+    9: "Nueve de Oros: Una etapa material se acaba, nueva vida comienza. El oro central es como una cabeza de bebé naciendo. En lo práctico: parto, herencia, cambio de situación. Peligro: crisis económica mal vivida, robo, exilio.",
+    10: "Diez de Oros: El ciclo material se clausura. Aparece un eje blanco que une dos oros naranja: entrada en la creatividad. En la vida: milagro, transición a otra dimensión. Riesgo: rechazo del cuerpo, sensación de fracaso.",
+    11: "Paje de Oros: Se pregunta por su lugar en el mundo. Un oro en la mano, otro enterrado. En la lectura: duda sobre inversión, carrera, salud. Negativo: inactividad, juego temerario.",
+    12: "Caballero de Oros: Superación de la materia en la creatividad. Montura azul, basto en la mano, oro astral en el cielo. En la vida: rico que crea algo nuevo, viaje iniciático. Peligro: apego material, falta de visión.",
+    13: "Reina de Oros: Importa su dinero, situación, salud. Mira fijamente un oro voluminoso. Puede innovar o aferrarse. En lo humano: administradora, guardiana del tesoro. Riesgo: avaricia, obsesión por seguridad material.",
+    14: "Rey de Oros: Poder asentado en la materia. Sentado en la naturaleza, sin pompa. Conoce dos riquezas: la material y la espiritual. En la vida: industrial, agricultor, hombre próspero. Peligro: estafa, dinero sucio, especulación."
+  };
+
+  const bastos = {
+    1: "As de Bastos: Gran energía vital en potencia. El basto, rodeado de pavesas, es la fuerza creativa y sexual. En lo cotidiano: medios para crear, vencer dificultades, deseo. Peligro: bloqueo sexual, pérdida de energía, brutalidad.",
+    2: "Dos de Bastos: Estado virgen, deseos acumulados. El basto aún no se ha alzado; la energía espera. En la vida: latencia de la libido, potencial creativo en gestación. Riesgo: bloqueo sexual, timidez, tabúes.",
+    3: "Tres de Bastos: Primer estallido de la energía vital. Pubertad, primeras experiencias sexuales, impulso creativo. En lo humano: entusiasmo, inicio de proyectos. Peligro: dispersión, eyaculación precoz, abuso de poder.",
+    4: "Cuatro de Bastos: El deseo se ha hecho realidad. Éxito creativo, sexualidad estable, obra consolidada. En la vida: rutina placentera, seguridad en la creación. Riesgo: aburrimiento, monotonía, creatividad mercantil.",
+    5: "Cinco de Bastos: Tentación, nueva dirección. El basto central se abre hacia un ideal más elevado. En la práctica: sublimación, iniciación a nuevas prácticas. Peligro: perversión, conflicto entre sexualidad y espiritualidad.",
+    6: "Seis de Bastos: Expresión esencial del placer. Éxtasis, gozo de crear, felicidad de ser quien se es. En la vida: orgasmo, obra maestra, alegría creativa. Riesgo: narcisismo, autocomplacencia, superficialidad.",
+    7: "Siete de Bastos: Gran apertura, acción irresistible. El basto se convierte en canal de energía universal. En lo humano: éxito, donación, relación apasionada. Peligro: dictadura, fascismo, poder destructor.",
+    8: "Ocho de Bastos: Perfección: concentración extrema. Las flores laterales han desaparecido, sólo queda la esencia. En la vida: sublimación, orgasmo cósmico, creatividad pura. Riesgo: parálisis, perfeccionismo asfixiante.",
+    9: "Nueve de Bastos: Elección entre la vida y la muerte. Carta desnuda, sin hojas, dominio implacable de sí mismo. En lo práctico: renuncia, elección esencial, entrega total. Peligro: miedo a morir, fracaso, impotencia.",
+    10: "Diez de Bastos: Ciclo cumplido. El basto se divide en dos, aparece un eje blanco: paso a las Espadas. En la vida: visión angélica de la sexualidad, cristalización del espíritu. Riesgo: amargura, desarraigo, renuncia dolorosa.",
+    11: "Paje de Bastos: Duda entre hacer y no hacer. Manos sobre un basto sin desbastar. En la lectura: sexualidad vacilante, proyecto creativo por definir. Negativo: torpeza, bloqueo energético, brutalidad.",
+    12: "Caballero de Bastos: Instinto canalizado, creatividad en pleno dominio. Caballo blanco, basto que atraviesa la mano. En la vida: sanador, artista consumado, valor supremo. Peligro: violencia descontrolada, abuso de poder.",
+    13: "Reina de Bastos: Sensual, seductora. Mano en el vientre, otra mano artificial amarilla. En lo humano: artista, mujer apasionada, independiente. Riesgo: obsesión sexual, venalidad, exceso.",
+    14: "Rey de Bastos: Domina su energía vital, creativa y sexual. Cetro que toca el suelo y el sombrero. En la vida: creador, guerrero, amante sincero. Peligro: despotismo, jactancia, sexualidad aislada del amor."
+  };
+
+  const nombresMayores = [
+    "Le Mat", "Le Bateleur", "La Papesse", "L'Impératrice", "Le Empereur", "Le Pape",
+    "L'Amoureux", "Le Chariot", "La Justice", "L'Hermite", "La Roue de Fortune",
+    "La Force", "Le Pendu", "L'Arcan sans nom", "Tempérance", "Le Diable",
+    "La Maison Dieu", "L'Étoile", "La Lune", "Le Soleil", "Le Jugement", "Le Monde"
+  ];
+
+  // Construcción de todas las cartas
+  const todasCartas = [];
+
+  // Mayores
+  for (let i = 0; i <= 21; i++) {
+    todasCartas.push({
+      id: `major-${i}`,
+      tipo: 'major',
+      nombre: nombresMayores[i],
+      imagen: `img/${i}.png`,
+      significado: significadosMayores[i]
+    });
+  }
+
+  // Menores
+  const palosMenores = ['esh', 'mayim', 'hashamayim', 'haaretz'];
+  const palosNombres = { esh:"Bastos", mayim:"Copas", hashamayim:"Espadas", haaretz:"Oros" };
+  const palosSignificados = { esh: bastos, mayim: copas, hashamayim: espadas, haaretz: oros };
+  const grados = ["As","2","3","4","5","6","7","8","9","10","Paje","Caballero","Reina","Rey"];
+
+  for (let p of palosMenores) {
+    const paloNombre = palosNombres[p];
+    const mapSignif = palosSignificados[p];
+    for (let v = 1; v <= 14; v++) {
+      const grado = grados[v-1];
+      const nombre = `${grado} de ${paloNombre}`;
+      const texto = mapSignif[v] || `${grado} de ${paloNombre}. Energía en desarrollo. Observa los detalles geométricos y los colores para profundizar.`;
+      todasCartas.push({
+        id: `${p}-${v}`,
+        tipo: 'minor',
+        nombre: nombre,
+        imagen: `img/${p==='esh'?'b':p==='mayim'?'c':p==='hashamayim'?'e':'o'}${v}.png`,
+        significado: texto
+      });
+    }
+  }
+
+  // ------------------------------------------------------------
+  // LÓGICA DE LA APLICACIÓN
+  // ------------------------------------------------------------
+  let cartasTirada = [null, null, null, null, null];
+
+  function obtenerCartasAleatorias() {
+    const copia = [...todasCartas];
+    for (let i = copia.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [copia[i], copia[j]] = [copia[j], copia[i]];
+    }
+    return copia.slice(0, 5);
+  }
+
+  function mostrarTirada(cartas) {
+    const grid = document.getElementById('tirada-grid');
+    const posiciones = [
+      { clase: 'centro', label: 'CENTRO · TU ESENCIA' },
+      { clase: 'sup-izq', label: '⬆️ EMOCIONES (Copas)' },
+      { clase: 'sup-der', label: '⬆️ PENSAMIENTOS (Espadas)' },
+      { clase: 'inf-izq', label: '⬇️ CUERPO / MATERIA (Oros)' },
+      { clase: 'inf-der', label: '⬇️ CREATIVIDAD (Bastos)' }
+    ];
+    grid.innerHTML = '';
+    for (let i = 0; i < cartas.length; i++) {
+      const carta = cartas[i];
+      const pos = posiciones[i];
+      const div = document.createElement('div');
+      div.className = `carta-tirada ${pos.clase}`;
+      div.innerHTML = `
+        <img src="${carta.imagen}" alt="${carta.nombre}" loading="lazy">
+        <div class="pos-label">${pos.label}</div>
+      `;
+      div.addEventListener('click', (e) => {
+        e.stopPropagation();
+        abrirModal(carta);
+      });
+      grid.appendChild(div);
+    }
+  }
+
+  function barajarYTirada() {
+    document.getElementById('portada').classList.add('hidden');
+    const barajadoDiv = document.getElementById('barajado');
+    barajadoDiv.classList.add('visible');
+    setTimeout(() => {
+      barajadoDiv.classList.remove('visible');
+      const nuevasCartas = obtenerCartasAleatorias();
+      cartasTirada = nuevasCartas;
+      mostrarTirada(cartasTirada);
+      document.getElementById('tirada-container').classList.add('visible');
+    }, 1800);
+  }
+
+  function nuevaTiradaDesdeHistoria() {
+    cerrarHistoria();
+    document.getElementById('tirada-container').classList.remove('visible');
+    barajarYTirada();
+  }
+
+  const modal = document.getElementById('modal');
+  const modalTitulo = document.getElementById('modal-titulo');
+  const modalImagen = document.getElementById('modal-imagen');
+  const modalLectura = document.getElementById('modal-lectura');
+
+  function abrirModal(carta) {
+    modalTitulo.textContent = carta.nombre;
+    modalImagen.innerHTML = `<img src="${carta.imagen}" alt="${carta.nombre}" style="max-width:180px;">`;
+    modalLectura.innerHTML = `<p>${carta.significado}</p>`;
+    modal.style.display = 'flex';
+  }
+
+  function cerrarModal() { modal.style.display = 'none'; }
+  function abrirHistoria() { document.getElementById('historia-modal').style.display = 'flex'; }
+  function cerrarHistoria() { document.getElementById('historia-modal').style.display = 'none'; }
+
+  document.getElementById('portada').addEventListener('click', barajarYTirada);
+  document.getElementById('btn-historia').addEventListener('click', abrirHistoria);
+  document.getElementById('modal-cerrar').addEventListener('click', cerrarModal);
+  document.getElementById('historia-cerrar').addEventListener('click', cerrarHistoria);
+  document.getElementById('btn-historia-nueva-tirada').addEventListener('click', nuevaTiradaDesdeHistoria);
+  window.addEventListener('click', (e) => {
+    if (e.target === modal) cerrarModal();
+    if (e.target === document.getElementById('historia-modal')) cerrarHistoria();
+  });
+</script>
+</body>
+</html>
