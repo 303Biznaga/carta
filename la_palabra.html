@@ -1,0 +1,1058 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+<title>La Palabra · Historia de la Humanidad</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cinzel:wght@400;600&family=IM+Fell+English:ital@0;1&display=swap');
+:root{
+  --void:#02050a;--gold:#c8a84b;--goldlt:#e2c97e;--goldd:#6a5020;
+  --sage:#4e9e68;--foam:#cce4d8;--smoke:#4a6a58;--cyan:#5ab8d4;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{width:100%;height:100%;overflow:hidden;background:var(--void);}
+body{font-family:'IM Fell English',Georgia,serif;color:var(--foam);touch-action:manipulation;user-select:none;}
+#grain{position:fixed;inset:0;z-index:9999;pointer-events:none;opacity:.28;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.13'/%3E%3C/svg%3E");
+  mix-blend-mode:overlay;}
+#main-canvas{position:fixed;inset:0;width:100%;height:100%;}
+#dots{position:fixed;right:14px;top:50%;transform:translateY(-50%);
+  display:flex;flex-direction:column;gap:7px;z-index:100;}
+.dot{width:5px;height:5px;border-radius:50%;background:rgba(200,168,75,.18);
+  cursor:pointer;transition:all .3s;}
+.dot.active{background:rgba(200,168,75,.75);transform:scale(1.4);}
+#step-wrapper{position:fixed;inset:0;display:flex;flex-direction:column;
+  justify-content:flex-end;pointer-events:none;z-index:50;}
+#step-panel{padding:0 0 clamp(26px,5.5vh,48px);pointer-events:all;
+  opacity:1;transition:opacity .5s ease;}
+#step-panel.hiding{opacity:0;}
+.step-era{text-align:center;font-family:'Cinzel',serif;font-size:clamp(7px,1.8vw,9px);
+  letter-spacing:.55em;text-transform:uppercase;color:rgba(200,168,75,.35);margin-bottom:10px;}
+.step-title{text-align:center;font-family:'Cinzel Decorative',serif;
+  font-size:clamp(15px,4.8vw,27px);font-weight:400;color:var(--foam);
+  letter-spacing:.06em;line-height:1.2;margin-bottom:4px;padding:0 24px;}
+.step-author{text-align:center;font-family:'Cinzel',serif;font-size:clamp(8px,2.2vw,10px);
+  letter-spacing:.4em;text-transform:uppercase;color:var(--goldd);margin-bottom:18px;}
+.voices{display:grid;grid-template-columns:1fr 1fr;gap:0;border-top:1px solid rgba(200,168,75,.1);}
+.voice-left{font-family:'IM Fell English',serif;font-style:italic;
+  font-size:clamp(11px,3vw,13px);color:rgba(204,228,216,.65);line-height:1.7;
+  letter-spacing:.03em;padding:13px 15px 13px 20px;border-right:1px solid rgba(200,168,75,.08);}
+.voice-right{font-family:'Cinzel',serif;font-weight:400;font-size:clamp(7.5px,2vw,10px);
+  text-transform:uppercase;letter-spacing:.12em;color:rgba(90,184,212,.55);
+  line-height:1.85;padding:13px 20px 13px 15px;}
+.nav-hint{text-align:center;margin-top:13px;font-family:'Cinzel',serif;
+  font-size:6.5px;letter-spacing:.5em;color:rgba(200,168,75,.2);text-transform:uppercase;}
+#intro-wrap{position:fixed;inset:0;z-index:60;pointer-events:none;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  transition:opacity .6s;}
+.i-inner{position:relative;z-index:2;display:flex;flex-direction:column;
+  align-items:center;text-align:center;padding:0 32px;}
+.i-word{font-family:'Cinzel Decorative',serif;font-size:clamp(52px,15vw,88px);
+  color:rgba(200,168,75,.18);line-height:1;margin-bottom:18px;
+  letter-spacing:.08em;transition:opacity .35s ease;}
+.i-title{font-family:'Cinzel Decorative',serif;font-size:clamp(24px,7vw,40px);
+  color:var(--foam);letter-spacing:.07em;margin-bottom:8px;}
+.i-sub{font-family:'IM Fell English',serif;font-style:italic;
+  font-size:clamp(12px,3.2vw,15px);color:var(--smoke);letter-spacing:.07em;margin-bottom:6px;}
+.i-count{font-family:'Cinzel',serif;font-size:7px;letter-spacing:.5em;
+  color:rgba(200,168,75,.28);text-transform:uppercase;margin-bottom:36px;}
+.i-cta{font-family:'Cinzel',serif;font-size:7.5px;letter-spacing:.5em;
+  text-transform:uppercase;color:rgba(200,168,75,.4);
+  animation:pulse 2.2s ease-in-out infinite;}
+@keyframes pulse{0%,100%{opacity:.28;}50%{opacity:.72;}}
+#final-screen{position:fixed;inset:0;z-index:200;background:var(--void);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  opacity:0;pointer-events:none;transition:opacity .8s ease;text-align:center;padding:40px;}
+#final-screen.show{opacity:1;pointer-events:all;}
+.final-inner{position:relative;z-index:2;max-width:320px;margin:0 auto;}
+.final-title{font-family:'Cinzel Decorative',serif;font-size:clamp(20px,6vw,32px);
+  color:var(--foam);margin-bottom:16px;line-height:1.3;}
+.final-text{font-family:'IM Fell English',serif;font-style:italic;
+  font-size:clamp(13px,3.5vw,16px);color:var(--smoke);line-height:1.82;margin-bottom:40px;}
+.final-btn{background:transparent;border:1px solid rgba(200,168,75,.2);
+  font-family:'Cinzel',serif;font-size:7.5px;letter-spacing:.45em;
+  text-transform:uppercase;color:var(--smoke);padding:14px 28px;cursor:pointer;transition:all .22s;}
+.final-btn:active{color:var(--foam);border-color:rgba(200,168,75,.5);}
+</style>
+</head>
+<body>
+<div id="grain"></div>
+<canvas id="main-canvas"></canvas>
+
+<div id="intro-wrap">
+  <div class="i-inner">
+    <div class="i-word" id="i-word-display">palabra</div>
+    <div class="i-title">La Palabra</div>
+    <div class="i-sub">La forma que el pensamiento toma cuando decide salir</div>
+    <div class="i-count">16 momentos · 100,000 años</div>
+    <div class="i-cta">toca para comenzar</div>
+  </div>
+</div>
+
+<div id="dots"></div>
+
+<div id="step-wrapper" style="display:none;">
+  <div id="step-panel">
+    <div class="step-era" id="s-era"></div>
+    <div class="step-title" id="s-title"></div>
+    <div class="step-author" id="s-author"></div>
+    <div class="voices">
+      <div class="voice-left" id="s-left"></div>
+      <div class="voice-right" id="s-right"></div>
+    </div>
+    <div class="nav-hint" id="s-nav"></div>
+  </div>
+</div>
+
+<div id="final-screen">
+  <div class="final-inner">
+    <div class="final-title">La palabra<br>que no puede<br>decirse a sí misma</div>
+    <div class="final-text">Ninguna palabra puede describirse completamente a sí misma sin usarse. La palabra "palabra" necesita ser una palabra para decir lo que es una palabra. El lenguaje es el único sistema que no puede saltar fuera de sí mismo para observarse desde afuera. Vivimos dentro de él como vivimos dentro del tiempo — sin poder ver sus bordes porque somos parte de lo que contiene.</div>
+    <button class="final-btn" onclick="window.location.href='index.html'">volver al origen</button>
+  </div>
+</div>
+
+<script>
+/* ═══════════════════════════════
+   DATOS
+═══════════════════════════════ */
+const STEPS = [
+  {
+    era: 'Prehistoria · 100,000 a.C.',
+    title: 'El Primer Sonido con Intención',
+    author: 'El origen del lenguaje',
+    left: 'Antes de la palabra hubo el grito. El grito es involuntario — sale del cuerpo sin que la mente lo decida. La palabra es diferente: es un sonido que el ser humano eligió asignar a algo que no es ese sonido. El salto entre el grito y la palabra es el salto más grande que la mente humana ha dado. Nadie sabe cuándo ocurrió. No deja fósiles. Solo sabemos que en algún momento alguien produjo un sonido para referirse a algo ausente — y eso lo cambió todo.',
+    right: 'El lenguaje no deja registro arqueológico directo. Indicios indirectos: la hioides humana (hueso del habla) moderna aparece hace ~100,000 años. El área de Broca: especialización cerebral para el lenguaje. La hipótesis musica-lingüística: el lenguaje evolucionó del canto. El origen del lenguaje: uno de los problemas científicos no resueltos. La Sociedad Lingüística de París prohibió los debates sobre el origen del lenguaje en 1866 — demasiado especulativos.',
+    draw: drawOrigin, freq: 136
+  },
+  {
+    era: 'Mesopotamia · 3200 a.C.',
+    title: 'La Escritura',
+    author: 'Cuando la palabra aprendió a quedarse',
+    left: 'La escritura cuneiforme nace de una necesidad contable — registrar grano, ganado, intercambios. Al principio es pictográfica: un toro dibujado significa toro. Luego el signo se abstrae: ya no parece el toro pero lo nombra. Luego el signo representa un sonido, no un concepto. En tres siglos, la escritura pasa de dibujar el mundo a transcribir el habla. La palabra aprende a quedarse sin que nadie la pronuncie. La memoria se vuelve externa.',
+    right: 'Escritura cuneiforme: ~3200 a.C., Uruk. Evolución: pictogramas → logograma → silabario. El número de signos: 800 al inicio, reducido a ~400 con la abstracción. La escritura como tecnología de la memoria: extiende el alcance del lenguaje más allá de la muerte del hablante. La paradoja de la escritura (Platón, Fedro): la escritura debilita la memoria natural. El texto como prótesis cognitiva.',
+    draw: drawCuneiform, freq: 144
+  },
+  {
+    era: 'India · 1500 a.C.',
+    title: 'La Palabra Sagrada',
+    author: 'El Aum y la lengua como cosmos',
+    left: 'Los Vedas declaran que el universo fue creado por la palabra — Vak. El sonido Aum contiene todos los sonidos posibles: A es el comienzo, U es el medio, M es el fin, y el silencio después del M es lo que va más allá del fin. La gramática de Panini, 500 a.C., describe el sánscrito con tal precisión que lingüistas modernos la consideran el primer tratado formal de lingüística. Para los indios antiguos, comprender la gramática era comprender la estructura del cosmos.',
+    right: 'Aum (ॐ): el sonido primordial del hinduismo. Panini (c. 500 a.C.): Ashtadhyayi — 3,959 reglas para describir el sánscrito. La gramática generativa avant-la-lettre: reglas que generan todas las oraciones posibles. La lingüística de Saussure redescubrió métodos de Panini 2,400 años después. El sánscrito: lengua con más raíces compartidas con las lenguas europeas — la hipótesis del proto-indoeuropeo. La palabra como código genético del cosmos.',
+    draw: drawAum, freq: 192
+  },
+  {
+    era: 'Arameo · Siglo V a.C.',
+    title: 'Alaha · La Palabra que Todo lo Sostiene',
+    author: 'La lengua de Jesús',
+    left: 'En arameo, la palabra para "Dios" es Alaha — construida sobre la raíz "al", que significa "la unidad que todo lo sostiene y de la que todo emerge". No es el nombre de un ser sobrenatural: es la descripción de un principio. El arameo es una lengua construida sobre raíces triconsonánticas — el mismo esqueleto que sostiene familias enteras de palabras. La raíz no cambia, los patrones vocálicos la modulan. La estructura de la palabra es la estructura del campo cuántico: base invariante con perturbaciones.',
+    right: 'El arameo: lengua semítica, sirvió de lingua franca en Oriente Medio desde el s. VIII a.C. Las raíces triconsonánticas: cada raíz genera un campo semántico completo. Ejemplo: K-T-B → "escribir": katab (él escribió), kitab (libro), kātib (escritor), maktab (oficina). La arquitectura triconsonántica: invariante topológica bajo transformaciones morfológicas. El arameo como lengua en la que Jesús enseñó — sus palabras más íntimas en esta estructura.',
+    draw: drawAramaic, freq: 216
+  },
+  {
+    era: 'Grecia · Siglo V a.C.',
+    title: 'El Logos',
+    author: 'La palabra que es también razón',
+    left: 'En griego, logos significa simultáneamente palabra, razón, principio y discurso. La misma palabra que designa lo que se dice designa también la estructura de lo que es. Para Heráclito, el Logos es el principio que gobierna el cosmos — el mismo principio que el pensamiento humano usa cuando piensa correctamente. La palabra no solo describe la razón: la palabra es la razón. Pensar es hablar interiormente. Hablar es pensar hacia afuera.',
+    right: 'Logos: λόγος — raíz "leg-": "recoger", "elegir", "decir". Heráclito (c. 500 a.C.): el Logos como principio universal de orden. Aristóteles: el logos como definición, argumento, razón. El Evangelio de Juan: "En el principio era el Logos" — la palabra como principio creador. La lingüística cognitiva moderna: el lenguaje estructura el pensamiento (hipótesis de Sapir-Whorf débil). El pensamiento sin lenguaje: posible pero diferente — el pensamiento verbal vs. el pensamiento imagístico.',
+    draw: drawLogos, freq: 256
+  },
+  {
+    era: 'India · Siglo V a.C.',
+    title: 'El Nombre y la Cosa',
+    author: '¿Convención o naturaleza?',
+    left: 'El diálogo Crátilo de Platón formula la pregunta que la lingüística todavía debate: ¿los nombres de las cosas son convenciones arbitrarias, o existe una relación natural entre el sonido y lo que nombra? Las palabras para "mamá" en casi todas las lenguas del mundo contienen sonidos nasales — m, n, ma, na, amma, mama. No porque haya un acuerdo: sino porque son los primeros sonidos que el bebé produce. Algunas palabras parecen motivadas por la naturaleza misma.',
+    right: 'La arbitrariedad del signo (Saussure): la relación entre significante y significado es arbitraria y convencional. La iconicidad: onomatopeyas, simbolismo fonético. Experimento de Köhler (1929): "maluma" vs "takete" — la mayoría asigna maluma a la figura redonda. La sinestesia fonética: patrones translingüísticos no arbitrarios. Las palabras para "madre": mama (español), mère (francés), mutter (alemán), mātr (sánscrito), madre (italiano). La nasal labial como primer sonido articulado.',
+    draw: drawNaming, freq: 288
+  },
+  {
+    era: 'Edad Media · Siglo XI',
+    title: 'Los Universales',
+    author: 'La disputa más larga de la filosofía',
+    left: 'La palabra "árbol" — ¿existe independientemente de todos los árboles que designa? Los realistas medievales decían sí: el universal "árbol" existe en el mundo de las ideas. Los nominalistas decían no: "árbol" es solo un sonido que los humanos acordaron pronunciar para agrupar cosas que se parecen. La disputa dura cuatro siglos. No se resuelve. Se disuelve — cuando el problema se reformula. Pero la pregunta sigue siendo la misma: ¿la palabra crea la categoría o la encuentra?',
+    right: 'El problema de los universales: Platón (realismo extremo) → Aristóteles (realismo moderado) → Abelardo (conceptualismo) → Ockham (nominalismo). La navaja de Ockham: no multiplicar entidades sin necesidad. Las categorías cognitivas: prototipos (Rosch, 1970s) — los universales son estructuras mentales, ni cosas del mundo ni meras convenciones. La lingüística cognitiva: las palabras reflejan estructuras conceptuales que son parcialmente universales y parcialmente culturales.',
+    draw: drawUniversals, freq: 324
+  },
+  {
+    era: 'Saussure · 1916',
+    title: 'El Signo Lingüístico',
+    author: 'Significante y significado',
+    left: 'Ferdinand de Saussure publica póstumamente el Curso de Lingüística General y lo cambia todo. La palabra no es la cosa: es la unión de una imagen acústica — el significante — y un concepto — el significado. Ninguno existe sin el otro. Y la relación entre ambos es arbitraria: no hay ninguna razón por la que el concepto "árbol" se llame "tree" en inglés y "arbre" en francés. El lenguaje es un sistema de diferencias: cada palabra vale por lo que no es, más que por lo que es.',
+    right: 'El signo lingüístico: significante (imagen acústica) + significado (concepto). Principios: arbitrariedad del signo, linearidad del significante. La langue vs. parole: el sistema abstracto vs. el uso concreto. La sincronía vs. diacronía: el estado actual del sistema vs. su historia. El valor lingüístico: "mouton" vs. "sheep/mutton" — el corte del campo semántico difiere por lengua. El estructuralismo: el lenguaje como sistema de oposiciones. Influencia: Lévi-Strauss, Jakobson, Lacan, Derrida.',
+    draw: drawSaussure, freq: 341
+  },
+  {
+    era: 'Wittgenstein · 1921 / 1953',
+    title: 'Los Límites del Lenguaje',
+    author: 'De lo que no se puede hablar',
+    left: 'Wittgenstein joven: "Los límites de mi lenguaje significan los límites de mi mundo." Y al final del Tractatus: "De lo que no se puede hablar, hay que callar." Wittgenstein mayor: las palabras no tienen un significado fijo — tienen usos. El significado de una palabra es su uso en el lenguaje. Las palabras son herramientas, no espejos de la realidad. El mismo Wittgenstein que dijo que el lenguaje era todo pasó la segunda mitad de su vida demostrando que el lenguaje no podía decirlo todo.',
+    right: 'Tractatus (1921): el lenguaje muestra la forma lógica del mundo. Los límites del lenguaje = límites del mundo pensable. Lo místico: lo que no puede decirse pero se muestra. Investigaciones Filosóficas (1953): el significado como uso. Los juegos del lenguaje: el lenguaje entretejido con formas de vida. El seguimiento de reglas: no hay regla que determine su propia aplicación. La paradoja de Kripkenstein. El lenguaje privado: imposible — el significado requiere práctica pública.',
+    draw: drawWittgenstein, freq: 384
+  },
+  {
+    era: 'Chomsky · 1957',
+    title: 'La Gramática Universal',
+    author: 'La estructura profunda del lenguaje',
+    left: 'Chomsky propone que la capacidad humana para el lenguaje es innata — una facultad biológica que todos los seres humanos traen al nacer. Las lenguas del mundo, tan diversas en superficie, comparten una estructura profunda. Un niño aprende su lengua materna sin instrucción explícita, a partir de datos insuficientes, en un tiempo extraordinariamente corto. Esto solo es posible si la mente ya conoce la gramática antes de aprender ninguna lengua particular. El lenguaje no es aprendido: es recordado.',
+    right: 'La gramática generativa: reglas recursivas que generan infinitas oraciones a partir de vocabulario finito. La estructura profunda (D-structure) vs. superficie (S-structure). El argumento de la pobreza del estímulo: los datos disponibles al niño son insuficientes para aprender la gramática — debe haber conocimiento innato. La gramática universal: conjunto de principios y parámetros universales. Críticas: Piaget (aprendizaje), Tomasello (imitación social). El debate continúa.',
+    draw: drawChomsky, freq: 432
+  },
+  {
+    era: 'La Cábala · El Séfer Yetzirá',
+    title: 'Las 22 Letras que Crearon el Mundo',
+    author: 'El universo como texto',
+    left: 'El Séfer Yetzirá — el Libro de la Formación — declara que el universo fue creado con 32 caminos de sabiduría: 10 sefirot y 22 letras. Las letras arameas no son símbolos que representan sonidos: son las fuerzas con las que el mundo fue construido. Combinar letras es combinar fuerzas. El Golem — la criatura artificial de la tradición judía — fue creado escribiendo la palabra אמת (emet, verdad) en su frente. Y destruido borrando la primera letra, convirtiendo la verdad en מת (met, muerto). La palabra como código de activación de la realidad.',
+    right: 'El Séfer Yetzirá (s. III-VI d.C.): el texto fundacional de la Cábala. Las 22 letras como fuerzas cósmicas. Las 3 letras madres (א מ ש): aire, agua, fuego. Las 7 dobles (ב ג ד כ פ ר ת): los planetas. Las 12 simples: los signos del zodíaco. La gematría: cada letra como número, cada palabra como suma. El Golem: אמת → מת al borrar א. La lingüística como cosmología. El lenguaje como arquitectura del ser, no descripción de él.',
+    draw: drawKabbalah, freq: 480
+  },
+  {
+    era: 'Austin · 1955 / Searle · 1969',
+    title: 'Los Actos de Habla',
+    author: 'La palabra que hace lo que dice',
+    left: 'Cuando el juez dice "declaro abierta la sesión" no describe una apertura — la crea. Cuando dices "te prometo" no informas de una promesa — la produces. Austin llama a estos enunciados "performativos": hacen lo que dicen. Hay palabras que no representan el mundo sino que lo transforman. El "sí" del matrimonio, la declaración de guerra, el veredicto del jurado, la absolución del sacerdote — son palabras que crean realidades jurídicas, sociales, existenciales. La palabra como acto.',
+    right: 'Los actos de habla (Austin, 1962): locucionario (el decir), ilocucionario (la fuerza — prometer, ordenar, declarar), perlocucionario (el efecto sobre el oyente). Los performativos: "Yo prometo X" ≠ descripción de una promesa = la promesa misma. Condiciones de felicidad: el contexto debe ser apropiado para que el acto sea válido. Los fallos: el juez ilegítimo, el contrato firmado bajo coacción. El lenguaje como institución social — las palabras tienen poder porque existe un sistema que las reconoce.',
+    draw: drawSpeechActs, freq: 528
+  },
+  {
+    era: 'Derrida · 1967',
+    title: 'La Différance',
+    author: 'La palabra que se demora a sí misma',
+    left: 'Derrida inventa una palabra que no puede pronunciarse — différance, con a en lugar de e, la diferencia es inaudible, solo visible en la escritura. El significado de una palabra no está en la palabra: está diferido, aplazado, construido por la diferencia con todas las demás palabras. No hay un significado original que la palabra alcance — hay una cadena infinita de remisiones entre signos. La presencia plena del significado es una ilusión. Toda palabra es una traza de algo que nunca estuvo completamente presente.',
+    right: 'La différance: neologismo de Derrida que combina "diferir" (distinguirse) y "diferir" (aplazar). El significado como efecto de diferencias, no presencia positiva. La deconstrucción: mostrar cómo los textos minan sus propias afirmaciones. La metafísica de la presencia: la tradición occidental asume que hay un significado presente y original que el lenguaje transmite. La escritura vs. el habla: Platón privilegia el habla (presencia) sobre la escritura (ausencia del autor). Derrida invierte la jerarquía.',
+    draw: drawDerrida, freq: 576
+  },
+  {
+    era: 'Neurociencia · Siglo XX',
+    title: 'La Palabra en el Cerebro',
+    author: 'Broca, Wernicke y el lenguaje encarnado',
+    left: 'Broca descubre en 1861 que un paciente que no puede hablar tiene una lesión en el lóbulo frontal izquierdo. Wernicke descubre en 1874 que pacientes que hablan con fluidez pero sin sentido tienen lesiones en el lóbulo temporal izquierdo. El lenguaje no está en toda la mente — está localizado. Y sin embargo los escáneres modernos muestran que en la producción de cualquier palabra se activa una red de regiones distribuidas por todo el cerebro. La palabra es a la vez local y global, modular y distribuida.',
+    right: 'Área de Broca (44/45 de Brodmann): producción del habla. Área de Wernicke (22): comprensión. El fascículo arcuato: la conexión entre ambas. La afasia de Broca: habla telegráfica, comprensión intacta. La afasia de Wernicke: habla fluida, comprensión nula. El modelo de red: las palabras activan distribuciones de activación a través de múltiples regiones. La palabra concreta vs. abstracta: activa regiones sensoriomotoras vs. frontales. Las palabras no están almacenadas — son reconstruidas cada vez.',
+    draw: drawBrain, freq: 639
+  },
+  {
+    era: 'Física cuántica · El observador',
+    title: 'Nombrar es Colapsar',
+    author: 'La palabra como medición',
+    left: 'En mecánica cuántica, el acto de medir colapsa la función de onda: la superposición de estados posibles se reduce a un estado definido. Nombrar tiene algo de esto. Antes de que el dolor tenga nombre, existe como una nube de malestar difuso. Cuando le damos nombre — tristeza, duelo, ansiedad — el estado se colapsa en algo preciso, localizable, tratable. El nombre no describe el estado: lo crea como estado distinguible. La palabra hace con la experiencia lo que la medición hace con la partícula: la convierte en algo determinado.',
+    right: 'El colapso de la función de onda: la medición transforma ψ en un eigenstate. Analogía lingüística: el continuo de experiencia → la categoría discreta de la palabra. La hipótesis de Sapir-Whorf: las categorías lingüísticas estructuran la percepción. Los colores en diferentes lenguas: el ruso distingue azul claro/oscuro como colores distintos — los hablantes de ruso los discriminan más rápido. El efecto Bouba/Kiki. El naming como acto de creación de realidad: "naming as frame" (Lakoff). La palabra como instrumento de colapso ontológico.',
+    draw: drawCollapse, freq: 672
+  },
+  {
+    era: 'El retorno',
+    title: 'Esta palabra · ahora',
+    author: 'El instante de la lectura',
+    left: 'Estás leyendo. En este momento, símbolos en una pantalla se convierten en sonidos en tu mente aunque no haya sonido en la habitación. Esos sonidos se convierten en imágenes, en conceptos, en emociones. Algo que estaba en otra mente — en el momento en que se escribió — está ahora en la tuya. La palabra es el único puente que existe entre una mente y otra. No transmite el pensamiento — transmite la señal que permite que el pensamiento se reconstruya. Cada lectura es una resurrección.',
+    right: 'La comunicación lingüística: no transmisión de contenido mental sino de señales que activan reconstrucciones. El código de Grice: la comunicación exitosa requiere intención reconocida. La teoría de la relevancia (Sperber y Wilson): el oyente busca el efecto cognitivo máximo con el menor esfuerzo. El texto como objeto semióticamente abierto (Eco): el lector co-crea el significado. La muerte del autor (Barthes): el texto pertenece al lector, no al escritor. La lectura como acto creativo. Esta frase, ahora, en tu mente — es también tuya.',
+    draw: drawReturn, freq: 720
+  }
+];
+
+/* ═══════════════════════════════
+   ESTADO
+═══════════════════════════════ */
+let currentStep=-1, isAnimating=false;
+const canvas=document.getElementById('main-canvas');
+const ctx=canvas.getContext('2d');
+const DPR=window.devicePixelRatio||1;
+let W,H,CX,CY,animFrame,t=0;
+
+function resize(){
+  W=window.innerWidth;H=window.innerHeight;
+  canvas.width=W*DPR;canvas.height=H*DPR;
+  canvas.style.width=W+'px';canvas.style.height=H+'px';
+  CX=canvas.width/2;CY=canvas.height/2;
+}
+resize();window.addEventListener('resize',resize);
+
+const dotsEl=document.getElementById('dots');
+STEPS.forEach((_,i)=>{
+  const d=document.createElement('div');
+  d.className='dot';d.onclick=()=>goTo(i);dotsEl.appendChild(d);
+});
+function updateDots(){
+  document.querySelectorAll('.dot').forEach((d,i)=>d.classList.toggle('active',i===currentStep));
+}
+
+/* Palabras en distintas lenguas para el intro */
+const introWords=[
+  'palabra','word','mot','Wort','parola','λόγος',
+  'לוגוס','كلمة','말','言葉','वाक्','ܡܠܬܐ',
+  'verbo','logos','terme','слово','söz','vārds'
+];
+let introIdx=0;
+setInterval(()=>{
+  introIdx=(introIdx+1)%introWords.length;
+  const el=document.getElementById('i-word-display');
+  if(el){
+    el.style.opacity='0';
+    setTimeout(()=>{el.textContent=introWords[introIdx];el.style.opacity='1';},200);
+  }
+},1600);
+
+let AC=null;
+function getAC(){return AC||(AC=new(window.AudioContext||window.webkitAudioContext)());}
+function playTone(freq){
+  try{
+    const ac=getAC();if(ac.state==='suspended')ac.resume();
+    const now=ac.currentTime;
+    const osc=ac.createOscillator(),g=ac.createGain();
+    osc.type='sine';
+    osc.frequency.setValueAtTime(freq*.95,now);
+    osc.frequency.exponentialRampToValueAtTime(freq,now+.2);
+    g.gain.setValueAtTime(0,now);g.gain.linearRampToValueAtTime(.11,now+.13);
+    g.gain.exponentialRampToValueAtTime(.0001,now+2.7);
+    osc.connect(g);g.connect(ac.destination);osc.start(now);osc.stop(now+2.9);
+    const o2=ac.createOscillator(),g2=ac.createGain();
+    o2.type='sine';o2.frequency.value=freq*1.5;
+    g2.gain.setValueAtTime(0,now+.1);g2.gain.linearRampToValueAtTime(.028,now+.22);
+    g2.gain.exponentialRampToValueAtTime(.0001,now+1.8);
+    o2.connect(g2);g2.connect(ac.destination);o2.start(now+.1);o2.stop(now+1.9);
+  }catch(e){}
+}
+document.addEventListener('touchstart',()=>{try{getAC().resume();}catch(e){}},{once:true});
+
+function goTo(idx){
+  if(isAnimating)return;
+  if(idx>=STEPS.length){showFinal();return;}
+  if(idx<0){showIntro();return;}
+  isAnimating=true;
+  const panel=document.getElementById('step-panel');
+  panel.classList.add('hiding');
+  setTimeout(()=>{
+    currentStep=idx;const s=STEPS[idx];playTone(s.freq);
+    document.getElementById('s-era').textContent=s.era;
+    document.getElementById('s-title').textContent=s.title;
+    document.getElementById('s-author').textContent=s.author;
+    document.getElementById('s-left').textContent=s.left;
+    document.getElementById('s-right').textContent=s.right;
+    document.getElementById('s-nav').textContent=
+      idx<STEPS.length-1?'· toca para continuar ·':'· toca para cerrar ·';
+    document.getElementById('step-wrapper').style.display='block';
+    const intro=document.getElementById('intro-wrap');
+    intro.style.opacity='0';intro.style.pointerEvents='none';
+    t=0;if(animFrame)cancelAnimationFrame(animFrame);
+    startAnim(s.draw);
+    panel.classList.remove('hiding');updateDots();isAnimating=false;
+  },400);
+}
+function showIntro(){
+  currentStep=-1;
+  document.getElementById('step-wrapper').style.display='none';
+  const intro=document.getElementById('intro-wrap');
+  intro.style.opacity='1';intro.style.pointerEvents='all';
+  t=0;if(animFrame)cancelAnimationFrame(animFrame);
+  startAnim(drawIntroAnim);updateDots();
+}
+function showFinal(){
+  if(animFrame)cancelAnimationFrame(animFrame);
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  document.getElementById('final-screen').classList.add('show');
+  document.getElementById('step-wrapper').style.display='none';
+}
+function restart(){
+  document.getElementById('final-screen').classList.remove('show');
+  setTimeout(()=>showIntro(),300);
+}
+function next(){
+  if(currentStep===-1){goTo(0);return;}
+  if(currentStep>=STEPS.length-1){showFinal();return;}
+  goTo(currentStep+1);
+}
+function prev(){
+  if(currentStep<=0){showIntro();return;}
+  goTo(currentStep-1);
+}
+document.addEventListener('click',()=>next());
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowRight'||e.key===' ')next();
+  if(e.key==='ArrowLeft')prev();
+});
+let tx0=0;
+document.addEventListener('touchstart',e=>{tx0=e.touches[0].clientX;},{passive:true});
+document.addEventListener('touchend',e=>{
+  const dx=e.changedTouches[0].clientX-tx0;
+  if(Math.abs(dx)<30)next();else if(dx>60)prev();
+},{passive:true});
+
+function startAnim(fn){
+  function loop(){t+=.011;ctx.clearRect(0,0,canvas.width,canvas.height);fn();animFrame=requestAnimationFrame(loop);}
+  animFrame=requestAnimationFrame(loop);
+}
+
+/* HELPERS */
+function dot(x,y,r,col){ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fillStyle=col;ctx.fill();}
+function circ(x,y,r,col,lw){ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.strokeStyle=col;ctx.lineWidth=lw||.8;ctx.stroke();}
+function ln(x1,y1,x2,y2,col,lw){ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.strokeStyle=col;ctx.lineWidth=lw||.8;ctx.stroke();}
+function glow(x,y,r,col){
+  const g=ctx.createRadialGradient(x,y,0,x,y,r);
+  g.addColorStop(0,col.replace(/[\d.]+\)$/,'.15)'));
+  g.addColorStop(1,col.replace(/[\d.]+\)$/,'0)'));
+  ctx.fillStyle=g;ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fill();
+}
+function txt(s,x,y,col,size,align,font){
+  ctx.save();
+  ctx.font=`${font||'italic'} ${size||9*DPR}px '${font?'Cinzel Decorative':'Times New Roman'}',serif`;
+  ctx.fillStyle=col||'rgba(200,168,75,.25)';ctx.textAlign=align||'center';
+  ctx.fillText(s,x,y);ctx.restore();
+}
+function waveform(words,cx,cy,R){
+  // Dibujar una "onda sonora" estilizada para representar el habla
+  ctx.beginPath();
+  for(let x=-R;x<=R;x+=2){
+    const freq2=3+Math.sin(x*.02+t)*2;
+    const amp=(1-Math.abs(x/R)*.8)*R*.12;
+    const y=cy+Math.sin(x*.04*freq2+t*2)*amp;
+    x===-R?ctx.moveTo(cx+x,y):ctx.lineTo(cx+x,y);
+  }
+  ctx.strokeStyle='rgba(200,168,75,.4)';ctx.lineWidth=1.2;ctx.stroke();
+}
+
+/* ═══════════════════════════════
+   INTRO — palabras flotando
+═══════════════════════════════ */
+function drawIntroAnim(){
+  const R=Math.min(W,H)*.32*DPR;
+  // Onda sonora central
+  waveform([],CX,CY,R*.8);
+  // Partículas de sonido irradiando
+  for(let i=0;i<20;i++){
+    const a=i/20*Math.PI*2;
+    const r=R*(.2+(t*.15+i*.1)%1*.7);
+    const alpha=.15*(1-r/R);
+    if(alpha>0.01) dot(CX+Math.cos(a)*r,CY+Math.sin(a)*r,1.5*DPR,`rgba(200,168,75,${alpha})`);
+  }
+  // Punto central — la intención antes del sonido
+  const ps=3+Math.sin(t*1.5)*1.2;
+  dot(CX,CY,ps*DPR,'rgba(200,168,75,.85)');
+  glow(CX,CY,R*.2,'rgba(200,168,75,.85)');
+}
+
+/* ═══════════════════════════════
+   0: EL ORIGEN — EL GRITO Y LA PALABRA
+═══════════════════════════════ */
+function drawOrigin(){
+  const R=Math.min(W,H)*.28*DPR;
+  // El grito — onda irregular, involuntaria
+  ctx.beginPath();
+  for(let x=-R*.8;x<=R*.8;x+=2){
+    const chaos=Math.sin(x*.03+t*3)*Math.sin(x*.07+t*1.7)*R*.18;
+    x===-R*.8?ctx.moveTo(CX+x,CY-R*.3+chaos):ctx.lineTo(CX+x,CY-R*.3+chaos);
+  }
+  ctx.strokeStyle='rgba(200,168,75,.25)';ctx.lineWidth=.9;ctx.stroke();
+  txt('grito',CX-R*.6,CY-R*.5,'rgba(200,168,75,.2)',8*DPR,'left');
+  // La flecha de la transformación
+  ln(CX-R*.1,CY-R*.08,CX+R*.1,CY-R*.08,'rgba(200,168,75,.2)',1);
+  ctx.save();ctx.beginPath();
+  ctx.moveTo(CX+R*.1,CY-R*.08);
+  ctx.lineTo(CX+R*.06,CY-R*.12);ctx.lineTo(CX+R*.06,CY-R*.04);
+  ctx.fillStyle='rgba(200,168,75,.25)';ctx.fill();ctx.restore();
+  // La palabra — onda regular, intencional
+  ctx.beginPath();
+  for(let x=-R*.8;x<=R*.8;x+=2){
+    const order=Math.sin(x*.045+t*1.5)*R*.14*(1-Math.abs(x/R*.8)*.3);
+    x===-R*.8?ctx.moveTo(CX+x,CY+R*.25+order):ctx.lineTo(CX+x,CY+R*.25+order);
+  }
+  ctx.strokeStyle='rgba(200,168,75,.5)';ctx.lineWidth=1.3;ctx.stroke();
+  txt('palabra',CX-R*.6,CY+R*.48,'rgba(200,168,75,.35)',8*DPR,'left');
+  // La diferencia: la intención
+  dot(CX,CY,3.5*DPR,'rgba(200,168,75,.7)');
+  glow(CX,CY,R*.1,'rgba(200,168,75,.7)');
+  txt('intención',CX+R*.12,CY+R*.04,'rgba(200,168,75,.25)',8*DPR,'left');
+  txt('referencia ausente',CX,CY+R*.65,'rgba(200,168,75,.18)',8*DPR);
+}
+
+/* ═══════════════════════════════
+   1: ESCRITURA CUNEIFORME
+═══════════════════════════════ */
+function drawCuneiform(){
+  const R=Math.min(W,H)*.28*DPR;
+  // La tablilla
+  ctx.save();ctx.translate(CX,CY);ctx.rotate(Math.sin(t*.08)*.008);
+  ctx.beginPath();ctx.roundRect(-R*.6,-R*.72,R*1.2,R*1.44,R*.04);
+  ctx.fillStyle='rgba(22,16,8,.65)';ctx.fill();
+  ctx.strokeStyle='rgba(200,168,75,.28)';ctx.lineWidth=1;ctx.stroke();
+  // Signos cuneiformes — evolución pictograma → signo abstracto
+  const signs=[
+    {x:-.35,y:-.55,type:'pic'},  // pictograma de toro
+    {x:.1,y:-.55,type:'mid'},    // transitorio
+    {x:.4,y:-.55,type:'cun'},    // cuneiforme
+  ];
+  const litSign=Math.floor(t*.5)%3;
+  signs.forEach(({x,y,type},i)=>{
+    const sx=x*R, sy=y*R;
+    const isLit=i===litSign;
+    const alpha=isLit?.7:.3;
+    if(type==='pic'){
+      // Toro simplificado
+      ctx.beginPath();ctx.arc(sx,sy,R*.08,0,Math.PI*2);
+      ctx.strokeStyle=`rgba(200,168,75,${alpha})`;ctx.lineWidth=.8;ctx.stroke();
+      ln(sx-R*.06,sy+R*.06,sx-R*.1,sy+R*.12,`rgba(200,168,75,${alpha})`,.7);
+      ln(sx+R*.06,sy+R*.06,sx+R*.1,sy+R*.12,`rgba(200,168,75,${alpha})`,.7);
+    } else if(type==='mid'){
+      // Signo intermedio
+      for(let k=0;k<4;k++){
+        const a=k/4*Math.PI*2;
+        ln(sx,sy,sx+Math.cos(a)*R*.09,sy+Math.sin(a)*R*.09,`rgba(200,168,75,${alpha})`,.7);
+      }
+    } else {
+      // Cuneiforme — cuñas
+      for(let k=0;k<3;k++){
+        ctx.beginPath();
+        ctx.moveTo(sx-R*.08+k*R*.06,sy-R*.06);
+        ctx.lineTo(sx-R*.05+k*R*.06,sy);
+        ctx.lineTo(sx-R*.1+k*R*.06,sy+R*.06);
+        ctx.strokeStyle=`rgba(200,168,75,${alpha})`;ctx.lineWidth=1;ctx.stroke();
+      }
+    }
+  });
+  // Más signos en filas
+  for(let row=0;row<4;row++){
+    for(let col=0;col<5;col++){
+      const sx2=(-2+col)*R*.22, sy2=(-.1+row*.28)*R;
+      const isLit2=(row*5+col===Math.floor(t*.4)%20);
+      // Cuña cuneiforme
+      ctx.beginPath();ctx.moveTo(sx2-R*.06,sy2);ctx.lineTo(sx2,sy2+R*.05);
+      ctx.lineTo(sx2-R*.06,sy2+R*.1);
+      ctx.strokeStyle=`rgba(200,168,75,${isLit2?.55:.15})`;ctx.lineWidth=isLit2?1:.5;ctx.stroke();
+      ctx.beginPath();ctx.moveTo(sx2,sy2+R*.02);ctx.lineTo(sx2+R*.08,sy2+R*.02);
+      ctx.strokeStyle=`rgba(200,168,75,${isLit2?.45:.12})`;ctx.lineWidth=isLit2?.9:.4;ctx.stroke();
+    }
+  }
+  ctx.restore();
+  txt('pictograma · logograma · silabario',CX,CY+R*.9,'rgba(200,168,75,.2)',8*DPR);
+}
+
+/* ═══════════════════════════════
+   2: AUM — LA PALABRA SAGRADA
+═══════════════════════════════ */
+function drawAum(){
+  const R=Math.min(W,H)*.28*DPR;
+  // El símbolo OM
+  ctx.save();ctx.font=`${R*.9}px 'Times New Roman'`;
+  ctx.fillStyle=`rgba(200,168,75,${.12+Math.sin(t*.5)*.04})`;
+  ctx.textAlign='center';ctx.textBaseline='middle';
+  ctx.fillText('ॐ',CX,CY);ctx.restore();
+  // Las tres partes del Aum como ondas
+  const parts=[
+    {label:'A',y:CY-R*.62,freq:1,col:'rgba(200,168,75,.45)'},
+    {label:'U',y:CY-R*.35,freq:1.5,col:'rgba(90,184,212,.4)'},
+    {label:'M',y:CY-R*.08,freq:.7,col:'rgba(78,158,104,.4)'},
+  ];
+  parts.forEach(({label,y,freq:f,col},i)=>{
+    ctx.beginPath();
+    for(let x=-R*.7;x<=R*.7;x+=2){
+      const wave=Math.sin(x*.05*f+t*(1.5-i*.3))*R*.06*(1-Math.abs(x/R*.7)*.4);
+      x===-R*.7?ctx.moveTo(CX+x,y+wave):ctx.lineTo(CX+x,y+wave);
+    }
+    ctx.strokeStyle=col;ctx.lineWidth=1;ctx.stroke();
+    txt(label,CX-R*.82,y,'rgba(200,168,75,.4)',10*DPR,'left');
+  });
+  // El silencio después — la cuarta parte
+  txt('· · ·',CX,CY+R*.18,'rgba(200,168,75,.2)',11*DPR);
+  txt('silencio · lo que va más allá del fin',CX,CY+R*.35,'rgba(200,168,75,.15)',8*DPR);
+  // Panini — las reglas
+  txt('3,959 reglas · Panini · 500 a.C.',CX,CY+R*.88,'rgba(200,168,75,.18)',8*DPR);
+}
+
+/* ═══════════════════════════════
+   3: ARAMEO — ALAHA
+═══════════════════════════════ */
+function drawAramaic(){
+  const R=Math.min(W,H)*.28*DPR;
+  // La raíz triconsonántica — el esqueleto
+  const root=['א','ל','ה'];
+  root.forEach((c,i)=>{
+    const x=CX+(i-1)*R*.4;
+    ctx.save();ctx.font=`${R*.45}px 'Times New Roman'`;
+    ctx.fillStyle=`rgba(200,168,75,${.55+Math.sin(t*.5+i)*.15})`;
+    ctx.textAlign='center';ctx.textBaseline='middle';ctx.direction='rtl';
+    ctx.fillText(c,x,CY-R*.15);ctx.restore();
+  });
+  // Las palabras derivadas de la raíz
+  const derivatives=[
+    {word:'אלהא',meaning:'Alaha · Dios',y:CY+R*.22},
+    {word:'אל',meaning:'El · fuerza divina',y:CY+R*.42},
+    {word:'אלה',meaning:'jurar · comprometerse',y:CY+R*.62},
+  ];
+  const litD=Math.floor(t*.4)%derivatives.length;
+  derivatives.forEach(({word,meaning,y},i)=>{
+    const isLit=i===litD;
+    ctx.save();ctx.font=`${(isLit?16:13)*DPR}px 'Times New Roman'`;
+    ctx.fillStyle=`rgba(200,168,75,${isLit?.8:.3})`;
+    ctx.textAlign='center';ctx.direction='rtl';
+    ctx.fillText(word,CX-R*.12,y);ctx.restore();
+    txt(meaning,CX+R*.12,y,'rgba(200,168,75,.3)',isLit?9:8*DPR,'left');
+  });
+  // El patrón vocálico — la modulation
+  txt('raíz invariante · vocales como modulación',CX,CY+R*.88,'rgba(200,168,75,.18)',8*DPR);
+  // Línea separando la raíz de las derivaciones
+  const lg=ctx.createLinearGradient(CX-R*.7,CY+R*.05,CX+R*.7,CY+R*.05);
+  lg.addColorStop(0,'rgba(200,168,75,0)');lg.addColorStop(.5,'rgba(200,168,75,.2)');lg.addColorStop(1,'rgba(200,168,75,0)');
+  ctx.beginPath();ctx.moveTo(CX-R*.7,CY+R*.05);ctx.lineTo(CX+R*.7,CY+R*.05);
+  ctx.strokeStyle=lg;ctx.lineWidth=.7;ctx.stroke();
+}
+
+/* ═══════════════════════════════
+   4: LOGOS — HERÁCLITO
+═══════════════════════════════ */
+function drawLogos(){
+  const R=Math.min(W,H)*.28*DPR;
+  // La palabra LOGOS en griego — grande, tenue
+  ctx.save();ctx.font=`${R*.55}px 'Times New Roman'`;
+  ctx.fillStyle=`rgba(200,168,75,${.08+Math.sin(t*.4)*.03})`;
+  ctx.textAlign='center';ctx.textBaseline='middle';
+  ctx.fillText('λόγος',CX,CY);ctx.restore();
+  // Los cuatro significados — en órbita
+  const meanings=['palabra','razón','principio','discurso'];
+  const colors=['rgba(200,168,75,','rgba(90,184,212,','rgba(78,158,104,','rgba(196,122,106,'];
+  meanings.forEach((m,i)=>{
+    const a=i/4*Math.PI*2+t*.12;
+    const r=R*.72;
+    const px=CX+Math.cos(a)*r,py=CY+Math.sin(a)*r;
+    dot(px,py,3*DPR,colors[i]+'.6)');
+    glow(px,py,R*.1,colors[i]+'.6)');
+    txt(m,px,py-R*.1,colors[i]+'.4)',8.5*DPR);
+    // Línea al centro
+    ln(px,py,CX,CY,colors[i]+'.08)',.6);
+  });
+  // La flecha del pensamiento hacia el lenguaje y viceversa
+  circ(CX,CY,R*.25,'rgba(200,168,75,.12)',.6);
+  txt('pensar = hablar interiormente',CX,CY+R*.9,'rgba(200,168,75,.18)',8*DPR);
+}
+
+/* ═══════════════════════════════
+   5: CONVENCIÓN O NATURALEZA
+═══════════════════════════════ */
+function drawNaming(){
+  const R=Math.min(W,H)*.28*DPR;
+  // Bouba / Kiki
+  const side=Math.sin(t*.3)>.0;
+  // La forma redonda — bouba
+  ctx.save();ctx.translate(CX-R*.45,CY-R*.1);
+  ctx.beginPath();
+  for(let a=0;a<Math.PI*2;a+=.1){
+    const r=R*(.28+Math.sin(a*3)*.08);
+    a===0?ctx.moveTo(Math.cos(a)*r,Math.sin(a)*r):ctx.lineTo(Math.cos(a)*r,Math.sin(a)*r);
+  }
+  ctx.closePath();
+  ctx.strokeStyle=`rgba(200,168,75,${side?.2:.45})`;ctx.lineWidth=1;ctx.stroke();
+  ctx.fillStyle=`rgba(200,168,75,${side?.03:.08})`;ctx.fill();
+  ctx.restore();
+  txt('maluma',CX-R*.45,CY+R*.28,`rgba(200,168,75,${side?.25:.5})`,10*DPR);
+  // La forma angular — kiki
+  ctx.save();ctx.translate(CX+R*.45,CY-R*.1);
+  ctx.beginPath();
+  const angles=8;
+  for(let i=0;i<=angles;i++){
+    const a=i/angles*Math.PI*2;
+    const r=R*(i%2===0?.28:.15);
+    i===0?ctx.moveTo(Math.cos(a)*r,Math.sin(a)*r):ctx.lineTo(Math.cos(a)*r,Math.sin(a)*r);
+  }
+  ctx.closePath();
+  ctx.strokeStyle=`rgba(200,168,75,${!side?.2:.45})`;ctx.lineWidth=1;ctx.stroke();
+  ctx.fillStyle=`rgba(200,168,75,${!side?.03:.08})`;ctx.fill();
+  ctx.restore();
+  txt('takete',CX+R*.45,CY+R*.28,`rgba(200,168,75,${!side?.25:.5})`,10*DPR);
+  // La palabra "mama" en distintas lenguas
+  const mamas=['mama','mère','mātr','madre','mutter','мама'];
+  mamas.forEach((m,i)=>{
+    const a=i/mamas.length*Math.PI+Math.PI*.1;
+    const x=CX+Math.cos(a)*R*.55,y=CY+R*.6+Math.sin(a)*R*.12;
+    txt(m,x,y,'rgba(200,168,75,.25)',8.5*DPR);
+  });
+  txt('la nasal bilabial · el primer sonido',CX,CY+R*.88,'rgba(200,168,75,.15)',7.5*DPR);
+}
+
+/* ═══════════════════════════════
+   6: UNIVERSALES — ÁRBOL
+═══════════════════════════════ */
+function drawUniversals(){
+  const R=Math.min(W,H)*.28*DPR;
+  // El árbol — ¿idea platónica o agrupación mental?
+  // Muchos árboles distintos
+  const trees=[
+    {x:-.6,y:.2,w:.18,h:.4,col:'rgba(78,158,104,.4)'},
+    {x:-.2,y:.15,w:.15,h:.5,col:'rgba(78,158,104,.35)'},
+    {x:.2,y:.18,w:.2,h:.45,col:'rgba(78,158,104,.38)'},
+    {x:.6,y:.22,w:.12,h:.38,col:'rgba(78,158,104,.32)'},
+  ];
+  trees.forEach(({x,y,w,h,col})=>{
+    const tx=CX+x*R,ty=CY+y*R,tw=w*R,th=h*R;
+    // Copa
+    ctx.beginPath();ctx.arc(tx,ty-th*.5,tw*.7,0,Math.PI*2);
+    ctx.fillStyle=col;ctx.fill();
+    ctx.strokeStyle=col.replace(/[\d.]+\)$/,'.6)');ctx.lineWidth=.6;ctx.stroke();
+    // Tronco
+    ctx.beginPath();ctx.rect(tx-tw*.12,ty-th*.1,tw*.24,th*.4);
+    ctx.fillStyle='rgba(200,168,75,.15)';ctx.fill();
+  });
+  // La palabra "árbol" — flotando encima
+  const arbolA=Math.sin(t*.4)*.06;
+  ctx.save();ctx.font=`${14*DPR}px 'Cinzel Decorative',serif`;
+  ctx.fillStyle=`rgba(200,168,75,.55)`;
+  ctx.textAlign='center';ctx.textBaseline='middle';
+  ctx.fillText('"árbol"',CX,CY-R*.62);ctx.restore();
+  // Flechas desde la palabra hacia los árboles
+  trees.forEach(({x,y})=>{
+    ln(CX,CY-R*.52,CX+x*R,CY+(y-.12)*R,'rgba(200,168,75,.1)',.6);
+  });
+  // La pregunta — realista vs nominalista
+  txt('¿existe "árbol" fuera de los árboles?',CX,CY+R*.82,'rgba(200,168,75,.2)',8.5*DPR);
+  const litSide=Math.floor(t*.25)%2;
+  txt('Realismo: sí',CX-R*.42,CY+R*.98,litSide===0?'rgba(200,168,75,.5)':'rgba(200,168,75,.2)',8*DPR);
+  txt('Nominalismo: no',CX+R*.38,CY+R*.98,litSide===1?'rgba(200,168,75,.5)':'rgba(200,168,75,.2)',8*DPR);
+}
+
+/* ═══════════════════════════════
+   7: SAUSSURE — SIGNO
+═══════════════════════════════ */
+function drawSaussure(){
+  const R=Math.min(W,H)*.28*DPR;
+  // El signo como oval dividido
+  const ow=R*.7,oh=R*.5;
+  ctx.beginPath();ctx.ellipse(CX,CY,ow,oh,0,0,Math.PI*2);
+  ctx.strokeStyle='rgba(200,168,75,.35)';ctx.lineWidth=1;ctx.stroke();
+  ctx.fillStyle='rgba(200,168,75,.04)';ctx.fill();
+  // La línea que separa significante y significado
+  ctx.save();ctx.setLineDash([4,6]);
+  ln(CX-ow,CY,CX+ow,CY,'rgba(200,168,75,.25)',.8);
+  ctx.setLineDash([]);ctx.restore();
+  // Arriba: significado (concepto)
+  glow(CX,CY-R*.25,'rgba(200,168,75,.8)');
+  // Imagen mental del árbol
+  ctx.beginPath();ctx.arc(CX,CY-R*.25,R*.14,0,Math.PI*2);
+  ctx.strokeStyle='rgba(200,168,75,.2)';ctx.lineWidth=.6;ctx.stroke();
+  ctx.beginPath();ctx.moveTo(CX-R*.08,CY-R*.12);ctx.lineTo(CX+R*.08,CY-R*.12);
+  ctx.lineTo(CX,CY-R*.32);ctx.closePath();
+  ctx.strokeStyle='rgba(78,158,104,.25)';ctx.lineWidth=.7;ctx.stroke();
+  txt('significado (concepto)',CX,CY-R*.5,'rgba(200,168,75,.3)',8.5*DPR);
+  // Abajo: significante (imagen acústica)
+  // Onda de sonido
+  ctx.beginPath();
+  for(let x=-R*.35;x<=R*.35;x+=2){
+    const y=CY+R*.2+Math.sin(x*.08+t*2)*R*.06;
+    x===-R*.35?ctx.moveTo(CX+x,y):ctx.lineTo(CX+x,y);
+  }
+  ctx.strokeStyle='rgba(90,184,212,.4)';ctx.lineWidth=1;ctx.stroke();
+  txt('significante (imagen acústica)',CX,CY+R*.48,'rgba(90,184,212,.28)',8.5*DPR);
+  // Las flechas de la arbitrariedad
+  txt('relación arbitraria',CX+R*.75,CY,'rgba(200,168,75,.2)',7.5*DPR,'left');
+  // Diferentes lenguas
+  const langs=['árbol','tree','arbre','Baum','дерево'];
+  langs.forEach((l,i)=>{
+    const a=i/langs.length*Math.PI-Math.PI/2;
+    txt(l,CX-R*1.08,CY+R*.68+i*R*.16,`rgba(200,168,75,${.15+i*.02})`,7.5*DPR,'left');
+  });
+}
+
+/* ═══════════════════════════════
+   8: WITTGENSTEIN — LÍMITES
+═══════════════════════════════ */
+function drawWittgenstein(){
+  const R=Math.min(W,H)*.28*DPR;
+  // El círculo del lenguaje
+  const lR=R*.65;
+  circ(CX,CY,lR,'rgba(200,168,75,.28)',1.2);
+  const lg=ctx.createRadialGradient(CX,CY,0,CX,CY,lR);
+  lg.addColorStop(0,'rgba(200,168,75,.05)');lg.addColorStop(1,'rgba(200,168,75,.01)');
+  ctx.fillStyle=lg;ctx.beginPath();ctx.arc(CX,CY,lR,0,Math.PI*2);ctx.fill();
+  // Palabras dentro del círculo — lo que puede decirse
+  const sayable=['azul','rápido','tres','si...entonces','causa','posible'];
+  sayable.forEach((w,i)=>{
+    const a=i/sayable.length*Math.PI*2+t*.04;
+    const r=R*(.25+Math.sin(i*1.4+t*.2)*.15);
+    txt(w,CX+Math.cos(a)*r,CY+Math.sin(a)*r,'rgba(200,168,75,.4)',8.5*DPR);
+  });
+  // Lo que no puede decirse — más allá del borde
+  const unsayable=['belleza','sagrado','​amor','sentido','Dios','misterio'];
+  unsayable.forEach((w,i)=>{
+    const a=i/unsayable.length*Math.PI*2+t*.03+Math.PI*.15;
+    const r=R*(.82+Math.sin(i*1.7)*.12);
+    txt(w,CX+Math.cos(a)*r,CY+Math.sin(a)*r,'rgba(200,168,75,.18)',7.5*DPR);
+  });
+  txt('lo decible',CX,CY+lR+R*.15,'rgba(200,168,75,.3)',8.5*DPR);
+  txt('— — —',CX,CY+lR+R*.28,'rgba(200,168,75,.15)',10*DPR);
+  txt('De lo que no se puede hablar hay que callar',CX,CY+lR+R*.42,'rgba(200,168,75,.2)',8*DPR);
+}
+
+/* ═══════════════════════════════
+   9: CHOMSKY — ESTRUCTURA PROFUNDA
+═══════════════════════════════ */
+function drawChomsky(){
+  const R=Math.min(W,H)*.28*DPR;
+  // Un árbol sintáctico
+  const nodes=[
+    {label:'O',x:0,y:-.75,size:4},      // Oración
+    {label:'SN',x:-.45,y:-.45,size:3},   // Sujeto
+    {label:'SV',x:.45,y:-.45,size:3},    // Predicado
+    {label:'Det',x:-.65,y:-.1,size:2.5},{label:'N',x:-.25,y:-.1,size:2.5},
+    {label:'V',x:.2,y:-.1,size:2.5},{label:'SN',x:.65,y:-.1,size:2.5},
+    {label:'El',x:-.65,y:.25,size:2},{label:'gato',x:-.25,y:.25,size:2},
+    {label:'come',x:.2,y:.25,size:2},{label:'Det',x:.5,y:.25,size:2.5},{label:'N',x:.82,y:.25,size:2.5},
+    {label:'el',x:.5,y:.6,size:2},{label:'pez',x:.82,y:.6,size:2},
+  ];
+  const edges=[[0,1],[0,2],[1,3],[1,4],[2,5],[2,6],[3,7],[4,8],[5,9],[6,10],[6,11],[10,12],[11,13]];
+  const litNode=Math.floor(t*.4)%nodes.length;
+  edges.forEach(([a,b])=>{
+    const na=nodes[a],nb=nodes[b];
+    ln(CX+na.x*R,CY+na.y*R*.88,CX+nb.x*R,CY+nb.y*R*.88,'rgba(200,168,75,.18)',.7);
+  });
+  nodes.forEach(({label,x,y,size},i)=>{
+    const isLit=i===litNode;
+    const px=CX+x*R,py=CY+y*R*.88;
+    if(isLit){
+      dot(px,py,R*.08,'rgba(200,168,75,.1)');
+      glow(px,py,R*.12,'rgba(200,168,75,.8)');
+    }
+    ctx.save();ctx.font=`${(isLit?size+2:size)*DPR}px 'Courier New'`;
+    ctx.fillStyle=`rgba(200,168,75,${isLit?.85:.4})`;
+    ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText(label,px,py);ctx.restore();
+  });
+  txt('estructura profunda · gramática universal innata',CX,CY+R*.88,'rgba(200,168,75,.2)',8*DPR);
+}
+
+/* ═══════════════════════════════
+   10: CÁBALA — LAS 22 LETRAS
+═══════════════════════════════ */
+function drawKabbalah(){
+  const R=Math.min(W,H)*.27*DPR;
+  const letters='אבגדהוזחטיכלמנסעפצקרשת'.split('');
+  const cols=11,cell=R*.19;
+  const ox=CX-cols*cell/2,oy=CY-cell;
+  // Las tres categorías
+  const mothers=[0,12,20]; // א מ ש
+  const doubles=[1,2,3,10,16,19,21]; // ב ג ד כ פ ר ת
+  const lit=Math.floor(t*.4)%22;
+  letters.forEach((c,i)=>{
+    const col=i%cols,row=Math.floor(i/cols);
+    const px=ox+col*cell+cell/2,py=oy+row*cell+cell/2;
+    const isMother=mothers.includes(i);
+    const isDouble=doubles.includes(i);
+    const isLit=i===lit;
+    const col2=isMother?'rgba(200,168,75,':isDouble?'rgba(90,184,212,':'rgba(78,158,104,';
+    if(isLit){
+      ctx.beginPath();ctx.arc(px,py,cell*.45,0,Math.PI*2);
+      ctx.fillStyle=col2+'.12)';ctx.fill();
+      glow(px,py,cell*.6,col2+'.8)');
+    }
+    ctx.save();ctx.font=`${(isLit?17:13)*DPR}px 'Times New Roman'`;
+    ctx.fillStyle=col2+(isLit?.88:isMother||isDouble?.45:.3)+')';
+    ctx.textAlign='center';ctx.textBaseline='middle';ctx.direction='rtl';
+    ctx.fillText(c,px,py);ctx.restore();
+  });
+  // El Golem — אמת y מת
+  const golemPhase=Math.sin(t*.3);
+  const golemWord=golemPhase>0?'אמת':'מת';
+  const golemMeaning=golemPhase>0?'emet · verdad':'met · muerte';
+  ctx.save();ctx.font=`${18*DPR}px 'Times New Roman'`;
+  ctx.fillStyle=`rgba(200,168,75,${.4+Math.abs(golemPhase)*.3})`;
+  ctx.textAlign='center';ctx.direction='rtl';
+  ctx.fillText(golemWord,CX,CY+cell+R*.28);ctx.restore();
+  txt(golemMeaning,CX,CY+cell+R*.48,'rgba(200,168,75,.28)',8.5*DPR);
+}
+
+/* ═══════════════════════════════
+   11: ACTOS DE HABLA
+═══════════════════════════════ */
+function drawSpeechActs(){
+  const R=Math.min(W,H)*.28*DPR;
+  const acts=[
+    {word:'"Te prometo"',type:'Promesa',col:'rgba(200,168,75,',y:-.55},
+    {word:'"Declaro guerra"',type:'Declaración',col:'rgba(90,184,212,',y:-.2},
+    {word:'"Te condeno"',type:'Veredicto',col:'rgba(196,122,106,',y:.15},
+    {word:'"Sí, acepto"',type:'Matrimonio',col:'rgba(78,158,104,',y:.5},
+  ];
+  const lit=Math.floor(t*.3)%acts.length;
+  acts.forEach(({word,type,col,y},i)=>{
+    const isLit=i===lit;
+    const baseY=CY+y*R;
+    // La onda de sonido
+    ctx.beginPath();
+    for(let x=-R*.65;x<=R*.65;x+=2){
+      const wave=Math.sin(x*.06+t*(1.5+i*.2))*R*.04*(isLit?1.5:.7);
+      x===-R*.65?ctx.moveTo(CX+x,baseY+wave):ctx.lineTo(CX+x,baseY+wave);
+    }
+    ctx.strokeStyle=col+(isLit?.55:.2)+')';ctx.lineWidth=isLit?1.2:.7;ctx.stroke();
+    // Las palabras
+    txt(word,CX-R*.05,baseY-R*.1,col+(isLit?.7:.3)+')',(isLit?10:8.5)*DPR);
+    // La flecha → el acto creado
+    if(isLit){
+      ln(CX+R*.55,baseY,CX+R*.75,baseY,col+'.45)',1);
+      txt(type,CX+R*.82,baseY,col+'.55)',9*DPR,'left');
+      // El efecto — la realidad creada
+      glow(CX+R*.82,baseY,R*.08,col+'.55)');
+    }
+  });
+  txt('la palabra que hace lo que dice',CX,CY+R*.82,'rgba(200,168,75,.2)',8.5*DPR);
+}
+
+/* ═══════════════════════════════
+   12: DERRIDA — DIFFÉRANCE
+═══════════════════════════════ */
+function drawDerrida(){
+  const R=Math.min(W,H)*.28*DPR;
+  // La cadena de significantes — cada palabra apunta a otra
+  const chain=['árbol','planta','ser vivo','organismo','sistema','orden','...'];
+  const chainY=CY-R*.1;
+  chain.forEach((w,i)=>{
+    const px=CX-R*.85+i*(R*1.7/chain.length);
+    const isLit=i===Math.floor(t*.4)%chain.length;
+    const alpha=isLit?.7:.25-i*.02;
+    txt(w,px,chainY,`rgba(200,168,75,${Math.max(.08,alpha)})`,(isLit?9.5:8)*DPR);
+    if(i<chain.length-1){
+      ln(px+R*.12,chainY-R*.04,px+R*(1.7/chain.length)-.12,chainY-R*.04,
+        `rgba(200,168,75,${isLit?.3:.1})`,.6);
+    }
+  });
+  // El diferimiento — la llegada del significado que nunca llega
+  const deferral=(t*.2)%1;
+  const dx=CX-R*.8+deferral*R*1.6;
+  dot(dx,chainY,4*DPR,'rgba(200,168,75,.8)');
+  for(let i=1;i<=12;i++){
+    const ddx=dx-i*R*.04;
+    if(ddx>CX-R*.85) dot(ddx,chainY,(2.5-i*.15)*DPR,`rgba(200,168,75,${.4-i*.03})`);
+  }
+  // La différance — inaudible, solo visible
+  ctx.save();
+  ctx.font=`${R*.55}px 'Times New Roman'`;
+  ctx.fillStyle=`rgba(200,168,75,${.06+Math.sin(t*.4)*.02})`;
+  ctx.textAlign='center';ctx.textBaseline='middle';
+  ctx.fillText('différance',CX,CY+R*.3);ctx.restore();
+  // La a de différance — inaudible
+  circ(CX+R*.35,CY+R*.3,R*.06,'rgba(200,168,75,.35)',.8);
+  txt('solo visible · no pronunciable',CX+R*.35,CY+R*.44,'rgba(200,168,75,.22)',7.5*DPR);
+  txt('el significado siempre diferido · siempre aplazado',CX,CY+R*.85,'rgba(200,168,75,.18)',8*DPR);
+}
+
+/* ═══════════════════════════════
+   13: CEREBRO — ÁREAS DEL LENGUAJE
+═══════════════════════════════ */
+function drawBrain(){
+  const R=Math.min(W,H)*.27*DPR;
+  // Silueta del cerebro — vista lateral
+  ctx.save();ctx.translate(CX,CY-R*.05);ctx.scale(1,.88);
+  ctx.beginPath();
+  const brainPts=[];
+  for(let a=0;a<Math.PI*2;a+=.05){
+    const r=R*(.52+Math.sin(a*4)*.06+Math.sin(a*7)*.03+Math.cos(a*2)*.04);
+    brainPts.push([Math.cos(a)*r,Math.sin(a)*r]);
+  }
+  brainPts.forEach(([x,y],i)=>i===0?ctx.moveTo(x,y):ctx.lineTo(x,y));
+  ctx.closePath();
+  ctx.strokeStyle='rgba(200,168,75,.2)';ctx.lineWidth=.8;ctx.stroke();
+  ctx.fillStyle='rgba(200,168,75,.03)';ctx.fill();
+  ctx.restore();
+  // Las dos áreas
+  const areas=[
+    {label:"Broca",sublabel:"producción",x:-.28,y:-.02,col:'rgba(200,168,75,.7)',r:.13},
+    {label:"Wernicke",sublabel:"comprensión",x:.12,y:.18,col:'rgba(90,184,212,.65)',r:.13},
+  ];
+  areas.forEach(({label,sublabel,x,y,col,r},i)=>{
+    const px=CX+x*R,py=CY+y*R;
+    const isLit=Math.floor(t*.4)%2===i;
+    const a=isLit?.35:.12;
+    ctx.beginPath();ctx.arc(px,py,r*R,0,Math.PI*2);
+    ctx.fillStyle=col.replace(/[\d.]+\)$/,`${a})`);ctx.fill();
+    ctx.strokeStyle=col;ctx.lineWidth=isLit?1.2:.6;ctx.stroke();
+    if(isLit) glow(px,py,r*R*1.5,col);
+    txt(label,px,py-R*.05,col.replace(/[\d.]+\)$/,'.7)'),9.5*DPR);
+    txt(sublabel,px,py+R*.08,col.replace(/[\d.]+\)$/,'.4)'),7.5*DPR);
+  });
+  // El fascículo arcuato — la conexión
+  const p1=[CX-.28*R,CY-.02*R],p2=[CX+.12*R,CY+.18*R];
+  ctx.save();ctx.setLineDash([3,5]);
+  ctx.beginPath();ctx.moveTo(...p1);
+  ctx.bezierCurveTo(p1[0]+R*.1,p1[1]-R*.25,p2[0]-R*.1,p2[1]-R*.25,...p2);
+  ctx.strokeStyle='rgba(200,168,75,.25)';ctx.lineWidth=.8;ctx.stroke();
+  ctx.setLineDash([]);ctx.restore();
+  txt('fascículo arcuato',CX-R*.1,CY-R*.35,'rgba(200,168,75,.18)',7.5*DPR);
+  txt('las palabras no se almacenan · se reconstruyen',CX,CY+R*.82,'rgba(200,168,75,.18)',8*DPR);
+}
+
+/* ═══════════════════════════════
+   14: EL COLAPSO — NOMBRAR ES COLAPSAR
+═══════════════════════════════ */
+function drawCollapse(){
+  const R=Math.min(W,H)*.28*DPR;
+  const named=Math.sin(t*.25)>.0;
+  if(!named){
+    // La experiencia sin nombre — nube difusa
+    for(let i=0;i<50;i++){
+      const a=i/50*Math.PI*2+Math.sin(i*.5+t*.3)*.3;
+      const r=R*(.2+Math.abs(Math.sin(i*1.3+t*.2))*.5);
+      const alpha=.04+Math.sin(i*.7+t)*.02;
+      dot(CX+Math.cos(a)*r,CY+Math.sin(a)*r,2.5*DPR,`rgba(200,168,75,${alpha})`);
+    }
+    // Círculos difusos
+    for(let i=1;i<=4;i++){
+      circ(CX,CY,R*(i*.18),`rgba(200,168,75,${.06-i*.01})`,.5);
+    }
+    txt('experiencia sin nombre',CX,CY+R*.75,'rgba(200,168,75,.2)',8.5*DPR);
+    txt('difusa · indistinguible · inmanejable',CX,CY+R*.92,'rgba(200,168,75,.13)',8*DPR);
+  } else {
+    // La experiencia nombrada — colapso a forma definida
+    const colProgress=Math.min(1,(Math.sin(t*.25))*3);
+    // La onda colapsando
+    for(let i=0;i<20;i++){
+      const a=i/20*Math.PI*2;
+      const r=R*(.45*(1-colProgress*.7));
+      if(r>3*DPR) dot(CX+Math.cos(a)*r,CY+Math.sin(a)*r,1.5*DPR,`rgba(200,168,75,${.15*(1-colProgress)})`);
+    }
+    // El nombre — emergiendo
+    const nameAlpha=colProgress*.85;
+    ctx.save();ctx.font=`${(14+colProgress*6)*DPR}px 'Cinzel Decorative',serif`;
+    ctx.fillStyle=`rgba(200,168,75,${nameAlpha})`;
+    ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText('tristeza',CX,CY);ctx.restore();
+    glow(CX,CY,R*.3,'rgba(200,168,75,.9)');
+    txt('nombrado · localizable · tratable',CX,CY+R*.75,'rgba(200,168,75,.3)',8.5*DPR);
+    txt('el nombre colapsa la experiencia en categoría',CX,CY+R*.92,'rgba(200,168,75,.2)',8*DPR);
+  }
+}
+
+/* ═══════════════════════════════
+   15: RETORNO — ESTA PALABRA AHORA
+═══════════════════════════════ */
+function drawReturn(){
+  const R=Math.min(W,H)*.3*DPR;
+  // Dos mentes — el escritor y el lector
+  const writerX=CX-R*.72, readerX=CX+R*.72;
+  // El escritor — una mente
+  circ(writerX,CY,R*.22,'rgba(200,168,75,.2)',.8);
+  dot(writerX,CY,3*DPR,'rgba(200,168,75,.5)');
+  txt('escritor',writerX,CY+R*.32,'rgba(200,168,75,.2)',7.5*DPR);
+  // El lector — otra mente
+  circ(readerX,CY,R*.22,'rgba(200,168,75,.2)',.8);
+  dot(readerX,CY,3*DPR,'rgba(200,168,75,.5)');
+  txt('lector',readerX,CY+R*.32,'rgba(200,168,75,.2)',7.5*DPR);
+  // La onda que viaja entre los dos — la palabra
+  const progress=(t*.2)%1;
+  // Onda en movimiento
+  ctx.beginPath();
+  for(let x=writerX+R*.25;x<=readerX-R*.25;x+=2){
+    const relX=(x-(writerX+R*.25))/((readerX-R*.25)-(writerX+R*.25));
+    const wave=Math.sin(x*.04-t*1.8)*R*.08*(1-Math.abs(relX-.5)*2*.3);
+    relX===0?ctx.moveTo(x,CY+wave):ctx.lineTo(x,CY+wave);
+  }
+  const wg=ctx.createLinearGradient(writerX+R*.25,CY,readerX-R*.25,CY);
+  wg.addColorStop(0,'rgba(200,168,75,0)');wg.addColorStop(.5,'rgba(200,168,75,.45)');wg.addColorStop(1,'rgba(200,168,75,0)');
+  ctx.strokeStyle=wg;ctx.lineWidth=1.2;ctx.stroke();
+  // El punto viajando
+  const wpx=writerX+R*.25+(readerX-writerX-.5*R)*progress;
+  const wpy=CY+Math.sin(wpx*.04-t*1.8)*R*.08;
+  dot(wpx,wpy,4*DPR,'rgba(200,168,75,.9)');
+  glow(wpx,wpy,R*.1,'rgba(200,168,75,.9)');
+  // La palabra en el medio
+  txt('"palabra"',CX,CY-R*.28,'rgba(200,168,75,.45)',12*DPR);
+  // El pensamiento reconstruido
+  txt('no transmite el pensamiento',CX,CY+R*.62,'rgba(200,168,75,.2)',8.5*DPR);
+  txt('transmite la señal para reconstruirlo',CX,CY+R*.78,'rgba(200,168,75,.15)',8*DPR);
+  txt('cada lectura es una resurrección',CX,CY+R*.95,'rgba(200,168,75,.28)',9*DPR);
+}
+
+showIntro();
+</script>
+</body>
+</html>

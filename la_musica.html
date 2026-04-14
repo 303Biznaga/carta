@@ -1,0 +1,1211 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+<title>La Música · Historia de la Humanidad</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cinzel:wght@400;600&family=IM+Fell+English:ital@0;1&display=swap');
+:root{
+  --void:#02050a;--gold:#c8a84b;--goldlt:#e2c97e;--goldd:#6a5020;
+  --sage:#4e9e68;--foam:#cce4d8;--smoke:#4a6a58;--cyan:#5ab8d4;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{width:100%;height:100%;overflow:hidden;background:var(--void);}
+body{font-family:'IM Fell English',Georgia,serif;color:var(--foam);touch-action:manipulation;user-select:none;}
+#grain{position:fixed;inset:0;z-index:9999;pointer-events:none;opacity:.28;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.13'/%3E%3C/svg%3E");
+  mix-blend-mode:overlay;}
+#main-canvas{position:fixed;inset:0;width:100%;height:100%;}
+#dots{position:fixed;right:14px;top:50%;transform:translateY(-50%);
+  display:flex;flex-direction:column;gap:7px;z-index:100;}
+.dot{width:5px;height:5px;border-radius:50%;background:rgba(200,168,75,.18);
+  cursor:pointer;transition:all .3s;}
+.dot.active{background:rgba(200,168,75,.75);transform:scale(1.4);}
+#step-wrapper{position:fixed;inset:0;display:flex;flex-direction:column;
+  justify-content:flex-end;pointer-events:none;z-index:50;}
+#step-panel{padding:0 0 clamp(26px,5.5vh,48px);pointer-events:all;
+  opacity:1;transition:opacity .5s ease;}
+#step-panel.hiding{opacity:0;}
+.step-era{text-align:center;font-family:'Cinzel',serif;font-size:clamp(7px,1.8vw,9px);
+  letter-spacing:.55em;text-transform:uppercase;color:rgba(200,168,75,.35);margin-bottom:10px;}
+.step-title{text-align:center;font-family:'Cinzel Decorative',serif;
+  font-size:clamp(15px,4.8vw,27px);font-weight:400;color:var(--foam);
+  letter-spacing:.06em;line-height:1.2;margin-bottom:4px;padding:0 24px;}
+.step-author{text-align:center;font-family:'Cinzel',serif;font-size:clamp(8px,2.2vw,10px);
+  letter-spacing:.4em;text-transform:uppercase;color:var(--goldd);margin-bottom:18px;}
+.voices{display:grid;grid-template-columns:1fr 1fr;gap:0;border-top:1px solid rgba(200,168,75,.1);}
+.voice-left{font-family:'IM Fell English',serif;font-style:italic;
+  font-size:clamp(11px,3vw,13px);color:rgba(204,228,216,.65);line-height:1.7;
+  letter-spacing:.03em;padding:13px 15px 13px 20px;border-right:1px solid rgba(200,168,75,.08);}
+.voice-right{font-family:'Cinzel',serif;font-weight:400;font-size:clamp(7.5px,2vw,10px);
+  text-transform:uppercase;letter-spacing:.12em;color:rgba(90,184,212,.55);
+  line-height:1.85;padding:13px 20px 13px 15px;}
+.nav-hint{text-align:center;margin-top:13px;font-family:'Cinzel',serif;
+  font-size:6.5px;letter-spacing:.5em;color:rgba(200,168,75,.2);text-transform:uppercase;}
+#intro-wrap{position:fixed;inset:0;z-index:60;pointer-events:none;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  transition:opacity .6s;}
+.i-inner{position:relative;z-index:2;display:flex;flex-direction:column;
+  align-items:center;text-align:center;padding:0 32px;}
+.i-glyph{font-family:'Times New Roman',serif;font-size:clamp(70px,20vw,110px);
+  color:rgba(200,168,75,.18);line-height:1;margin-bottom:14px;}
+.i-title{font-family:'Cinzel Decorative',serif;font-size:clamp(24px,7vw,40px);
+  color:var(--foam);letter-spacing:.07em;margin-bottom:8px;}
+.i-sub{font-family:'IM Fell English',serif;font-style:italic;
+  font-size:clamp(12px,3.2vw,15px);color:var(--smoke);letter-spacing:.07em;margin-bottom:6px;}
+.i-count{font-family:'Cinzel',serif;font-size:7px;letter-spacing:.5em;
+  color:rgba(200,168,75,.28);text-transform:uppercase;margin-bottom:36px;}
+.i-cta{font-family:'Cinzel',serif;font-size:7.5px;letter-spacing:.5em;
+  text-transform:uppercase;color:rgba(200,168,75,.4);
+  animation:pulse 2.2s ease-in-out infinite;}
+@keyframes pulse{0%,100%{opacity:.28;}50%{opacity:.72;}}
+#final-screen{position:fixed;inset:0;z-index:200;background:var(--void);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  opacity:0;pointer-events:none;transition:opacity .8s ease;text-align:center;padding:40px;}
+#final-screen.show{opacity:1;pointer-events:all;}
+.final-inner{position:relative;z-index:2;max-width:320px;margin:0 auto;}
+.final-title{font-family:'Cinzel Decorative',serif;font-size:clamp(20px,6vw,32px);
+  color:var(--foam);margin-bottom:16px;line-height:1.3;}
+.final-text{font-family:'IM Fell English',serif;font-style:italic;
+  font-size:clamp(13px,3.5vw,16px);color:var(--smoke);line-height:1.82;margin-bottom:40px;}
+.final-btn{background:transparent;border:1px solid rgba(200,168,75,.2);
+  font-family:'Cinzel',serif;font-size:7.5px;letter-spacing:.45em;
+  text-transform:uppercase;color:var(--smoke);padding:14px 28px;cursor:pointer;transition:all .22s;}
+.final-btn:active{color:var(--foam);border-color:rgba(200,168,75,.5);}
+</style>
+</head>
+<body>
+<div id="grain"></div>
+<canvas id="main-canvas"></canvas>
+
+<div id="intro-wrap">
+  <div class="i-inner">
+    <div class="i-glyph">𝄞</div>
+    <div class="i-title">La Música</div>
+    <div class="i-sub">Lo que ocurre cuando el sonido descubre que tiene vecinos</div>
+    <div class="i-count">16 momentos · 60,000 años</div>
+    <div class="i-cta">toca para escuchar</div>
+  </div>
+</div>
+
+<div id="dots"></div>
+
+<div id="step-wrapper" style="display:none;">
+  <div id="step-panel">
+    <div class="step-era" id="s-era"></div>
+    <div class="step-title" id="s-title"></div>
+    <div class="step-author" id="s-author"></div>
+    <div class="voices">
+      <div class="voice-left" id="s-left"></div>
+      <div class="voice-right" id="s-right"></div>
+    </div>
+    <div class="nav-hint" id="s-nav"></div>
+  </div>
+</div>
+
+<div id="final-screen">
+  <div class="final-inner">
+    <div class="final-title">La música<br>es la única cosa<br>que solo existe mientras ocurre</div>
+    <div class="final-text">Un cuadro permanece. Una escultura permanece. Un libro permanece. La música desaparece en el momento en que termina. Lo que queda es solo el recuerdo de algo que ya no es. Por eso nos conmueve como ningún otro arte: porque comparte con nosotros su naturaleza más íntima — ser algo que ocurre y pasa.</div>
+    <button class="final-btn" onclick="window.location.href='index.html'">volver al silencio</button>
+  </div>
+</div>
+
+<script>
+/* ══════════════════════════════════════
+   SÍNTESIS MUSICAL — cada paso suena
+══════════════════════════════════════ */
+let AC = null;
+function getAC(){return AC||(AC=new(window.AudioContext||window.webkitAudioContext)());}
+
+/* Notas en Hz */
+const N = {
+  C3:130.8, D3:146.8, E3:164.8, F3:174.6, G3:196, A3:220, B3:246.9,
+  C4:261.6, D4:293.7, E4:329.6, F4:349.2, G4:392, A4:440, B4:493.9,
+  C5:523.3, D5:587.3, E5:659.3, F5:698.5, G5:784, A5:880,
+  Bb3:233.1, Eb4:311.1, Fs4:370, Bb4:466.2, Eb5:622.3
+};
+
+/* Genera un oscilador con envolvente ADSR */
+function makeNote(freq, type, start, dur, gain, ac){
+  const osc = ac.createOscillator();
+  const g = ac.createGain();
+  osc.type = type || 'sine';
+  osc.frequency.value = freq;
+  g.gain.setValueAtTime(0, start);
+  g.gain.linearRampToValueAtTime(gain, start + Math.min(.04, dur*.1));
+  g.gain.setValueAtTime(gain, start + dur*.6);
+  g.gain.exponentialRampToValueAtTime(.0001, start + dur);
+  osc.connect(g);
+  osc.start(start); osc.stop(start + dur + .05);
+  return g;
+}
+
+/* Reverb simple por convolución con ruido */
+function makeReverb(ac, duration=1.5, decay=2){
+  const rate = ac.sampleRate;
+  const len = rate * duration;
+  const buf = ac.createBuffer(2, len, rate);
+  for(let c=0;c<2;c++){
+    const d = buf.getChannelData(c);
+    for(let i=0;i<len;i++) d[i]=(Math.random()*2-1)*Math.pow(1-i/len, decay);
+  }
+  const conv = ac.createConvolver();
+  conv.buffer = buf;
+  return conv;
+}
+
+/*
+  playMusic(id) — cada paso tiene su motivo musical
+  id: string que identifica qué sonido producir
+*/
+function playMusic(id){
+  try{
+    const ac = getAC();
+    if(ac.state==='suspended') ac.resume();
+    const now = ac.currentTime;
+    const rev = makeReverb(ac, 1.8, 2.5);
+    const masterGain = ac.createGain();
+    masterGain.gain.value = 0.55;
+    rev.connect(masterGain);
+    masterGain.connect(ac.destination);
+    // También salida directa (sin reverb) para claridad
+    const dry = ac.createGain();
+    dry.gain.value = 0.45;
+    dry.connect(ac.destination);
+
+    function play(freq, type, offset, dur, g){
+      const node = makeNote(freq, type, now+offset, dur, g, ac);
+      node.connect(rev);
+      node.connect(dry);
+    }
+
+    switch(id){
+
+      case 'drone': // bordón de flauta hueso — prehistoria
+        play(N.G3,'sine',0,3,.5);
+        play(N.G3*1.5,'sine',.1,2.5,.12);
+        play(N.G3*2,'sine',.05,2,.06);
+        break;
+
+      case 'pentatonic': // escala pentatónica — primeras escalas
+        [N.C4,N.D4,N.E4,N.G4,N.A4,N.C5].forEach((f,i)=>
+          play(f,'triangle',i*.18,1.2,.35));
+        break;
+
+      case 'pythagorean': // quinta pitagórica — armonía de esferas
+        play(N.C4,'sine',0,2.5,.4);
+        play(N.G4,'sine',.05,2.5,.35);
+        play(N.C5,'sine',.1,2,.2);
+        break;
+
+      case 'gregorian': // canto gregoriano — modo dórico
+        [N.D4,N.E4,N.F4,N.G4,N.A4,N.G4,N.F4,N.E4].forEach((f,i)=>{
+          play(f,'sine',i*.32,0.55,.5);
+        });
+        break;
+
+      case 'lute': // laúd renacentista — acorde arpegiado
+        [N.C4,N.E4,N.G4,N.C5].forEach((f,i)=>
+          play(f,'sawtooth',i*.08,1.8,.28));
+        play(N.C3,'sawtooth',0,2,.2);
+        break;
+
+      case 'fugue': // fuga barroca — dos voces en contrapunto
+        [N.C4,N.D4,N.E4,N.F4,N.G4].forEach((f,i)=>
+          play(f,'sawtooth',i*.18,0.45,.3));
+        [N.G3,N.A3,N.B3,N.C4,N.D4].forEach((f,i)=>
+          play(f,'sawtooth',i*.18+.55,0.45,.25));
+        play(N.C3,'sawtooth',0,2,.15);
+        break;
+
+      case 'sonata': // sonata clásica — tema en Do mayor
+        [[N.E4,.28],[N.E4,.14],[N.F4,.28],[N.G4,.56],
+         [N.G4,.28],[N.F4,.14],[N.E4,.28],[N.D4,.56]].reduce((t2,[f,d])=>{
+          play(f,'triangle',t2,d+.05,.38);
+          return t2+d;
+        },0);
+        break;
+
+      case 'beethoven': // sordera — sol menor, angustiado
+        [N.G3,N.G3,N.G3,N.Eb4].forEach((f,i)=>
+          play(f,'sawtooth',[0,.12,.24,.42][i],[.1,.1,.1,.6][i],.5));
+        play(N.Bb3,'sawtooth',.55,1.2,.2);
+        break;
+
+      case 'blues': // blues — escala blues, swing
+        [N.A3,N.C4,N.D4,N.Eb4,N.E4,N.G4,N.A4].forEach((f,i)=>
+          play(f,'sawtooth',i*.15,0.4,.32));
+        // Bajo
+        [N.A3,N.A3].forEach((f,i)=>play(f,'sawtooth',i*.5,0.4,.2));
+        break;
+
+      case 'jazz': // jazz — acorde de séptima con tensiones
+        [N.C4,N.E4,N.G4,N.Bb4,N.D5].forEach((f,i)=>
+          play(f,'sine',i*.06,2,.25));
+        // Ride (ruido filtrado)
+        {const buf=ac.createBuffer(1,ac.sampleRate*.1,ac.sampleRate);
+        const d=buf.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;
+        [0,.25,.5,.75,1].forEach(beat=>{
+          const src=ac.createBufferSource();src.buffer=buf;
+          const hpf=ac.createBiquadFilter();hpf.type='highpass';hpf.frequency.value=8000;
+          const g2=ac.createGain();g2.gain.setValueAtTime(.08,now+beat);
+          g2.gain.exponentialRampToValueAtTime(.0001,now+beat+.08);
+          src.connect(hpf);hpf.connect(g2);g2.connect(dry);src.start(now+beat);
+        });}
+        break;
+
+      case 'indian': // raga — drones y ornamentos
+        play(N.A3,'sine',0,3,.45);
+        play(N.E4,'sine',.05,3,.3);
+        // Melodía ornamentada
+        [N.A4,N.B4,N.A4,N.G4*1.07,N.A4,N.B4,N.C5].forEach((f,i)=>
+          play(f,'sine',i*.18+.2,.28,.35));
+        break;
+
+      case 'kabbalah': // frecuencias sagradas — 432 Hz, armónicos
+        play(432,'sine',0,3,.4);
+        play(432*1.5,'sine',.1,2.5,.18);
+        play(432*2,'sine',.2,2,.09);
+        play(528,'sine',.8,2,.15); // la frecuencia del ADN
+        break;
+
+      case 'electronic': // música electrónica — síntesis pura
+        // Bajo
+        {const osc=ac.createOscillator();const g2=ac.createGain();
+        osc.type='sawtooth';osc.frequency.value=55;
+        const lfo=ac.createOscillator();const lfoG=ac.createGain();
+        lfo.frequency.value=2;lfoG.gain.value=8;
+        lfo.connect(lfoG);lfoG.connect(osc.frequency);
+        g2.gain.setValueAtTime(0,now);g2.gain.linearRampToValueAtTime(.4,now+.02);
+        g2.gain.setValueAtTime(.4,now+2);g2.gain.exponentialRampToValueAtTime(.0001,now+2.5);
+        osc.connect(g2);g2.connect(dry);osc.start(now);osc.stop(now+2.5);lfo.start(now);lfo.stop(now+2.5);}
+        // Arpeggio
+        [N.A3,N.C4,N.E4,N.A4,N.E4,N.C4].forEach((f,i)=>
+          play(f,'square',i*.12,.18,.15));
+        break;
+
+      case 'silence_music': // el silencio de Cage — 4'33''
+        // Solo un levísimo ruido de sala
+        {const buf=ac.createBuffer(1,ac.sampleRate*.5,ac.sampleRate);
+        const d=buf.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*.015;
+        const src=ac.createBufferSource();src.buffer=buf;
+        const lpf=ac.createBiquadFilter();lpf.type='lowpass';lpf.frequency.value=400;
+        const g2=ac.createGain();g2.gain.setValueAtTime(0,now);
+        g2.gain.linearRampToValueAtTime(.3,now+.15);
+        g2.gain.exponentialRampToValueAtTime(.0001,now+.5);
+        src.connect(lpf);lpf.connect(g2);g2.connect(dry);src.start(now);}
+        break;
+
+      case 'return': // retorno — acorde de Do mayor abierto
+        play(N.C3,'sine',0,3,.3);
+        play(N.G3,'sine',.08,2.8,.22);
+        play(N.C4,'sine',.16,2.6,.28);
+        play(N.E4,'sine',.24,2.4,.2);
+        play(N.G4,'sine',.32,2.2,.15);
+        play(N.C5,'sine',.4,2,.1);
+        break;
+    }
+  }catch(e){console.log('music error:',e);}
+}
+
+/* Sonido para el intro — acorde de apertura */
+function playIntro(){
+  try{
+    const ac=getAC();if(ac.state==='suspended')ac.resume();
+    const now=ac.currentTime;
+    const rev=makeReverb(ac,2,2);
+    const mg=ac.createGain();mg.gain.value=.45;
+    rev.connect(mg);mg.connect(ac.destination);
+    const dry=ac.createGain();dry.gain.value=.35;dry.connect(ac.destination);
+    // Acorde perfecto mayor — C E G
+    [N.C3,N.G3,N.C4,N.E4,N.G4,N.C5].forEach((f,i)=>{
+      const osc=ac.createOscillator(),g=ac.createGain();
+      osc.type='sine';osc.frequency.value=f;
+      g.gain.setValueAtTime(0,now);
+      g.gain.linearRampToValueAtTime(.18-i*.02,now+.1+i*.08);
+      g.gain.setValueAtTime(.18-i*.02,now+2);
+      g.gain.exponentialRampToValueAtTime(.0001,now+3.5);
+      osc.connect(g);g.connect(rev);g.connect(dry);
+      osc.start(now+i*.05);osc.stop(now+3.6);
+    });
+  }catch(e){}
+}
+
+/* Mapeo de sonidos a cada paso */
+const MUSIC_IDS = [
+  'drone',        // 0: Prehistoria
+  'pentatonic',   // 1: Las primeras escalas
+  'pythagorean',  // 2: Pitágoras
+  'gregorian',    // 3: Canto gregoriano
+  'lute',         // 4: Renacimiento
+  'fugue',        // 5: Bach / Barroco
+  'sonata',       // 6: Mozart / Clásico
+  'beethoven',    // 7: Beethoven / Romántico
+  'blues',        // 8: Blues / Folk
+  'jazz',         // 9: Jazz
+  'indian',       // 10: Música india
+  'kabbalah',     // 11: Frecuencias sagradas
+  'electronic',   // 12: Música electrónica
+  'silence_music',// 13: El silencio (Cage)
+  'return',       // 14: Neurociencia
+  'return',       // 15: El retorno
+];
+
+/* ══════════════════════════════════════
+   DATOS
+══════════════════════════════════════ */
+const STEPS = [
+  {
+    era: 'Prehistoria · 60,000 a.C.',
+    title: 'La Primera Música',
+    author: 'La flauta de hueso y el ritmo',
+    left: 'La flauta de Divje Babe, tallada en un hueso de oso hace 60,000 años en la actual Eslovenia, es el instrumento musical más antiguo conocido. Tiene cuatro agujeros que producen intervalos similares a la escala diatónica. Antes de la escritura, antes de la agricultura, antes de la cerámica, el ser humano ya hacía música. No para sobrevivir — para otra cosa. La música precede a la civilización. Quizás la hizo posible.',
+    right: 'La flauta de Divje Babe: ~60,000 años, hueso de oso, cuatro agujeros. Las flautas de Hohle Fels: ~40,000 años, hueso de buitre y marfil de mamut — con muescas en V. El origen de la música: anterior al Homo sapiens moderno. La hipótesis de la selección sexual (Darwin): la música evolucionó como el canto de los pájaros. La hipótesis social (Dunbar): la música como grooming acústico — crea cohesión grupal. La hipótesis cognitiva: la música como subproducto del lenguaje.',
+    draw: drawPrehistory
+  },
+  {
+    era: 'Mesopotamia y Egipto · 3000 a.C.',
+    title: 'Las Primeras Escalas',
+    author: 'Siete notas que ordenan el caos',
+    left: 'Los sumerios tenían arpas de nueve cuerdas. Los egipcios, liras y aulós. Los chinos, la escala pentatónica de cinco notas. Independientemente, culturas separadas por océanos llegaron a divisiones similares de la octava. La escala no es una invención — es un descubrimiento. El oído humano responde a ciertas relaciones de frecuencia de manera universal. La octava, la quinta, la cuarta: las consonancias que el oído reconoce como "naturales" son las mismas en todas las culturas.',
+    right: 'La escala pentatónica: C-D-E-G-A (sin semitonos). Aparece en China (qin, ~3000 a.C.), África, Mesopotamia, Grecia, América precolombina. La escala diatónica: siete notas con dos semitonos. El círculo de quintas: 12 tonos por quintas sucesivas. La afinación de Ur: tablilla cuneiforme (~2000 a.C.) con instrucciones de afinación por intervalos de quinta. Los universales musicales (Nettl): pulso regular, escala de 5-7 notas, consonancias de octava y quinta — presentes en toda música conocida.',
+    draw: drawScales
+  },
+  {
+    era: 'Pitágoras · Siglo VI a.C.',
+    title: 'La Música de las Esferas',
+    author: 'Los números que suenan juntos',
+    left: 'Pitágoras escucha los martillos en la herrería y descubre que las proporciones 2:1, 3:2, 4:3 producen consonancias perfectas — la octava, la quinta, la cuarta. El universo entero es proporción sonora. Los planetas al girar producen una música inaudible cuya armonía es la ley que gobierna el cosmos. La música no es arte — es matemática hecha audible. Esta idea dominará la teoría musical durante dos milenios.',
+    right: 'La escala pitagórica: construida por quintas puras (3:2). La coma pitagórica: 12 quintas = 531441:524288 ≠ 7 octavas = 2. El sistema no cierra. Solución del temperamento igual (Bach, s. XVIII): cada semitono = ²√12 ≈ 1.0595. El círculo de quintas: se cierra con el temperamento igual. El monocordio: instrumento de una cuerda con puente móvil para demostrar proporciones. La musica universalis de Boecio (s. VI): sistematiza la herencia pitagórica para la Edad Media.',
+    draw: drawPythagoras
+  },
+  {
+    era: 'Edad Media · Siglo IX',
+    title: 'El Canto Gregoriano',
+    author: 'Guido d\'Arezzo y el pentagrama',
+    left: 'Guido d\'Arezzo inventa alrededor del año 1025 el sistema de notación sobre un pentagrama de cuatro líneas y los nombres de las notas: Ut, Re, Mi, Fa, Sol, La — tomados del himno a San Juan Bautista, donde cada frase empieza un tono más alto. Por primera vez, la música puede transmitirse sin que el maestro la cante en persona. La notación libera a la música de la presencia — la convierte en texto que puede leerse, reproducirse, viajar.',
+    right: 'El sistema de Guido d\'Arezzo (~1025): hexacordios de seis notas con solmisación. Los nombres Ut-Re-Mi-Fa-Sol-La: del himno "Ut queant laxis" de Pablo el Diácono. El "Si" añadido en el s. XVI. "Ut" → "Do" en el s. XVII (Italia). Los modos eclesiásticos: dórico, frigio, lidio, mixolidio — cuatro modos auténticos + cuatro plagales. El canto gregoriano: monofónico, ritmo libre, texto latino. La notación neumática: precursora del pentagrama — direcciones melódicas sobre el texto.',
+    draw: drawGregorian
+  },
+  {
+    era: 'Renacimiento · Siglo XV',
+    title: 'La Polifonía',
+    author: 'Varias voces a la vez',
+    left: 'La polifonía —múltiples voces independientes cantando simultáneamente— transforma la música medieval en algo radicalmente nuevo. Palestrina compone misas donde cuatro voces se entrelazan en contrapunto. Es la primera música que crea espacio armónico — donde lo que importa no es solo la melodía sino las relaciones entre las notas que suenan al mismo tiempo. La armonía nace de la polifonía. El acorde es la huella del contrapunto.',
+    right: 'El contrapunto: arte de combinar voces independientes según reglas de consonancia. Las reglas de Palestrina: no quintas o octavas paralelas, preparar y resolver las disonancias. La notación mensural: valores de nota con duración proporcional. El madrigal: polifonía secular italiana del s. XVI. Los instrumentos del Renacimiento: laúd, vihuela, clavicémbalo, viola da gamba. La perspectiva musical (Manfred Bukofzer): la armonía tonal como equivalente auditivo de la perspectiva visual.',
+    draw: drawPolyphony
+  },
+  {
+    era: 'Bach · 1685–1750',
+    title: 'El Contrapunto Perfecto',
+    author: 'El Clave Bien Temperado',
+    left: 'Bach compone el Clave Bien Temperado — dos preludios y fugas en cada una de las 24 tonalidades mayores y menores — para demostrar que el temperamento igual funciona en todas las tonalidades. La fuga es la forma más compleja del contrapunto: un tema que se responde a sí mismo en distintas voces y tonalidades, que se invierte, se aumenta, se disminuye. Bach lleva el sistema tonal hasta su límite sin romperlo. Dos siglos después, Schoenberg lo rompe. La música occidental se divide en ese instante.',
+    right: 'El Clave Bien Temperado I (1722) y II (1744): 48 preludios y fugas. El temperamento igual: divide la octava en 12 semitonos iguales de razón ²√12. La fuga: exposición (sujeto en tónica + respuesta en dominante), desarrollo (episodios + entradas), estrecho, coda. El Contrapunto Canónico: un tema seguido por sí mismo a distancia fija. Los cánones cancrizantes: el tema al revés. La Ofrenda Musical y El Arte de la Fuga: los sistemas más complejos del contrapunto occidental.',
+    draw: drawBach
+  },
+  {
+    era: 'Mozart · Beethoven · Siglo XVIII',
+    title: 'La Forma Sonata',
+    author: 'El drama en tres actos',
+    left: 'La forma sonata — exposición, desarrollo, recapitulación — es la narrativa de la música clásica. Presenta dos temas contrastantes, los hace combatir en el desarrollo, y los reconcilia en la recapitulación. Es teatro sin palabras. Beethoven la lleva hasta el límite: en la Quinta Sinfonía, cuatro notas —sol-sol-sol-mi— generan una arquitectura de cuarenta minutos. Perder la audición a los treinta años y seguir componiendo sinfónicamente es el acto de voluntad más extraordinario de la historia de la música.',
+    right: 'La forma sonata: exposición (tema principal en tónica + tema secundario en dominante), desarrollo (modulaciones, fragmentación), recapitulación (ambos temas en tónica). El motivo de la Quinta: G-G-G-Eb en 4/4, ritmo "larga-larga-larga-larga" — presencia en los cuatro movimientos. Beethoven sordo: sus últimos cuartetos (op. 127-135) compuestos completamente sin escuchar. El metrónomo (Mälzel, 1815): primeras indicaciones metronómicas. La orquesta clásica: cuerdas + maderas + metales + timbales.',
+    draw: drawSonata
+  },
+  {
+    era: 'Siglo XIX · El Romanticismo',
+    title: 'La Música Absoluta',
+    author: 'Cuando la música quiso decirlo todo',
+    left: 'Los románticos creen que la música es el arte supremo porque es el único que no representa nada externo — es puro sentimiento en forma. Schopenhauer: la música no describe las pasiones, es la voluntad misma sonando. Wagner crea el leitmotiv: un motivo musical asociado a un personaje o idea que aparece y se transforma a lo largo de toda una ópera de cinco horas. Brahms y Liszt libran la guerra entre música absoluta y música programática. El debate no se resuelve — pero produce el repertorio más rico de la historia musical.',
+    right: 'La música absoluta: sin programa, sin texto, sin imagen — solo relaciones musicales puras (Hanslick). La música programática: La música como narración o pintura de ideas extramusicales (Berlioz, Liszt). El leitmotiv wagneriano: en el Anillo del Nibelungo, más de 100 motivos identificables. El cromatismo romántico: Tristan und Isolde (1859) lleva la tonalidad al límite — el acorde de Tristán es emblemático. El poema sinfónico (Liszt): forma de un solo movimiento con programa extramusical. El lied (Schubert): 600 canciones para voz y piano.',
+    draw: drawRomantic
+  },
+  {
+    era: 'Blues y Jazz · 1900',
+    title: 'La Música que Inventó el Siglo XX',
+    author: 'Del Delta del Mississippi al mundo',
+    left: 'El blues nace en el Delta del Mississippi de la fusión de la música africana con los espirituales y el work song de las plantaciones. La nota blue — el tercero bemol sobre una tríada mayor — es un microintervalo que no existe en la escala europea. El jazz surge del blues en Nueva Orleans: improvisación colectiva sobre una estructura armónica. Miles Davis, Coltrane, Monk reinventan el jazz en cada década. En cincuenta años, esta música de comunidades marginadas se convierte en el lenguaje musical del siglo.',
+    right: 'La escala blues: 1, b3, 4, b5, 5, b7 (6 notas). La nota blue: microintervalo entre b3 y 3 natural. El blues de 12 compases: I-I-I-I / IV-IV-I-I / V-IV-I-V. La improvisación: composición en tiempo real sobre la armonía. El bebop (Parker, Dizzy, ~1945): tempos más rápidos, armonías más complejas, virtuosismo individual. El modal jazz (Kind of Blue, Miles Davis, 1959): improvisación sobre escalas, no acordes. La importancia del silencio en el jazz: "las notas que no tocas son tan importantes como las que tocas" (Miles).',
+    draw: drawBlues
+  },
+  {
+    era: 'La Cábala · Siglo XII',
+    title: 'Los Números que Vibran',
+    author: 'Las frecuencias sagradas del universo',
+    left: 'En la tradición cabalística, cada sefirah del Árbol de la Vida tiene una frecuencia asociada. El universo fue creado por sonido — por la vibración de las letras sagradas. Hans Cousto calcula en 1978 que la frecuencia de la Tierra alrededor del Sol es 136.1 Hz — elevada en octavas — exactamente el Om. Las frecuencias Solfeggio (396, 417, 528, 639, 741, 852 Hz) son las del canto gregoriano medieval. La armonía no es un invento humano: es la estructura del cosmos haciéndose audible.',
+    right: 'La Ley de la Octava (Cousto): cualquier período puede convertirse en frecuencia auditiva por octavación. La frecuencia Om: 136.1 Hz = 1/año_sidéreo × 2³². Las frecuencias Solfeggio: escala de seis notas del himno gregoriano "Ut queant laxis". La frecuencia 528 Hz: "Mi" de la escala Solfeggio — algunos la asocian con reparación del ADN. La afinación 432 Hz vs 440 Hz: debate sobre qué frecuencia de La "resuena" más con la naturaleza. Las 10 sefirot y sus notas: sistema de correspondencias numerológico-musicales.',
+    draw: drawKabbalah
+  },
+  {
+    era: 'Schoenberg · 1923',
+    title: 'El Dodecafonismo',
+    author: 'Cuando la tonalidad se disolvió',
+    left: 'Schoenberg lleva el cromatismo wagneriano hasta su conclusión lógica: abandona la tonalidad completamente. En su lugar, la técnica de doce notas: una serie con las doce notas de la escala cromática en un orden fijo, que puede usarse directa, invertida, retrógrada o retrógrado-invertida. Cada nota importa igual — no hay tónica, no hay jerarquía. Es la revolución más radical en la historia de la música occidental. Y produce una música que el público del siglo XX en su mayor parte nunca aprenderá a amar.',
+    right: 'El dodecafonismo (Schoenberg, 1923): la serie de doce notas como base estructural. Las cuatro formas: O (original), R (retrógrado), I (inversión), RI (retrógrado-invertido). Las 48 formas posibles de la serie. La Segunda Escuela de Viena: Schoenberg, Berg, Webern. Berg reconcilia el sistema con el romanticismo (Violinkonzert). Webern lleva la serialidad al extremo: puntos de sonido aislados. El serialismo integral (Boulez, Stockhausen): serializar también el ritmo, la dinámica y el timbre.',
+    draw: drawDodecaphony
+  },
+  {
+    era: 'Música electrónica · 1950',
+    title: 'El Sintetizador',
+    author: 'Cuando la electricidad aprendió a cantar',
+    left: 'El Theremin (1919) se toca sin tocarlo — el cuerpo del músico interrumpe un campo electromagnético. El sintetizador Moog (1964) genera cualquier sonido posible mediante osciladores, filtros y amplificadores. La música concreta de Pierre Schaeffer usa grabaciones de sonidos reales transformados. Stockhausen compone Gesang der Jünglinge combinando voz y electrónica. De repente, el sonido de un tren, un mar, el propio silencio transformado pueden ser música. Los límites entre ruido y música se disuelven definitivamente.',
+    right: 'El Theremin (Leon Theremin, 1919): dos antenas, campo electromagnético, sin contacto físico. El Moog (Robert Moog, 1964): osciladores VCO, filtros VCF, amplificadores VCA — modular y patching. La síntesis sustractiva: partir del ruido blanco y filtrar. La síntesis aditiva: sumar sinusoides (Fourier inverso). La síntesis FM (Chowning, 1967): base del Yamaha DX7. El sampler (Fairlight CMI, 1979): grabar y reproducir muestras de sonido real. El MIDI (1983): protocolo de comunicación entre instrumentos digitales. La música de síntesis como exploración del espacio sonoro total.',
+    draw: drawElectronic
+  },
+  {
+    era: 'Cage · Xenakis · Fluxus · 1950',
+    title: 'El Azar y el Silencio',
+    author: 'Cuando todo puede ser música',
+    left: 'John Cage compone con el I Ching — lanzando monedas para determinar cada decisión musical. El resultado no puede predecirse ni repetirse. Iannis Xenakis aplica ecuaciones estocásticas de física estadística a la composición: nubes de sonido que obedecen leyes probabilísticas. Fluxus declara que una partitura puede ser: "Mirar el sol hasta que te lloren los ojos." La pregunta de qué es la música ya no tiene respuesta unívoca. Y esa imposibilidad es, ella misma, una respuesta.',
+    right: 'La música aleatoria (Cage): operaciones de azar en la composición o la interpretación. El I Ching: 64 hexagramas, ~10^18 posibilidades estructurales. La música estocástica (Xenakis): procesos aleatorios con distribuciones estadísticas definidas. La teoría de conjuntos en la música (Allen Forte): análisis de la música post-tonal por clases de alturas. Las partituras gráficas: instrucciones visuales no convencionales para el intérprete. El happening musical (Fluxus): la performance como forma musical. La pregunta de Cage: "¿Hay algo que no sea música?"',
+    draw: drawCage
+  },
+  {
+    era: 'Neurociencia · Siglo XXI',
+    title: 'Por Qué la Música Nos Emociona',
+    author: 'El cerebro que escucha y siente',
+    left: 'La música activa más regiones del cerebro que cualquier otro estímulo. El sistema de recompensa libera dopamina durante los "escalofríos" musicales — la misma dopamina que el sexo, la comida, las drogas. El ritmo sincroniza oscilaciones cerebrales. Las canciones de cuna son universales — todos los idiomas del mundo las tienen y todas comparten los mismos rasgos. Bebés de dos días prefieren la música consonante a la disonante. El cerebro humano está predispuesto a la música antes de escuchar ninguna.',
+    right: 'El frisson musical: respuesta de escalofríos en ~50% de la población, correlaciona con apertura a la experiencia. El núcleo accumbens: liberación de dopamina anticipatoria antes del clímax musical. La sincronía neuronal: el ritmo musical sincroniza oscilaciones gamma y beta del cortex. Las neuronas espejo: activación al escuchar música que se asocia a acciones motoras. El SSIRH (Shared Syntactic Integration Resource Hypothesis): procesamiento musical y lingüístico comparten recursos. La música y la memoria: canciones conocidas activan la memoria autobiográfica incluso en Alzheimer avanzado.',
+    draw: drawNeuroscience
+  },
+  {
+    era: 'La tradición · El presente',
+    title: 'La Improvisación',
+    author: 'La composición que no espera',
+    left: 'En el jazz, en el flamenco, en el raga indio, en el blues, en el gamelan balinés — la música más viva de la humanidad se improvisa. El músico compone en tiempo real, respondiendo a los otros músicos, al espacio, al público. No hay partitura — hay tradición: un conjunto de posibilidades que el cuerpo ha internalizado tan profundamente que puede elegir entre ellas sin pensar. La improvisación no es ausencia de estructura — es la estructura vivida tan completamente que ya no necesita ser escrita.',
+    right: 'La improvisación: composición en tiempo real usando vocabulario estilístico internalizado. El jazz: improvisación sobre acordes o escalas modales. El flamenco: el duende — momento de inspiración que trasciende la técnica. El raga: improvisación dentro de reglas estrictas de escala, tempo y emoción (rasa). El gamelan: música colectiva sin director. La improvisación libre: sin estructura preestablecida — escucha total. La diferencia: improvisación idiomática (dentro de un estilo) vs libre. El cuerpo como partitura: la técnica internalizada como gramática del momento.',
+    draw: drawImprovisation
+  },
+  {
+    era: 'El retorno',
+    title: 'Ahora mismo · en todas partes',
+    author: '∞ músicas simultáneas',
+    left: 'En este momento, alguien está escuchando a Bach en un tren. Alguien está improvisando un blues en Nueva Orleans. Un niño está escuchando por primera vez el tema de su película favorita y algo en él se abre para siempre. Una abuela está tarareando una canción que su madre le cantó. Un adolescente está descubriendo que cierto acorde le rompe el corazón de la mejor manera posible. La música no termina. Solo cambia de oyente.',
+    right: 'El streaming musical: ~100,000 canciones nuevas subidas a Spotify por día (2024). Canciones identificadas por Shazam: >100,000 millones de veces. La memoria musical: la última capacidad cognitiva en desaparecer en el Alzheimer. La música universal: de las ~3,800 culturas estudiadas, el 100% tiene música. La canción más escuchada en la historia: "Blinding Lights" (The Weeknd) — ~4,000 millones de streams. El silencio que queda después: la música cambia el cerebro — su presencia persiste después de que el sonido termina.',
+    draw: drawReturn
+  }
+];
+
+/* ══════════════════════════════════════
+   ESTADO Y NAVEGACIÓN
+══════════════════════════════════════ */
+let currentStep=-1, isAnimating=false;
+const canvas=document.getElementById('main-canvas');
+const ctx=canvas.getContext('2d');
+const DPR=window.devicePixelRatio||1;
+let W,H,CX,CY,animFrame,t=0;
+
+function resize(){
+  W=window.innerWidth;H=window.innerHeight;
+  canvas.width=W*DPR;canvas.height=H*DPR;
+  canvas.style.width=W+'px';canvas.style.height=H+'px';
+  CX=canvas.width/2;CY=canvas.height/2;
+}
+resize();window.addEventListener('resize',resize);
+
+const dotsEl=document.getElementById('dots');
+STEPS.forEach((_,i)=>{
+  const d=document.createElement('div');
+  d.className='dot';d.onclick=()=>goTo(i);dotsEl.appendChild(d);
+});
+function updateDots(){
+  document.querySelectorAll('.dot').forEach((d,i)=>d.classList.toggle('active',i===currentStep));
+}
+
+document.addEventListener('touchstart',()=>{try{getAC().resume();}catch(e){}},{once:true});
+document.addEventListener('click',()=>{try{getAC().resume();}catch(e){}},{once:true});
+
+function goTo(idx){
+  if(isAnimating)return;
+  if(idx>=STEPS.length){showFinal();return;}
+  if(idx<0){showIntro();return;}
+  isAnimating=true;
+  const panel=document.getElementById('step-panel');
+  panel.classList.add('hiding');
+  setTimeout(()=>{
+    currentStep=idx;const s=STEPS[idx];
+    playMusic(MUSIC_IDS[idx]);
+    document.getElementById('s-era').textContent=s.era;
+    document.getElementById('s-title').textContent=s.title;
+    document.getElementById('s-author').textContent=s.author;
+    document.getElementById('s-left').textContent=s.left;
+    document.getElementById('s-right').textContent=s.right;
+    document.getElementById('s-nav').textContent=
+      idx<STEPS.length-1?'· toca para continuar ·':'· toca para cerrar ·';
+    document.getElementById('step-wrapper').style.display='block';
+    const intro=document.getElementById('intro-wrap');
+    intro.style.opacity='0';intro.style.pointerEvents='none';
+    t=0;if(animFrame)cancelAnimationFrame(animFrame);
+    startAnim(s.draw);
+    panel.classList.remove('hiding');updateDots();isAnimating=false;
+  },400);
+}
+function showIntro(){
+  currentStep=-1;
+  document.getElementById('step-wrapper').style.display='none';
+  const intro=document.getElementById('intro-wrap');
+  intro.style.opacity='1';intro.style.pointerEvents='all';
+  t=0;if(animFrame)cancelAnimationFrame(animFrame);
+  startAnim(drawIntroAnim);updateDots();
+  setTimeout(()=>playIntro(),300);
+}
+function showFinal(){
+  if(animFrame)cancelAnimationFrame(animFrame);
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  document.getElementById('final-screen').classList.add('show');
+  document.getElementById('step-wrapper').style.display='none';
+  setTimeout(()=>playMusic('return'),200);
+}
+function restart(){
+  document.getElementById('final-screen').classList.remove('show');
+  setTimeout(()=>showIntro(),300);
+}
+function next(){
+  if(currentStep===-1){goTo(0);return;}
+  if(currentStep>=STEPS.length-1){showFinal();return;}
+  goTo(currentStep+1);
+}
+function prev(){
+  if(currentStep<=0){showIntro();return;}
+  goTo(currentStep-1);
+}
+document.addEventListener('click',()=>next());
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowRight'||e.key===' ')next();
+  if(e.key==='ArrowLeft')prev();
+});
+let tx0=0;
+document.addEventListener('touchstart',e=>{tx0=e.touches[0].clientX;},{passive:true});
+document.addEventListener('touchend',e=>{
+  const dx=e.changedTouches[0].clientX-tx0;
+  if(Math.abs(dx)<30)next();else if(dx>60)prev();
+},{passive:true});
+
+function startAnim(fn){
+  function loop(){t+=.011;ctx.clearRect(0,0,canvas.width,canvas.height);fn();animFrame=requestAnimationFrame(loop);}
+  animFrame=requestAnimationFrame(loop);
+}
+
+/* HELPERS */
+function dot(x,y,r,col){ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fillStyle=col;ctx.fill();}
+function circ(x,y,r,col,lw){ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.strokeStyle=col;ctx.lineWidth=lw||.8;ctx.stroke();}
+function ln(x1,y1,x2,y2,col,lw){ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.strokeStyle=col;ctx.lineWidth=lw||.8;ctx.stroke();}
+function glow(x,y,r,col){
+  const g=ctx.createRadialGradient(x,y,0,x,y,r);
+  g.addColorStop(0,col.replace(/[\d.]+\)$/,'.16)'));
+  g.addColorStop(1,col.replace(/[\d.]+\)$/,'0)'));
+  ctx.fillStyle=g;ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fill();
+}
+function txt(s,x,y,col,size,align){
+  ctx.save();ctx.font=`italic ${size||9*DPR}px 'Times New Roman'`;
+  ctx.fillStyle=col||'rgba(200,168,75,.25)';ctx.textAlign=align||'center';
+  ctx.fillText(s,x,y);ctx.restore();
+}
+function wave(cx,cy,R,freq,amp,phase,col,lw){
+  ctx.beginPath();let first=true;
+  for(let x=-R;x<=R;x+=2){
+    const y=cy+Math.sin((x/R)*Math.PI*2*freq+phase)*amp;
+    first?(ctx.moveTo(cx+x,y),first=false):ctx.lineTo(cx+x,y);
+  }
+  const g=ctx.createLinearGradient(cx-R,0,cx+R,0);
+  g.addColorStop(0,col.replace(/[\d.]+\)$/,'0)'));
+  g.addColorStop(.1,col);g.addColorStop(.9,col);
+  g.addColorStop(1,col.replace(/[\d.]+\)$/,'0)'));
+  ctx.strokeStyle=g;ctx.lineWidth=lw||1;ctx.stroke();
+}
+
+/* Dibuja un pentagrama con notas */
+function drawStaff(cx,cy,R,notes,litIdx){
+  const staffH=R*.18;
+  for(let i=0;i<5;i++){
+    const y=cy-staffH*2+i*staffH;
+    ln(cx-R*.75,y,cx+R*.75,y,'rgba(200,168,75,.18)',.55);
+  }
+  notes.forEach(({x,line,dur},i)=>{
+    const nx=cx-R*.65+x*R, ny=cy-staffH*2+line*staffH*.5;
+    const isLit=i===litIdx;
+    ctx.beginPath();ctx.ellipse(nx,ny,R*.05,R*.035,-Math.PI*.2,0,Math.PI*2);
+    ctx.fillStyle=isLit?'rgba(200,168,75,.88)':'rgba(200,168,75,.38)';ctx.fill();
+    if(isLit) glow(nx,ny,R*.1,'rgba(200,168,75,.88)');
+    if(dur==='q'||dur==='e') ln(nx+R*.05,ny,nx+R*.05,ny-R*.22,'rgba(200,168,75,.3)',.7);
+  });
+}
+
+/* ══════════════════════════════════════
+   ANIMACIONES
+══════════════════════════════════════ */
+
+function drawIntroAnim(){
+  const R=Math.min(W,H)*.3*DPR;
+  // Múltiples ondas — la orquesta
+  const voices=[
+    {f:1,a:.06,col:'rgba(200,168,75,.45)',y:-.32},
+    {f:1.5,a:.05,col:'rgba(90,184,212,.38)',y:-.1},
+    {f:.7,a:.07,col:'rgba(78,158,104,.32)',y:.12},
+    {f:2,a:.04,col:'rgba(196,122,106,.28)',y:.35},
+  ];
+  voices.forEach(({f,a,col,y})=>wave(CX,CY+y*R,R*.82,f,a*R,t*(1+f*.5),col,1));
+  // La nota central — el La 440
+  dot(CX,CY,3.5*DPR,'rgba(200,168,75,.8)');
+  glow(CX,CY,R*.15,'rgba(200,168,75,.8)');
+  // Ondas irradiando
+  for(let i=0;i<3;i++){
+    const ph=(t*.4+i/3)%1;
+    circ(CX,CY,ph*R,`rgba(200,168,75,${(1-ph)*.14})`,.7);
+  }
+  // Símbolo de clave de sol
+  ctx.save();ctx.font=`${R*.55}px 'Times New Roman'`;
+  ctx.fillStyle=`rgba(200,168,75,${.06+Math.sin(t*.4)*.02})`;
+  ctx.textAlign='center';ctx.textBaseline='middle';
+  ctx.fillText('𝄞',CX,CY);ctx.restore();
+}
+
+function drawPrehistory(){
+  const R=Math.min(W,H)*.28*DPR;
+  // La flauta de hueso
+  ctx.save();ctx.translate(CX,CY);ctx.rotate(-Math.PI/8);
+  ctx.beginPath();ctx.roundRect(-R*.055,-R*.72,R*.11,R*1.44,R*.055);
+  ctx.fillStyle='rgba(22,16,8,.65)';ctx.fill();
+  ctx.strokeStyle='rgba(200,168,75,.35)';ctx.lineWidth=1;ctx.stroke();
+  // Los cuatro agujeros
+  const holes=[-R*.35,-R*.12,R*.12,R*.35];
+  const litH=Math.floor(t*.5)%4;
+  holes.forEach((hy,i)=>{
+    const isLit=i===litH;
+    ctx.beginPath();ctx.arc(0,hy,R*.025,0,Math.PI*2);
+    ctx.fillStyle=isLit?'rgba(200,168,75,.8)':'rgba(3,6,10,.8)';ctx.fill();
+    ctx.strokeStyle='rgba(200,168,75,.4)';ctx.lineWidth=.7;ctx.stroke();
+    if(isLit){
+      ctx.restore();ctx.save();ctx.translate(CX,CY);ctx.rotate(-Math.PI/8);
+      // Onda saliendo del agujero
+      for(let j=1;j<=3;j++){
+        const ph=(t*.8+j/3)%1;
+        ctx.beginPath();ctx.arc(0,hy,ph*R*.18,0,Math.PI*2);
+        ctx.strokeStyle=`rgba(200,168,75,${(1-ph)*.3})`;ctx.lineWidth=.6;ctx.stroke();
+      }
+    }
+  });
+  ctx.restore();
+  // El fuego al fondo
+  for(let i=0;i<12;i++){
+    const fx=CX-R*.65+i*R*.12;
+    const fh=R*(.15+Math.abs(Math.sin(i*1.3+t*2))*.1);
+    ctx.beginPath();ctx.moveTo(fx,CY+R*.55);
+    ctx.quadraticCurveTo(fx+R*.03,CY+R*.55-fh,fx+R*.06,CY+R*.55);
+    ctx.strokeStyle=`rgba(200,168,75,${.08+Math.sin(i+t)*.04})`;ctx.lineWidth=1;ctx.stroke();
+  }
+  txt('Divje Babe · 60,000 a.C. · cuatro agujeros',CX,CY+R*.8,'rgba(200,168,75,.2)',8.5*DPR);
+}
+
+function drawScales(){
+  const R=Math.min(W,H)*.28*DPR;
+  // Las notas de la escala pentatónica en círculo
+  const pentatonic=[0,2,4,7,9]; // semitonos desde Do
+  const diatonic=[0,2,4,5,7,9,11,12];
+  const lit=Math.floor(t*.5)%5;
+  // La octava
+  for(let i=0;i<12;i++){
+    const a=i/12*Math.PI*2-Math.PI/2;
+    const isPenta=pentatonic.includes(i);
+    const r=R*(isPenta?.68:.58);
+    dot(CX+Math.cos(a)*r,CY+Math.sin(a)*r,(isPenta?4.5:2.5)*DPR,
+      isPenta?'rgba(200,168,75,.65)':'rgba(200,168,75,.18)');
+  }
+  // Líneas entre las notas pentatónicas
+  pentatonic.forEach((semi,i)=>{
+    const next=pentatonic[(i+1)%5];
+    const a1=semi/12*Math.PI*2-Math.PI/2;
+    const a2=next/12*Math.PI*2-Math.PI/2;
+    const isLit=i===lit;
+    ln(CX+Math.cos(a1)*R*.68,CY+Math.sin(a1)*R*.68,
+       CX+Math.cos(a2)*R*.68,CY+Math.sin(a2)*R*.68,
+       `rgba(200,168,75,${isLit?.4:.12})`,isLit?1:.5);
+    if(isLit){
+      const midA=(a1+a2)/2;
+      glow(CX+Math.cos(a1)*R*.68,CY+Math.sin(a1)*R*.68,R*.12,'rgba(200,168,75,.8)');
+    }
+  });
+  // Las notas de distintas culturas
+  const cultures=['China','Grecia','India','África','Andes'];
+  cultures.forEach((c,i)=>{
+    const a=i/5*Math.PI*2-Math.PI/2;
+    txt(c,CX+Math.cos(a)*R*.95,CY+Math.sin(a)*R*.95,'rgba(200,168,75,.22)',7.5*DPR);
+  });
+  txt('la escala pentatónica · universal',CX,CY+R*.22,'rgba(200,168,75,.2)',8.5*DPR);
+}
+
+function drawPythagoras(){
+  const R=Math.min(W,H)*.28*DPR;
+  // Las cuerdas en proporción
+  const ratios=[{r:1,label:'Do · 1:1',col:'rgba(200,168,75,'},{r:.5,label:'Do\' · 2:1',col:'rgba(200,168,75,'},{r:.667,label:'Sol · 3:2',col:'rgba(90,184,212,'},{r:.75,label:'Fa · 4:3',col:'rgba(78,158,104,'}];
+  const lit=Math.floor(t*.4)%ratios.length;
+  ratios.forEach(({r,label,col},i)=>{
+    const sx=CX-R*.7+i*R*.48, sy=CY-R*.35, elen=r*R*.7;
+    const isLit=i===lit;
+    // La cuerda vibrando
+    const freq2=1/r;
+    ctx.beginPath();let first=true;
+    for(let y=0;y<=elen;y+=2){
+      const x=sx+Math.sin((y/elen)*Math.PI*freq2*2+t*(2+freq2*1.5))*(isLit?R*.038:R*.018);
+      first?(ctx.moveTo(x,sy+y),first=false):ctx.lineTo(x,sy+y);
+    }
+    ctx.strokeStyle=col+(isLit?.65:.3)+')';ctx.lineWidth=isLit?1.3:.8;ctx.stroke();
+    dot(sx,sy,2.5*DPR,col+'.5)');dot(sx,sy+elen,2.5*DPR,col+'.5)');
+    if(isLit) glow(sx,sy+elen/2,R*.1,col+'.7)');
+    txt(label,sx,sy+elen+R*.18,col+(isLit?.5:.25)+')',8.5*DPR);
+  });
+  txt('la armonía es matemática que el oído reconoce',CX,CY+R*.7,'rgba(200,168,75,.18)',8.5*DPR);
+}
+
+function drawGregorian(){
+  const R=Math.min(W,H)*.28*DPR;
+  // Pentagrama medieval (cuatro líneas)
+  const staffLines=4, staffH=R*.15;
+  const sy=CY-R*.28;
+  for(let i=0;i<staffLines;i++){
+    ln(CX-R*.78,sy+i*staffH,CX+R*.78,sy+i*staffH,'rgba(200,168,75,.2)',.7);
+  }
+  // La clave de Fa
+  ctx.save();ctx.font=`${R*.4}px 'Times New Roman'`;
+  ctx.fillStyle='rgba(200,168,75,.3)';ctx.textAlign='center';ctx.textBaseline='middle';
+  ctx.fillText('𝄢',CX-R*.68,sy+staffH*1.5);ctx.restore();
+  // Neumas
+  const neumas=[{x:.3,y:2},{x:.55,y:1},{x:.75,y:2},{x:.95,y:0},
+                {x:1.15,y:1},{x:1.35,y:2},{x:1.55,y:3},{x:1.75,y:2},{x:1.95,y:1}];
+  const litN=Math.floor(t*.5)%neumas.length;
+  neumas.forEach(({x,y},i)=>{
+    const nx=CX-R*.68+x*R*.62,ny=sy+y*staffH*.5;
+    const isLit=i===litN;
+    ctx.beginPath();ctx.ellipse(nx,ny,R*.045,R*.032,-Math.PI*.2,0,Math.PI*2);
+    ctx.fillStyle=isLit?'rgba(200,168,75,.85)':'rgba(200,168,75,.38)';ctx.fill();
+    if(isLit) glow(nx,ny,R*.1,'rgba(200,168,75,.85)');
+  });
+  // Las palabras del canto
+  const syllables='U · T · Re · mi · Fa · Sol · La'.split('·');
+  syllables.forEach((s,i)=>{
+    txt(s.trim(),CX-R*.65+i*R*.22,sy+staffLines*staffH+R*.18,'rgba(200,168,75,.25)',8.5*DPR);
+  });
+  // La onda del canto
+  wave(CX,CY+R*.45,R*.72,1.5,R*.05,t*1.8,'rgba(200,168,75,.4)',1.1);
+  txt('Guido d\'Arezzo · 1025 · la música puede viajar',CX,CY+R*.72,'rgba(200,168,75,.18)',8.5*DPR);
+}
+
+function drawPolyphony(){
+  const R=Math.min(W,H)*.28*DPR;
+  // Cuatro voces del madrigal
+  const voices2=[
+    {label:'Soprano',y:-.55,col:'rgba(200,168,75,',f:2},
+    {label:'Alto',y:-.22,col:'rgba(90,184,212,',f:1.5},
+    {label:'Tenor',y:.12,col:'rgba(78,158,104,',f:1.2},
+    {label:'Bajo',y:.45,col:'rgba(196,122,106,',f:.8},
+  ];
+  const lit=Math.floor(t*.3)%voices2.length;
+  voices2.forEach(({label,y,col,f},i)=>{
+    const isLit=i===lit;
+    wave(CX,CY+y*R,R*.75,f,R*(isLit?.065:.035),t*(1.5+f*.3),col+(isLit?.55:.22)+')',isLit?1.2:.8);
+    txt(label,CX-R*.88,CY+y*R,col+(isLit?.5:.25)+')',isLit?9.5:8.5*DPR,'left');
+  });
+  // Las líneas de contrapunto — notas que se responden
+  const counterY=CY+R*.7;
+  for(let i=0;i<8;i++){
+    const x=CX-R*.65+i*R*.18;
+    const isDown=i%2===0;
+    ln(x,counterY-(isDown?R*.1:0),x,counterY-(isDown?0:R*.1),'rgba(200,168,75,.2)',.7);
+    dot(x,counterY-(isDown?R*.1:0),2*DPR,'rgba(200,168,75,.35)');
+  }
+  txt('cuatro voces · un tejido · la armonía nace del contrapunto',CX,CY+R*.92,'rgba(200,168,75,.18)',8*DPR);
+}
+
+function drawBach(){
+  const R=Math.min(W,H)*.28*DPR;
+  // El sujeto de la fuga — entrada sucesiva de voces
+  const voices3=[
+    {offset:0,yBase:-.42,col:'rgba(200,168,75,'},
+    {offset:.8,yBase:-.12,col:'rgba(90,184,212,'},
+    {offset:1.6,yBase:.18,col:'rgba(78,158,104,'},
+    {offset:2.4,yBase:.48,col:'rgba(196,122,106,'},
+  ];
+  const tCycled=t*.5;
+  voices3.forEach(({offset,yBase,col},i)=>{
+    const phase=tCycled-offset;
+    const active=phase>0;
+    const wy=CY+yBase*R;
+    if(active){
+      wave(CX,wy,R*.75,1.5+i*.1,R*.045,phase*2+i,col+'.5)',1);
+    } else {
+      // Todavía en silencio
+      ln(CX-R*.75,wy,CX+R*.75,wy,col+'.1)',.4);
+    }
+    txt(`Voz ${i+1}`,CX-R*.88,wy,col+(active?.4:.18)+')',8.5*DPR,'left');
+  });
+  // El círculo de quintas
+  for(let i=0;i<12;i++){
+    const a=i/12*Math.PI*2-Math.PI/2;
+    const r=R*.55;
+    const noteNames=['C','G','D','A','E','B','F#','Db','Ab','Eb','Bb','F'];
+    dot(CX+Math.cos(a)*r,CY+Math.sin(a)*r,3*DPR,'rgba(200,168,75,.3)');
+    txt(noteNames[i],CX+Math.cos(a)*r*1.22,CY+Math.sin(a)*r*1.22+4*DPR,'rgba(200,168,75,.2)',7.5*DPR);
+  }
+  txt('cuatro voces entran sucesivamente · la fuga',CX,CY+R*.82,'rgba(200,168,75,.18)',8.5*DPR);
+}
+
+function drawSonata(){
+  const R=Math.min(W,H)*.28*DPR;
+  // La forma sonata como diagrama
+  const sections=[
+    {label:'Exposición',x:-.7,w:.4,col:'rgba(200,168,75,'},
+    {label:'Desarrollo',x:-.2,w:.35,col:'rgba(90,184,212,'},
+    {label:'Recapitulación',x:.22,w:.45,col:'rgba(78,158,104,'},
+  ];
+  sections.forEach(({label,x,w,col},i)=>{
+    const sx=CX+x*R, bW=w*R, bH=R*.25;
+    const isLit=Math.floor(t*.3)%3===i;
+    ctx.beginPath();ctx.rect(sx,CY-bH/2,bW,bH);
+    ctx.fillStyle=col+(isLit?.1:.04)+')';ctx.fill();
+    ctx.strokeStyle=col+(isLit?.5:.2)+')';ctx.lineWidth=isLit?1:.6;ctx.stroke();
+    if(isLit) glow(sx+bW/2,CY,R*.15,col+'.7)');
+    txt(label,sx+bW/2,CY+R*.2,col+(isLit?.45:.2)+')',8.5*DPR);
+  });
+  // El motivo de la Quinta de Beethoven
+  const motivo=[
+    {f:1,dur:.12},{f:1,dur:.12},{f:1,dur:.12},{f:.79,dur:.45}, // sol sol sol mi♭
+    {f:.89,dur:.12},{f:.89,dur:.12},{f:.89,dur:.12},{f:.75,dur:.45}, // fa fa fa re
+  ];
+  const totalDur=motivo.reduce((s,{dur})=>s+dur,0);
+  let mX=CX-R*.75, litM=0;
+  let accDur=0;
+  motivo.forEach(({f,dur},i)=>{
+    const x=mX+accDur/totalDur*R*1.5;
+    const y=CY-R*.5-f*R*.12;
+    const isLit=i===Math.floor(t*.4)%motivo.length;
+    dot(x,y,(isLit?5:3)*DPR,isLit?'rgba(200,168,75,.85)':'rgba(200,168,75,.35)');
+    if(i>0){
+      const px=mX+(accDur-motivo[i-1].dur)/totalDur*R*1.5;
+      const py=CY-R*.5-motivo[i-1].f*R*.12;
+      ln(px,py,x,y,'rgba(200,168,75,.2)',.6);
+    }
+    if(isLit) glow(x,y,R*.08,'rgba(200,168,75,.85)');
+    accDur+=dur;
+  });
+  txt('sol · sol · sol · mi♭ · · ·',CX,CY-R*.72,'rgba(200,168,75,.28)',9*DPR);
+  txt('exposición → desarrollo → recapitulación',CX,CY+R*.55,'rgba(200,168,75,.2)',8.5*DPR);
+}
+
+function drawRomantic(){
+  const R=Math.min(W,H)*.28*DPR;
+  // El leitmotiv wagneriano — un tema que se transforma
+  const themes=[
+    {label:'anillo',notes:[1,1,.9,.8,.75,.7],col:'rgba(200,168,75,'},
+    {label:'espada',notes:[.7,.8,.9,1,.9,.8],col:'rgba(90,184,212,'},
+    {label:'amor',notes:[.85,.9,.95,1,.95,.9,.85],col:'rgba(196,122,106,'},
+  ];
+  const lit=Math.floor(t*.3)%themes.length;
+  themes.forEach(({label,notes,col},ti)=>{
+    const isLit=ti===lit;
+    const baseY=CY-R*.3+ti*R*.28;
+    notes.forEach((f,i)=>{
+      const x=CX-R*.55+i*R*.22;
+      const y=baseY-f*R*.14;
+      dot(x,y,(isLit?5:3)*DPR,col+(isLit?.75:.3)+')');
+      if(i>0){
+        const px=CX-R*.55+(i-1)*R*.22;
+        const py=baseY-notes[i-1]*R*.14;
+        ln(px,py,x,y,col+(isLit?.4:.15)+')',isLit?1:.6);
+      }
+    });
+    txt(label,CX+R*.62,baseY-R*.07,col+(isLit?.45:.2)+')',isLit?9.5:8.5*DPR,'left');
+    if(isLit) wave(CX,CY+R*.5,R*.72,1.5+ti*.3,R*.05,t*2,col+'.45)',1.1);
+  });
+  txt('leitmotiv · un tema que se transforma · Wagner',CX,CY+R*.78,'rgba(200,168,75,.2)',8.5*DPR);
+}
+
+function drawBlues(){
+  const R=Math.min(W,H)*.28*DPR;
+  // La escala blues — 12 compases
+  const blueNotes=[0,3,5,6,7,10]; // semitonos
+  const allNotes=Array.from({length:12},(_,i)=>i);
+  // Las notas en el pentagrama
+  allNotes.forEach(n=>{
+    const x=CX-R*.75+n*R*.135;
+    const isBlue=blueNotes.includes(n);
+    dot(x,CY-R*.38,(isBlue?5:2.5)*DPR,
+      isBlue?'rgba(200,168,75,.75)':'rgba(200,168,75,.18)');
+    if(isBlue&&n===6) txt('♭5',x,CY-R*.52,'rgba(200,168,75,.45)',8.5*DPR); // la nota blue
+  });
+  // La progresión de 12 compases
+  const progression=['I','I','I','I','IV','IV','I','I','V','IV','I','V'];
+  const lit=Math.floor(t*1.2)%12;
+  progression.forEach((chord,i)=>{
+    const x=CX-R*.75+i*R*.135;
+    const isLit=i===lit;
+    const y=CY-R*.08;
+    if(isLit){
+      ctx.beginPath();ctx.rect(x-R*.055,y-R*.12,R*.11,R*.24);
+      ctx.fillStyle='rgba(200,168,75,.12)';ctx.fill();
+      glow(x,y,R*.1,'rgba(200,168,75,.8)');
+    }
+    txt(chord,x,y+R*.05,'rgba(200,168,75,'+(isLit?.65:.3)+')',isLit?9:7.5);
+  });
+  // La nota blue — el b3 sobre mayor
+  wave(CX,CY+R*.38,R*.72,1.8,R*.06,t*2.5,'rgba(200,168,75,.45)',1.2);
+  txt('I · IV · V · la progresión de 12 compases',CX,CY+R*.62,'rgba(200,168,75,.2)',8.5*DPR);
+  txt('la nota blue ♭5 · no existe en la escala europea',CX,CY+R*.78,'rgba(200,168,75,.15)',8*DPR);
+}
+
+function drawKabbalah(){
+  const R=Math.min(W,H)*.28*DPR;
+  const solfFreqs=[
+    {f:396,note:'Ut',col:'rgba(200,168,75,'},
+    {f:417,note:'Re',col:'rgba(90,184,212,'},
+    {f:528,note:'Mi',col:'rgba(200,168,75,'},
+    {f:639,note:'Fa',col:'rgba(78,158,104,'},
+    {f:741,note:'Sol',col:'rgba(90,184,212,'},
+    {f:852,note:'La',col:'rgba(200,168,75,'},
+  ];
+  const lit=Math.floor(t*.4)%solfFreqs.length;
+  solfFreqs.forEach(({f,note,col},i)=>{
+    const a=i/6*Math.PI*2-Math.PI/2;
+    const r=R*.65;
+    const px=CX+Math.cos(a)*r,py=CY+Math.sin(a)*r;
+    const isLit=i===lit;
+    dot(px,py,(isLit?6:3.5)*DPR,col+(isLit?.85:.35)+')');
+    if(isLit){
+      glow(px,py,R*.18,col+'.85)');
+      wave(CX,CY+R*.75,R*.72,2,R*.06,t*2.5,col+'.5)',1.2);
+      txt(`${f} Hz`,px,py-R*.14,col+'.6)',9.5*DPR);
+    }
+    txt(note,px,py+(isLit?-R*.28:R*.14),col+(isLit?.5:.22)+')',isLit?9:8*DPR);
+  });
+  // El 432 Hz en el centro
+  dot(CX,CY,4*DPR,'rgba(200,168,75,.7)');
+  glow(CX,CY,R*.15,'rgba(200,168,75,.7)');
+  txt('432 Hz',CX,CY-R*.08,'rgba(200,168,75,.4)',9.5*DPR);
+  txt('la afinación del cosmos',CX,CY+R*.06,'rgba(200,168,75,.25)',8*DPR);
+  txt('frecuencias Solfeggio · canto gregoriano medieval',CX,CY+R*.98,'rgba(200,168,75,.18)',8*DPR);
+}
+
+function drawDodecaphony(){
+  const R=Math.min(W,H)*.28*DPR;
+  // La serie de doce notas
+  const series=[0,11,3,4,8,7,9,6,1,5,2,10]; // ejemplo de serie típica
+  const noteNames=['C','B','Eb','E','Ab','G','A','F#','C#','F','D','Bb'];
+  const lit=Math.floor(t*.5)%12;
+  // La serie en línea
+  series.forEach((pitch,i)=>{
+    const x=CX-R*.82+i*R*.15;
+    const y=CY-R*.45+pitch*R*.08;
+    const isLit=i===lit;
+    dot(x,y,(isLit?5.5:3)*DPR,`rgba(200,168,75,${isLit?.85:.3})`);
+    if(isLit){
+      glow(x,y,R*.1,'rgba(200,168,75,.85)');
+      txt(noteNames[pitch],x,y-R*.1,'rgba(200,168,75,.5)',9*DPR);
+    }
+    if(i>0){
+      const px=CX-R*.82+(i-1)*R*.15;
+      const py=CY-R*.45+series[i-1]*R*.08;
+      ln(px,py,x,y,`rgba(200,168,75,${isLit||i-1===lit?.3:.1})`,.6);
+    }
+  });
+  // Las cuatro formas
+  const forms=['Original','Retrógrado','Inversión','Ret. Inv.'];
+  const formColors=['rgba(200,168,75,','rgba(90,184,212,','rgba(78,158,104,','rgba(196,122,106,'];
+  forms.forEach((f,i)=>{
+    const y=CY+R*.12+i*R*.18;
+    txt(f,CX-R*.82,y,formColors[i]+'.35)',8.5*DPR,'left');
+    // La serie transformada
+    const transformed=series.map(p=>{
+      if(i===0) return p;
+      if(i===1) return series[series.length-1-series.indexOf(p)];
+      if(i===2) return (12-p)%12;
+      return (12-series[series.length-1-series.indexOf(p)])%12;
+    });
+    for(let j=0;j<6;j++){
+      const x=CX-R*.2+j*R*.2;
+      dot(x,y-transformed[j]*R*.015,2*DPR,formColors[i]+'.45)');
+    }
+  });
+  txt('12 notas · todas iguales · ninguna tónica',CX,CY+R*.82,'rgba(200,168,75,.2)',8.5*DPR);
+}
+
+function drawElectronic(){
+  const R=Math.min(W,H)*.28*DPR;
+  // Los bloques del sintetizador modular
+  const modules=[
+    {label:'VCO',sub:'oscilador',x:-.6,y:-.25,col:'rgba(200,168,75,'},
+    {label:'VCF',sub:'filtro',x:.0,y:-.25,col:'rgba(90,184,212,'},
+    {label:'VCA',sub:'amplif.',x:.6,y:-.25,col:'rgba(78,158,104,'},
+    {label:'ENV',sub:'envolvente',x:-.6,y:.25,col:'rgba(196,122,106,'},
+    {label:'LFO',sub:'modulación',x:.0,y:.25,col:'rgba(200,168,75,'},
+    {label:'OUT',sub:'salida',x:.6,y:.25,col:'rgba(200,168,75,'},
+  ];
+  const cables=[[0,1],[1,2],[3,1],[4,0],[4,1],[2,5]];
+  // Los cables de patch
+  cables.forEach(([a,b])=>{
+    const ma=modules[a],mb=modules[b];
+    ctx.beginPath();
+    ctx.moveTo(CX+ma.x*R,CY+ma.y*R+R*.08);
+    ctx.bezierCurveTo(
+      CX+ma.x*R,CY+(ma.y+mb.y)/2*R,
+      CX+mb.x*R,CY+(ma.y+mb.y)/2*R,
+      CX+mb.x*R,CY+mb.y*R-R*.08
+    );
+    ctx.strokeStyle='rgba(200,168,75,.18)';ctx.lineWidth=1.2;ctx.stroke();
+  });
+  // Los módulos
+  const lit=Math.floor(t*.4)%modules.length;
+  modules.forEach(({label,sub,x,y,col},i)=>{
+    const mx=CX+x*R,my=CY+y*R;
+    const isLit=i===lit;
+    ctx.beginPath();ctx.roundRect(mx-R*.15,my-R*.12,R*.3,R*.24,R*.02);
+    ctx.fillStyle=col+(isLit?.1:.04)+')';ctx.fill();
+    ctx.strokeStyle=col+(isLit?.5:.2)+')';ctx.lineWidth=isLit?.9:.5;ctx.stroke();
+    if(isLit) glow(mx,my,R*.18,col+'.7)');
+    txt(label,mx,my,col+(isLit?.7:.35)+')',isLit?10:9*DPR);
+    txt(sub,mx,my+R*.1,col+(isLit?.4:.18)+')',7.5*DPR);
+  });
+  // La onda de salida
+  wave(CX,CY+R*.68,R*.7,2.5,R*.06,t*3,'rgba(200,168,75,.45)',1.2);
+  txt('síntesis modular · patch · el sonido como circuito',CX,CY+R*.9,'rgba(200,168,75,.18)',8.5*DPR);
+}
+
+function drawCage(){
+  const R=Math.min(W,H)*.28*DPR;
+  // El I Ching — hexagramas
+  const hexagrams=[
+    [1,1,1,1,1,1],[0,0,0,0,0,0],[1,0,1,0,1,0],
+    [0,1,0,1,0,1],[1,1,0,0,1,1],[0,0,1,1,0,0]
+  ];
+  const lit=Math.floor(t*.25)%hexagrams.length;
+  hexagrams.forEach((hex,hi)=>{
+    const hx=CX-R*.62+hi*R*.25, hy=CY-R*.35;
+    const isLit=hi===lit;
+    hex.forEach((line,li)=>{
+      const ly=hy+li*R*.1;
+      if(line===1){
+        ln(hx,ly,hx+R*.2,ly,`rgba(200,168,75,${isLit?.65:.22})`,isLit?1.2:.7);
+      } else {
+        ln(hx,ly,hx+R*.07,ly,`rgba(200,168,75,${isLit?.5:.18})`,.7);
+        ln(hx+R*.13,ly,hx+R*.2,ly,`rgba(200,168,75,${isLit?.5:.18})`,.7);
+      }
+    });
+    if(isLit) glow(hx+R*.1,hy+R*.25,R*.1,'rgba(200,168,75,.75)');
+  });
+  // La partitura gráfica — instrucciones visuales
+  txt('Partitura',CX-R*.12,CY+R*.12,'rgba(200,168,75,.28)',9*DPR);
+  ctx.save();ctx.font=`italic ${9*DPR}px 'Times New Roman'`;
+  ctx.fillStyle='rgba(200,168,75,.22)';ctx.textAlign='center';
+  const instructions=['"Escucha."','"Toca lo que escuches."','"O no toques nada."'];
+  instructions.forEach((ins,i)=>ctx.fillText(ins,CX,CY+R*.28+i*R*.18));
+  ctx.restore();
+  // El silencio — el espacio en blanco
+  circ(CX,CY+R*.52,R*.08,'rgba(200,168,75,.2)',.7);
+  dot(CX,CY+R*.52,2*DPR,'rgba(200,168,75,.4)');
+  txt('4\'33\'\' · el azar · ¿qué no es música?',CX,CY+R*.82,'rgba(200,168,75,.2)',8.5*DPR);
+}
+
+function drawNeuroscience(){
+  const R=Math.min(W,H)*.27*DPR;
+  // El cerebro con regiones activas durante la música
+  ctx.save();ctx.translate(CX,CY-R*.05);ctx.scale(1,.9);
+  ctx.beginPath();
+  for(let a=0;a<Math.PI*2;a+=.05){
+    const r=R*(.5+Math.sin(a*4)*.06+Math.cos(a*7)*.03);
+    a===0?ctx.moveTo(Math.cos(a)*r,Math.sin(a)*r):ctx.lineTo(Math.cos(a)*r,Math.sin(a)*r);
+  }
+  ctx.closePath();ctx.strokeStyle='rgba(200,168,75,.18)';ctx.lineWidth=.8;ctx.stroke();
+  ctx.restore();
+  // Las regiones activas
+  const regions=[
+    {x:-.15,y:-.2,r:.14,col:'rgba(200,168,75,.7)',label:'cortex auditivo'},
+    {x:.05,y:.18,r:.12,col:'rgba(90,184,212,.6)',label:'sistema de recompensa'},
+    {x:.02,y:.4,r:.1,col:'rgba(78,158,104,.55)',label:'cerebelo'},
+    {x:-.3,y:.05,r:.1,col:'rgba(196,122,106,.5)',label:'área de Broca'},
+    {x:.3,y:-.1,r:.1,col:'rgba(200,168,75,.45)',label:'cortex motor'},
+  ];
+  const lit=Math.floor(t*.4)%regions.length;
+  regions.forEach(({x,y,r,col,label},i)=>{
+    const px=CX+x*R,py=CY-R*.05+y*R,rr=r*R;
+    const isLit=i===lit;
+    ctx.beginPath();ctx.arc(px,py,rr,0,Math.PI*2);
+    ctx.fillStyle=col.replace(/[\d.]+\)$/,`${isLit?.22:.07})`);ctx.fill();
+    ctx.strokeStyle=col;ctx.lineWidth=isLit?.9:.5;ctx.stroke();
+    if(isLit){glow(px,py,rr*1.4,col);txt(label,px,py+rr+R*.1,col.replace(/[\d.]+\)$/,'.5)'),8*DPR);}
+  });
+  // La onda de dopamina
+  wave(CX,CY+R*.72,R*.72,3,R*.04,t*2.5,'rgba(200,168,75,.38)',1);
+  txt('dopamina · escalofríos · sincronía neuronal',CX,CY+R*.9,'rgba(200,168,75,.18)',8.5*DPR);
+}
+
+function drawImprovisation(){
+  const R=Math.min(W,H)*.28*DPR;
+  // Varios músicos improvisando — órbitas
+  const musicians=[
+    {label:'jazz',a:0,r:.55,col:'rgba(200,168,75,',f:1.8},
+    {label:'flamenco',a:Math.PI*.4,r:.68,col:'rgba(90,184,212,',f:1.3},
+    {label:'raga',a:Math.PI*.8,r:.52,col:'rgba(78,158,104,',f:2.2},
+    {label:'blues',a:Math.PI*1.3,r:.65,col:'rgba(196,122,106,',f:1.6},
+    {label:'gamelan',a:Math.PI*1.75,r:.58,col:'rgba(200,168,75,',f:.9},
+  ];
+  musicians.forEach(({label,a,r,col,f},i)=>{
+    const angle=a+t*(0.04+i*.008);
+    const px=CX+Math.cos(angle)*r*R,py=CY+Math.sin(angle)*r*R;
+    dot(px,py,5*DPR,col+'.65)');
+    glow(px,py,R*.1,col+'.65)');
+    txt(label,px,py-R*.12,col+'.4)',8.5*DPR);
+    // La onda que emite
+    const waveLen=R*.28;
+    ctx.save();ctx.translate(px,py);ctx.rotate(angle+Math.PI/2);
+    ctx.beginPath();let first=true;
+    for(let x=-waveLen;x<=waveLen;x+=2){
+      const y=Math.sin((x/waveLen)*Math.PI*2*f+t*(2+f))*R*.025;
+      first?(ctx.moveTo(x,y),first=false):ctx.lineTo(x,y);
+    }
+    ctx.strokeStyle=col+'.3)';ctx.lineWidth=.7;ctx.stroke();
+    ctx.restore();
+    // Líneas entre músicos — el diálogo
+    musicians.forEach(({a:a2,r:r2},j)=>{
+      if(j<=i) return;
+      const angle2=a2+t*(0.04+j*.008);
+      const px2=CX+Math.cos(angle2)*r2*R,py2=CY+Math.sin(angle2)*r2*R;
+      ln(px,py,px2,py2,'rgba(200,168,75,.04)',.4);
+    });
+  });
+  dot(CX,CY,3*DPR,'rgba(200,168,75,.5)');
+  glow(CX,CY,R*.12,'rgba(200,168,75,.5)');
+  txt('la composición que no espera · el cuerpo como partitura',CX,CY+R*.05,'rgba(200,168,75,.2)',8.5*DPR);
+}
+
+function drawReturn(){
+  const R=Math.min(W,H)*.3*DPR;
+  // Muchas ondas simultáneas — la música del mundo
+  const nVoices=8;
+  for(let i=0;i<nVoices;i++){
+    const f=0.7+i*.3;
+    const a=R*(.04+Math.sin(i*2.1)*.02);
+    const y=CY-R*.35+i*R*.1;
+    const col=i%3===0?'rgba(200,168,75,':i%3===1?'rgba(90,184,212,':'rgba(78,158,104,';
+    wave(CX,y,R*.82,f,a,t*(1+f*.4)+i,col+'0.25)',0.8);
+  }
+  // El punto central — el oyente
+  dot(CX,CY,5*DPR,'rgba(200,168,75,.88)');
+  glow(CX,CY,R*.2,'rgba(200,168,75,.88)');
+  // Ondas llegando al oyente
+  for(let i=0;i<4;i++){
+    const ph=(t*.35+i/4)%1;
+    circ(CX,CY,ph*R,'rgba(200,168,75,'+(1-ph)*.18+')',.6);
+  }
+  // Las tradiciones musicales en órbita
+  const traditions=['Bach','Coltrane','Ravi Shankar','Fela Kuti','Villa-Lobos','Nusrat'];
+  traditions.forEach((tr,i)=>{
+    const a=i/traditions.length*Math.PI*2+t*.04;
+    const r=R*.78;
+    txt(tr,CX+Math.cos(a)*r,CY+Math.sin(a)*r,'rgba(200,168,75,.2)',7.5*DPR);
+  });
+  txt('∞ músicas · ahora mismo · en todas partes',CX,CY+R*.08,'rgba(200,168,75,.22)',9*DPR);
+}
+
+showIntro();
+</script>
+</body>
+</html>

@@ -1,0 +1,1156 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+<title>Los Arquetipos · Historia de la Humanidad</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cinzel:wght@400;600&family=IM+Fell+English:ital@0;1&display=swap');
+:root{
+  --void:#02050a;--gold:#c8a84b;--goldlt:#e2c97e;--goldd:#6a5020;
+  --sage:#4e9e68;--foam:#cce4d8;--smoke:#4a6a58;--cyan:#5ab8d4;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{width:100%;height:100%;overflow:hidden;background:var(--void);}
+body{font-family:'IM Fell English',Georgia,serif;color:var(--foam);touch-action:manipulation;user-select:none;}
+#grain{position:fixed;inset:0;z-index:9999;pointer-events:none;opacity:.28;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.13'/%3E%3C/svg%3E");
+  mix-blend-mode:overlay;}
+#main-canvas{position:fixed;inset:0;width:100%;height:100%;}
+#dots{position:fixed;right:14px;top:50%;transform:translateY(-50%);
+  display:flex;flex-direction:column;gap:7px;z-index:100;}
+.dot{width:5px;height:5px;border-radius:50%;background:rgba(200,168,75,.18);
+  cursor:pointer;transition:all .3s;}
+.dot.active{background:rgba(200,168,75,.75);transform:scale(1.4);}
+#step-wrapper{position:fixed;inset:0;display:flex;flex-direction:column;
+  justify-content:flex-end;pointer-events:none;z-index:50;}
+#step-panel{padding:0 0 clamp(26px,5.5vh,48px);pointer-events:all;
+  opacity:1;transition:opacity .5s ease;}
+#step-panel.hiding{opacity:0;}
+.step-era{text-align:center;font-family:'Cinzel',serif;font-size:clamp(7px,1.8vw,9px);
+  letter-spacing:.55em;text-transform:uppercase;color:rgba(200,168,75,.35);margin-bottom:10px;}
+.step-title{text-align:center;font-family:'Cinzel Decorative',serif;
+  font-size:clamp(15px,4.8vw,27px);font-weight:400;color:var(--foam);
+  letter-spacing:.06em;line-height:1.2;margin-bottom:4px;padding:0 24px;}
+.step-author{text-align:center;font-family:'Cinzel',serif;font-size:clamp(8px,2.2vw,10px);
+  letter-spacing:.4em;text-transform:uppercase;color:var(--goldd);margin-bottom:18px;}
+.voices{display:grid;grid-template-columns:1fr 1fr;gap:0;border-top:1px solid rgba(200,168,75,.1);}
+.voice-left{font-family:'IM Fell English',serif;font-style:italic;
+  font-size:clamp(11px,3vw,13px);color:rgba(204,228,216,.65);line-height:1.7;
+  letter-spacing:.03em;padding:13px 15px 13px 20px;border-right:1px solid rgba(200,168,75,.08);}
+.voice-right{font-family:'Cinzel',serif;font-weight:400;font-size:clamp(7.5px,2vw,10px);
+  text-transform:uppercase;letter-spacing:.12em;color:rgba(90,184,212,.55);
+  line-height:1.85;padding:13px 20px 13px 15px;}
+.nav-hint{text-align:center;margin-top:13px;font-family:'Cinzel',serif;
+  font-size:6.5px;letter-spacing:.5em;color:rgba(200,168,75,.2);text-transform:uppercase;}
+#intro-wrap{position:fixed;inset:0;z-index:60;pointer-events:none;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  transition:opacity .6s;}
+.i-inner{position:relative;z-index:2;display:flex;flex-direction:column;
+  align-items:center;text-align:center;padding:0 32px;}
+.i-glyph{font-family:'Times New Roman',serif;font-size:clamp(60px,18vw,100px);
+  color:rgba(200,168,75,.2);line-height:1;margin-bottom:16px;letter-spacing:.1em;}
+.i-title{font-family:'Cinzel Decorative',serif;font-size:clamp(24px,7vw,40px);
+  color:var(--foam);letter-spacing:.07em;margin-bottom:8px;}
+.i-sub{font-family:'IM Fell English',serif;font-style:italic;
+  font-size:clamp(12px,3.2vw,15px);color:var(--smoke);letter-spacing:.07em;margin-bottom:6px;}
+.i-count{font-family:'Cinzel',serif;font-size:7px;letter-spacing:.5em;
+  color:rgba(200,168,75,.28);text-transform:uppercase;margin-bottom:36px;}
+.i-cta{font-family:'Cinzel',serif;font-size:7.5px;letter-spacing:.5em;
+  text-transform:uppercase;color:rgba(200,168,75,.4);
+  animation:pulse 2.2s ease-in-out infinite;}
+@keyframes pulse{0%,100%{opacity:.28;}50%{opacity:.72;}}
+#final-screen{position:fixed;inset:0;z-index:200;background:var(--void);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  opacity:0;pointer-events:none;transition:opacity .8s ease;text-align:center;padding:40px;}
+#final-screen.show{opacity:1;pointer-events:all;}
+.final-inner{position:relative;z-index:2;max-width:320px;margin:0 auto;}
+.final-title{font-family:'Cinzel Decorative',serif;font-size:clamp(20px,6vw,32px);
+  color:var(--foam);margin-bottom:16px;line-height:1.3;}
+.final-text{font-family:'IM Fell English',serif;font-style:italic;
+  font-size:clamp(13px,3.5vw,16px);color:var(--smoke);line-height:1.82;margin-bottom:40px;}
+.final-btn{background:transparent;border:1px solid rgba(200,168,75,.2);
+  font-family:'Cinzel',serif;font-size:7.5px;letter-spacing:.45em;
+  text-transform:uppercase;color:var(--smoke);padding:14px 28px;cursor:pointer;transition:all .22s;}
+.final-btn:active{color:var(--foam);border-color:rgba(200,168,75,.5);}
+</style>
+</head>
+<body>
+<div id="grain"></div>
+<canvas id="main-canvas"></canvas>
+
+<div id="intro-wrap">
+  <div class="i-inner">
+    <div class="i-glyph">☉</div>
+    <div class="i-title">Los Arquetipos</div>
+    <div class="i-sub">Las formas que el alma usa cuando quiere decir algo que las palabras no alcanzan</div>
+    <div class="i-count">16 momentos · el tiempo de los mitos</div>
+    <div class="i-cta">toca para comenzar</div>
+  </div>
+</div>
+
+<div id="dots"></div>
+
+<div id="step-wrapper" style="display:none;">
+  <div id="step-panel">
+    <div class="step-era" id="s-era"></div>
+    <div class="step-title" id="s-title"></div>
+    <div class="step-author" id="s-author"></div>
+    <div class="voices">
+      <div class="voice-left" id="s-left"></div>
+      <div class="voice-right" id="s-right"></div>
+    </div>
+    <div class="nav-hint" id="s-nav"></div>
+  </div>
+</div>
+
+<div id="final-screen">
+  <div class="final-inner">
+    <div class="final-title">No los eliges.<br>Te eligen.</div>
+    <div class="final-text">Los arquetipos no son conceptos que puedas aprender y aplicar. Son estructuras que ya están operando en ti antes de que sepas su nombre. Reconocerlos no los neutraliza — los hace conscientes. Y hacerlos conscientes es la única forma de que no gobiernen desde la oscuridad.</div>
+    <button class="final-btn" onclick="window.location.href='index.html'">volver al origen</button>
+  </div>
+</div>
+
+<script>
+/* ══════════════════════════════════════
+   SÍNTESIS SONORA — tono para cada arquetipo
+   Cada arquetipo tiene su carácter sonoro propio
+══════════════════════════════════════ */
+let AC = null;
+function getAC(){ return AC || (AC = new (window.AudioContext || window.webkitAudioContext)()); }
+
+function makeReverb(ac, dur=2, decay=2.5){
+  const len = ac.sampleRate * dur;
+  const buf = ac.createBuffer(2, len, ac.sampleRate);
+  for(let c=0;c<2;c++){
+    const d = buf.getChannelData(c);
+    for(let i=0;i<len;i++) d[i] = (Math.random()*2-1) * Math.pow(1-i/len, decay);
+  }
+  const conv = ac.createConvolver();
+  conv.buffer = buf;
+  return conv;
+}
+
+function playArchetype(id){
+  try{
+    const ac = getAC();
+    if(ac.state==='suspended') ac.resume();
+    const now = ac.currentTime;
+    const rev = makeReverb(ac, 2.2, 2.8);
+    const master = ac.createGain(); master.gain.value = .5;
+    rev.connect(master); master.connect(ac.destination);
+    const dry = ac.createGain(); dry.gain.value = .38; dry.connect(ac.destination);
+
+    function tone(freq, type, start, dur, gain, vib=0){
+      const osc = ac.createOscillator();
+      const g = ac.createGain();
+      osc.type = type || 'sine';
+      osc.frequency.value = freq;
+      if(vib > 0){
+        const lfo = ac.createOscillator();
+        const lfoG = ac.createGain();
+        lfo.frequency.value = 5.5; lfoG.gain.value = vib;
+        lfo.connect(lfoG); lfoG.connect(osc.frequency);
+        lfo.start(now+start); lfo.stop(now+start+dur+.1);
+      }
+      g.gain.setValueAtTime(0, now+start);
+      g.gain.linearRampToValueAtTime(gain, now+start+Math.min(.06, dur*.12));
+      g.gain.setValueAtTime(gain, now+start+dur*.65);
+      g.gain.exponentialRampToValueAtTime(.0001, now+start+dur);
+      osc.connect(g); g.connect(rev); g.connect(dry);
+      osc.start(now+start); osc.stop(now+start+dur+.1);
+    }
+
+    function noise(start, dur, gain, freq, q){
+      const buf = ac.createBuffer(1, ac.sampleRate*dur, ac.sampleRate);
+      const d = buf.getChannelData(0);
+      for(let i=0;i<d.length;i++) d[i] = Math.random()*2-1;
+      const src = ac.createBufferSource(); src.buffer = buf;
+      const filt = ac.createBiquadFilter();
+      filt.type = 'bandpass'; filt.frequency.value = freq; filt.Q.value = q||1;
+      const g = ac.createGain();
+      g.gain.setValueAtTime(0, now+start);
+      g.gain.linearRampToValueAtTime(gain, now+start+.1);
+      g.gain.exponentialRampToValueAtTime(.0001, now+start+dur);
+      src.connect(filt); filt.connect(g); g.connect(dry);
+      src.start(now+start);
+    }
+
+    switch(id){
+      case 'collective': // Inconsciente colectivo — bordón profundo
+        tone(55,'sine',0,3.5,.45); tone(82.4,'sine',.05,3,.22); tone(110,'sine',.1,2.5,.12);
+        tone(55*1.5,'sine',.2,2,.08);
+        break;
+      case 'shadow': // La sombra — disonancia, oscuridad
+        tone(110,'sawtooth',0,2.5,.3); tone(116.5,'sawtooth',.08,2.3,.25);
+        tone(138.6,'sine',.15,2,.18); // b2 — disonancia
+        noise(0,1.5,.08,200,2);
+        break;
+      case 'hero': // El héroe — fanfarria ascendente
+        [[130.8,0,.25],[164.8,.18,.28],[196,.36,.3],[261.6,.54,.32],[329.6,.72,.25]].forEach(([f,s,g])=>tone(f,'triangle',s,.55,g));
+        break;
+      case 'mother': // La Gran Madre — acorde cálido, completo
+        tone(130.8,'sine',0,3,.4); tone(164.8,'sine',.08,2.8,.28);
+        tone(196,'sine',.16,2.6,.22); tone(261.6,'sine',.04,3,.18);
+        tone(130.8*.5,'sine',0,3.5,.15);
+        break;
+      case 'father': // El Padre — quintas sólidas, firme
+        tone(65.4,'sine',0,3,.45); tone(98,'sine',.06,3,.3);
+        tone(130.8,'sawtooth',.12,2.5,.2); tone(196,'sawtooth',.18,2,.12);
+        break;
+      case 'child': // El Niño — pentatónica juguetona
+        [261.6,329.6,392,523.3,329.6,261.6].forEach((f,i)=>tone(f,'triangle',i*.16,.4,.3));
+        break;
+      case 'anima': // Anima/Animus — dúo de contrarios
+        tone(220,'sine',0,3,.35,4); // femenino
+        tone(164.8,'triangle',.12,2.8,.3,3); // masculino
+        tone(277.2,'sine',.25,2,.15); // tensión
+        break;
+      case 'trickster': // Embaucador — saltarín, impredecible
+        [392,523.3,349.2,440,392,587.3,261.6].forEach((f,i)=>
+          tone(f,'square',i*.11+Math.random()*.04,.22,.22));
+        break;
+      case 'self': // El Sí-mismo — acorde perfecto, mandala
+        [130.8,164.8,196,261.6,329.6,392].forEach((f,i)=>tone(f,'sine',i*.1,3-.1*i,.25-i*.02,2));
+        break;
+      case 'plato': // Las Ideas — acorde puro, cristalino
+        tone(528,'sine',0,3,.35,1); tone(528*1.5,'sine',.1,2.8,.18);
+        tone(528*2,'sine',.2,2.4,.1); tone(264,'sine',0,3,.2);
+        break;
+      case 'kabbalah': // La Cábala — frecuencias del árbol
+        tone(136.1,'sine',0,3,.42); // Malkut/Tierra
+        tone(194.2,'sine',.1,2.8,.25); // Tiferet/Sol
+        tone(183.6,'sine',.2,2.6,.18); // Keter/Júpiter
+        tone(136.1*1.5,'sine',.3,2,.1);
+        break;
+      case 'myth': // Los mitos comparados — músicas del mundo
+        tone(220,'sine',0,3,.3,5); tone(277.2,'sine',.15,2.5,.22);
+        tone(330,'triangle',.3,2,.18); tone(440,'sine',.45,1.8,.12);
+        break;
+      case 'mandala': // El mandala — simetría perfecta
+        [220,277.2,329.6,440,329.6,277.2].forEach((f,i)=>
+          tone(f,'sine',i*.25,1.5,.22,3));
+        tone(110,'sine',0,3.5,.3);
+        break;
+      case 'synchronicity': // Sincronicidad — campanadas
+        [523.3,659.3,783.9,1046.5].forEach((f,i)=>{
+          tone(f,'sine',i*.2,.8,.3);
+          tone(f*.5,'sine',i*.2,1.2,.12);
+        });
+        break;
+      case 'culture': // Arquetipos en la cultura — fanfarria pop
+        [[261.6,0],[329.6,.15],[392,.3],[523.3,.45],[392,.6],[329.6,.75]].forEach(([f,s])=>
+          tone(f,'sawtooth',s,.28,.28));
+        tone(130.8,'sine',0,1.5,.25);
+        break;
+      case 'return': // Retorno — el círculo se cierra
+        [55,82.4,110,130.8,164.8,196,261.6].forEach((f,i)=>
+          tone(f,'sine',i*.12,3-.1*i,.2,1.5));
+        break;
+    }
+  }catch(e){ console.log('arch sound error:',e); }
+}
+
+function playIntroSound(){
+  try{
+    const ac=getAC(); if(ac.state==='suspended') ac.resume();
+    const now=ac.currentTime;
+    const rev=makeReverb(ac,2.5,3);
+    const mg=ac.createGain(); mg.gain.value=.45; rev.connect(mg); mg.connect(ac.destination);
+    const dry=ac.createGain(); dry.gain.value=.3; dry.connect(ac.destination);
+    // Acorde de apertura — del abismo a la luz
+    [55,110,164.8,220,261.6,329.6].forEach((f,i)=>{
+      const osc=ac.createOscillator(), g=ac.createGain();
+      osc.type='sine'; osc.frequency.value=f;
+      g.gain.setValueAtTime(0,now);
+      g.gain.linearRampToValueAtTime(.18-i*.022,now+.2+i*.15);
+      g.gain.setValueAtTime(.18-i*.022,now+2.5);
+      g.gain.exponentialRampToValueAtTime(.0001,now+4);
+      osc.connect(g); g.connect(rev); g.connect(dry);
+      osc.start(now+i*.1); osc.stop(now+4.2);
+    });
+  }catch(e){}
+}
+
+const ARCH_SOUNDS = [
+  'collective','shadow','hero','mother','father','child',
+  'anima','trickster','self','plato','kabbalah','myth',
+  'mandala','synchronicity','culture','return'
+];
+
+/* ══════════════════════════════════════
+   DATOS — 16 PASOS
+══════════════════════════════════════ */
+const STEPS = [
+  {
+    era: 'Jung · 1919',
+    title: 'El Inconsciente Colectivo',
+    author: 'La herencia psíquica de la humanidad',
+    left: 'Carl Jung propone que bajo el inconsciente personal —los recuerdos y traumas individuales— existe una capa más profunda compartida por toda la especie: el inconsciente colectivo. No se hereda como información sino como predisposición — como la capacidad del ojo para ver colores, el inconsciente colectivo es la capacidad de la psique para producir ciertas imágenes. Esas imágenes se repiten en los sueños, los mitos, los cuentos y las religiones de culturas que nunca tuvieron contacto. Jung las llama arquetipos.',
+    right: 'El inconsciente colectivo: propuesto en "Instinct and the Unconscious" (1919). Distinción de Freud: el inconsciente freudiano es personal (represión individual); el jungiano es transpersonal (herencia de especie). Los arquetipos: patterns of behavior — predisposiciones a percibir, imaginar y actuar de cierta manera. Evidencia: motivos míticos idénticos en culturas sin contacto. Los universales del sueño: persecución, caída, dientes que caen, volar — transculturales. El inconsciente colectivo como memoria evolutiva de la especie.',
+    draw: drawCollective
+  },
+  {
+    era: 'Jung · La psicología analítica',
+    title: 'La Sombra',
+    author: 'Lo que no queremos ver de nosotros mismos',
+    left: 'La Sombra es la suma de todo lo que rechazamos de nosotros mismos — lo que hemos declarado inaceptable y empujado al inconsciente. No solo lo negativo: también incluye potencias que nunca desarrollamos, talentos reprimidos, emociones censuradas. Lo que más nos irrita de los demás suele ser nuestra propia Sombra proyectada. Jung: "Preferiría ser completo antes que bueno." La Sombra no desaparece al ser ignorada — crece. El trabajo de integrarla es el primer paso de la individuación.',
+    right: 'La Sombra: primer arquetipo a integrar en el proceso de individuación. Proyección: ver en el otro lo que no aceptamos en nosotros mismos. La "regla de oro" jungiana de la Sombra: si algo en otra persona te provoca una reacción desproporcionada, examina si llevas eso en ti. La Sombra colectiva: el chivo expiatorio en política y religión. El mal: para Jung, el mal es Sombra no reconocida + poder. Los "9 de cada 10": la proporción estimada por Jung de inconsciente que es Sombra integrable, no patológica.',
+    draw: drawShadow
+  },
+  {
+    era: 'Campbell · 1949',
+    title: 'El Héroe',
+    author: 'El viaje que todos los mitos cuentan',
+    left: 'Joseph Campbell estudia miles de mitos y descubre que todos cuentan la misma historia: el héroe recibe una llamada, cruza un umbral, enfrenta pruebas en el mundo desconocido, encuentra a sus aliados y enemigos, llega al momento de la crisis suprema, muere y renace transformado, y regresa con el don que el mundo ordinario necesita. Ulises, Buda, Jesús, Luke Skywalker, Simba — el mismo viaje con nombres distintos. Campbell lo llama el monomito. Porque hay una sola historia humana con infinitas variaciones.',
+    right: 'El monomito (Joseph Campbell, "El Héroe de las Mil Caras", 1949): separación → iniciación → retorno. Las 17 etapas del viaje heroico. El umbral: la frontera entre el mundo ordinario y el especial. El guardián del umbral: quien prueba si el héroe está listo. La apotheosis: la muerte simbólica y renacimiento. El elixir: el don que el héroe trae de vuelta. La influencia en el cine: George Lucas, Christopher Vogler ("El Viaje del Escritor"). El héroe como modelo de transformación psicológica — no de victorias externas.',
+    draw: drawHero
+  },
+  {
+    era: 'Mitología universal',
+    title: 'La Gran Madre',
+    author: 'El principio que todo lo contiene',
+    left: 'La Gran Madre es el arquetipo más antiguo que conocemos — las Venus paleolíticas tienen 35,000 años. Es la tierra que nutre y devora, la madre que da vida y acepta la muerte, el océano del que todo emerge y al que todo regresa. Isis, Deméter, Kali, María, Gaia — todas son manifestaciones de la misma figura. Tiene dos caras inseparables: la madre amorosa que protege y la madre terrible que destruye. El que solo ve una cara no ha conocido a la madre completa.',
+    right: 'La Venus de Willendorf: ~28,000 a.C. — la imagen más antigua del arquetipo materno. Erich Neumann ("La Gran Madre", 1955): análisis iconográfico exhaustivo. Los cuatro aspectos: madre buena (Deméter, Isis), madre terrible (Kali, Medusa), anima positiva (Afrodita), anima negativa (la bruja). El uróboro: la serpiente que se muerde la cola — símbolo de la Gran Madre como ciclo. La primera diosa: en casi todas las culturas prehistóricas documentadas, la divinidad primaria es femenina.',
+    draw: drawMother
+  },
+  {
+    era: 'Mitología · Psicología',
+    title: 'El Padre y el Anciano Sabio',
+    author: 'La ley y el conocimiento',
+    left: 'El Padre como arquetipo es el principio del orden, la ley, el límite que hace posible la estructura. Cronos, Zeus, Yahwé, Odin — el padre que establece las reglas del mundo. Su aspecto positivo es la protección y la guía; su sombra es la tiranía y el miedo a ser superado. El Anciano Sabio es el Padre en su forma más refinada: Merlín, Gandalf, Tiresias, el senex de los alquimistas. Conoce el camino sin caminarlo por ti. Aparece cuando el héroe ha llegado tan lejos como su voluntad puede llevarlo.',
+    right: 'El arquetipo paterno en Jung: principio del logos (razón, orden, ley) en contraste con eros (conexión, relación). El senex: el viejo sabio — aparece en sueños como anciano guía. Manifestaciones: Merlín, Gandalf, Dumbledore, Obi-Wan Kenobi, el lama tibetano. La dualidad padre-rey: el padre nutricio (positivo) vs el padre devorador (negativo). Cronos devorando a sus hijos: el padre que teme ser superado por lo nuevo. La función del padre: establecer el límite que define la identidad del hijo.',
+    draw: drawFather
+  },
+  {
+    era: 'Psicología · Alquimia',
+    title: 'El Niño Divino',
+    author: 'El principio de lo posible',
+    left: 'El Niño Divino es el arquetipo del potencial no realizado, del futuro que llama desde dentro del presente. Nace en circunstancias imposibles — en un establo, en una canasta sobre el río, en medio de la persecución. Es pequeño y vulnerable pero lleva en sí la promesa de transformación. En psicología, el Niño interior es la parte de nosotros que nunca creció pero que guarda la capacidad de maravillarse, de jugar, de empezar de nuevo. Ignorar al Niño interior produce rigidez. Quedar atrapado en él produce infantilismo. La tarea es la alianza.',
+    right: 'El puer aeternus (niño eterno): arquetipo de la eterna juventud. Manifestaciones: Harpócrates, Dioniso niño, Jesús en el pesebre, Moisés en el río, Krishna. El puella: la variante femenina. Marie-Louise von Franz ("Puer Aeternus", 1970): el puer como psicología del adulto que evita comprometerse. La tensión puer-senex: entre la visión y la experiencia, la novedad y la tradición. El Niño como símbolo de la totalidad: en alquimia, el filius philosophorum es el resultado de la Gran Obra. El Niño herido: la parte de la psique que fue dañada en la infancia y necesita ser reconocida.',
+    draw: drawChild
+  },
+  {
+    era: 'Jung · Psicología analítica',
+    title: 'Anima y Animus',
+    author: 'El otro que llevamos dentro',
+    left: 'En el hombre, el Anima es la imagen del principio femenino interior — la contraparte inconsciente que compensa la actitud consciente masculina. En la mujer, el Animus es el principio masculino interior. No son estereotipos de género: son las dimensiones de la psique que la persona no ha integrado conscientemente. El Anima sin integrar lleva al hombre a proyectar en cada mujer real una figura mítica que ninguna puede sostener. El Animus sin integrar lleva a la mujer a un pensamiento rígido y juicios absolutos. Integrarlos es encontrar al interlocutor interno.',
+    right: 'El Anima: en el hombre, la personificación del inconsciente en forma femenina. Cuatro niveles (Emma Jung): Eva (biológica) → Helena (romántica) → María (espiritual) → Sofía (sabiduría). El Animus: en la mujer, personificación en forma masculina. Cuatro niveles: fuerza física → acción/iniciativa → logos/palabra → sentido espiritual. La proyección amorosa: enamorarse es a menudo encontrar la propia Anima/Animus en otra persona. El "matrimonio alquímico": unión del principio masculino y femenino en la psique — el opus magnum de la individuación.',
+    draw: drawAnima
+  },
+  {
+    era: 'Mitología universal',
+    title: 'El Embaucador',
+    author: 'El caos que hace posible el cambio',
+    left: 'Loki en la mitología nórdica. Coyote en la norteamericana. Anansi en la africana. Hermes en la griega. El Embaucador es el arquetipo del caos necesario — la figura que viola las reglas, cruza todos los límites, engaña a dioses y héroes, y sin pretenderlo produce los cambios que el orden establecido no podía generar. Es amoral, no inmoral. Su función no es hacer el bien sino agitar el sistema suficientemente para que evolucione. Sin el Embaucador, el cosmos se petrifica. Sin la sombra del Embaucador, el humor pierde su diente.',
+    right: 'Paul Radin ("El Embaucador", 1956): análisis del Trickster en la tradición winnebago. El Trickster como figura liminal: habita los umbrales — entre mundos, entre reglas. Características universales: transformista, ambiguo sexualmente, glotón, transgresor de tabúes. La función cósmica: en muchos mitos, el Trickster crea el mundo por accidente. Loki: causa la muerte de Baldr (la oscuridad necesaria) y forja las cadenas que lo atarán. Hermes: guía de almas entre el mundo de los vivos y los muertos — el comunicador. El humor como trickster: la risa como disolución del orden rígido.',
+    draw: drawTrickster
+  },
+  {
+    era: 'Jung · Alquimia',
+    title: 'El Sí-mismo',
+    author: 'El centro y la totalidad',
+    left: 'El Sí-mismo —el Self en Jung— es el arquetipo central: no el yo consciente sino la totalidad de la psique, consciente e inconsciente. Es el centro alrededor del cual gira toda la vida psíquica y simultáneamente la circunferencia que lo contiene todo. Aparece en los sueños como una figura de totalidad: el niño sabio, la figura luminosa, el círculo, el mandala. La individuación — el proceso de llegar a ser lo que uno verdaderamente es — no es hacerse más consciente sino acercar al yo consciente al Sí-mismo. No una conquista sino una rendición.',
+    right: 'El Sí-mismo (Self): en Jung, el arquetipo de totalidad psíquica. Distinción crucial: el Ego es el centro de la consciencia; el Self es el centro de la psique total. Simbolismo del Self: el mandala, el niño divino, el anciano sabio, el círculo cuadrado, la piedra filosofal. La individuación: proceso de diferenciación psicológica — no perfección moral sino autenticidad completa. El eje Ego-Self: la relación entre la consciencia y la totalidad — fuente de sentido. Para Jung, las grandes tradiciones religiosas son mapas del proceso de individuación.',
+    draw: drawSelf
+  },
+  {
+    era: 'Platón · Siglo IV a.C.',
+    title: 'Las Ideas Eternas',
+    author: 'Los arquetipos antes de Jung',
+    left: 'Platón propone que los objetos del mundo sensible son copias imperfectas de Ideas eternas e inmutables que existen en un plano separado. El caballo que ves es una imitación imperfecta de la Idea de Caballo — perfecta, eterna, inamovible. Jung reconoce explícitamente que sus arquetipos son la versión psicológica de las Ideas platónicas. La diferencia: para Platón las Ideas existen objetivamente fuera de la mente; para Jung los arquetipos existen como estructuras de la psique. Pero ambos señalan lo mismo: hay formas que no son aprendidas sino encontradas.',
+    right: 'La teoría de las Ideas (Platón, República VII, ~380 a.C.): el mito de la caverna. Los tres niveles: Ideas (ἰδέαι) → objetos físicos → sombras/imágenes. La Idea del Bien: el sol del mundo inteligible. El demiurgo: artesano divino que modela el mundo según las Ideas eternas. La anamnesis: el conocimiento como recuerdo — el alma ya conocía las Ideas antes de nacer. Jung sobre Platón: "El arquetipo es el correlato psicológico de la Idea platónica." El debate moderno: realismo vs nominalismo, platonismo matemático (Hardy, Penrose).',
+    draw: drawPlato
+  },
+  {
+    era: 'La Cábala · El Árbol de la Vida',
+    title: 'Las Sefirot como Arquetipos',
+    author: 'El universo como psique',
+    left: 'Las diez sefirot del Árbol de la Vida son los arquetipos de la tradición cabalística. Keter es la Corona — el Sí-mismo en su forma más elevada, el punto donde lo divino se manifiesta. Tiferet es la Belleza — el corazón del árbol, el punto de equilibrio, el Cristo, el arquetipo solar. Malkut es el Reino — el mundo manifestado, el cuerpo, la realidad concreta. Los caminos entre las sefirot son las relaciones entre los arquetipos. El Árbol entero es el mapa de la psique total, el cosmos y Dios simultáneamente — porque para la Cábala son lo mismo.',
+    right: 'Las 10 sefirot como arquetipos: Keter (corona/totalidad) → Chokmah (sabiduría/padre) → Binah (comprensión/madre) → Chesed (misericordia/amor) → Gevurah (fuerza/límite) → Tiferet (belleza/self) → Netzach (victoria/eros) → Hod (esplendor/logos) → Yesod (fundamento/inconsciente) → Malkut (reino/cuerpo). Las correspondencias con Jung: Tiferet = Self, Yesod = inconsciente personal, Keter = Sí-mismo transpersonal. El Árbol como mandala: simetría bilateral del mapa psíquico completo.',
+    draw: drawKabbalah
+  },
+  {
+    era: 'Mitología comparada · Campbell · Eliade',
+    title: 'Los Mitos del Mundo',
+    author: 'Un solo fuego, mil nombres',
+    left: 'Mircea Eliade estudia las religiones del mundo y descubre que todas describen el mismo tiempo sagrado —el illud tempus, el tiempo primordial— donde los arquetipos actúan en su forma pura. El mito no es mentira: es la verdad de las estructuras profundas expresada en imágenes. El diluvio universal aparece en Mesopotamia, Grecia, India, China, América Central, África. El dios que muere y resucita: Osiris, Dioniso, Adonis, Jesús, Perséfone. La doncella raptada al inframundo: Perséfone, Eurídice, Inanna. Son el mismo relato porque nacen de la misma psique.',
+    right: 'Mircea Eliade ("El Mito del Eterno Retorno", 1949): el tiempo mítico como paradigma. El mito del diluvio: documentado en >200 culturas independientes. La muerte y resurrección divina: Osiris (Egipto), Dioniso (Grecia), Adonis (Siria), Tammuz (Babilonia), Jesús (Palestina), Perséfone (Grecia). El descenso al inframundo: Inanna, Orfeo, Heracles, Eneas, Dante. La doncella solar: Eos, Aurora, Ushas (Vedas) — el mismo nombre proto-indoeuropeo. Estructuras comunes: nacimiento milagroso, pruebas, muerte simbólica, resurrección, ascensión.',
+    draw: drawMyths
+  },
+  {
+    era: 'Arte · Ritual · Psicología',
+    title: 'El Mandala',
+    author: 'La imagen del Sí-mismo',
+    left: 'El mandala —círculo con estructura cuadrada o cruciforme inscrita— aparece espontáneamente en los sueños de personas que atraviesan períodos de crisis y transformación. Jung lo descubrió en sus propios sueños durante su confrontación con el inconsciente (1913-1919). Lo encontró después en el arte tibetano, en las rosas de las catedrales medievales, en los yantras indios, en las decoraciones navajo, en los diagramas alquímicos. Ninguno de estos creadores se conocía. Todos estaban dibujando el mismo mapa del mismo territorio: la totalidad de la psique.',
+    right: 'El mandala (sánscrito: "círculo"): en el budismo tibetano, representación de la cosmología y la psique del Buda. Las rosas góticas: mandala en piedra, luz y color — Chartres, Notre Dame. El yantra: mandala geométrico en el hinduismo. El sand painting navajo: mandala ceremonial de curación. Jung y el mandala: dibujaba uno cada mañana durante su "confrontación con el inconsciente". La función psíquica del mandala: centrar, organizar, contener — representar la totalidad. Los cuatro cuadrantes: los cuatro elementos, las cuatro funciones psíquicas (pensamiento, sentimiento, sensación, intuición).',
+    draw: drawMandala
+  },
+  {
+    era: 'Jung · 1952',
+    title: 'La Sincronicidad',
+    author: 'Cuando el arquetipo se manifiesta en el mundo',
+    left: 'Jung llama sincronicidad a la coincidencia significativa entre un estado psíquico y un evento externo que no tienen causa común. Una paciente sueña con un escarabajo dorado — un símbolo de transformación — y al día siguiente aparece en su ventana un escarabeo dorado, especie rarísima en Europa central. El arquetipo activado en la psique parece resonar con el mundo externo. No es causalidad — es significado. Jung propone que los arquetipos no son solo estructuras psíquicas sino campos que conectan lo interior con lo exterior. La materia y la psique son, en su nivel más profundo, la misma cosa.',
+    right: 'Sincronicidad (Jung-Pauli, 1952): coincidencia significativa sin conexión causal. El principio: "acausal connecting principle" — cuarto principio junto con tiempo, espacio y causalidad. El escarabajo de Jung: ejemplo paradigmático durante una sesión terapéutica crucial. La colaboración Jung-Pauli: el físico Wolfgang Pauli (Premio Nobel 1945) y Jung desarrollan conjuntamente la idea. La unus mundus: el sustrato unificado de materia y psique postulado por los alquimistas. La mecánica cuántica y la sincronicidad: la no-localidad cuántica como posible mecanismo. El debate continúa — sin resolución.',
+    draw: drawSynchronicity
+  },
+  {
+    era: 'Cultura contemporánea',
+    title: 'Los Arquetipos Hoy',
+    author: 'Cine, publicidad, política y mitos modernos',
+    left: 'Los arquetipos no murieron con los dioses antiguos — emigraron a las pantallas. El héroe jungiano vive en Luke Skywalker, en Katniss Everdeen, en Neo. La Sombra es Darth Vader, Sauron, Voldemort — y también el villano que secretamente admiramos porque expresa lo que nosotros reprimimos. La publicidad usa arquetipos con precisión clínica: Apple es el Rebelde, Nike es el Héroe, Dove es la Gran Madre. Los políticos que movilizan masas lo hacen activando arquetipos — para bien y para mal. Los arquetipos son el lenguaje del poder colectivo.',
+    right: 'El sistema de arquetipos de marca (Mark/Pearson, 2001): 12 arquetipos aplicados al marketing. El Héroe (Nike, FedEx), el Rebelde (Apple, Harley-Davidson), el Sabio (Google, PBS), la Gran Madre (Dove), el Bufón/Trickster (M&M\'s, Old Spice). Los arquetipos en el cine: la "plantilla heroica" de Vogler aplicada a más del 80% del cine de Hollywood. Los arquetipos en política: el demagogo activa la Sombra colectiva (el chivo expiatorio). El liderazgo transformacional activa el arquetipo heroico. La psicología de masas (Freud, Jung, Le Bon): los grupos inconscientes son más arcaicos que los individuos.',
+    draw: drawCulture
+  },
+  {
+    era: 'El retorno · ahora',
+    title: 'Tú y tus Arquetipos',
+    author: 'El mapa que eres',
+    left: 'En este momento, algún arquetipo está activo en ti. Quizás el Héroe —enfrentando algo difícil con voluntad de transformarte. Quizás la Sombra —proyectando en alguien lo que no quieres ver en ti. Quizás el Niño —buscando maravillarte con algo. Quizás el Anciano Sabio —reconociendo un patrón que ya viste antes. No los elegiste. Emergieron. El trabajo no es elegir otros arquetipos sino hacer consciente cuál opera y desde qué nivel. Porque el mismo arquetipo puede ser prisión o puerta, dependiendo de si lo vives dormido o despierto.',
+    right: 'El proceso de individuación (Jung): hacerse consciente de los arquetipos que operan en uno, integrar la Sombra, relacionarse con el Anima/Animus, orientarse hacia el Sí-mismo. No es un proceso lineal ni un estado final. "La individuación es un proceso, no un logro" (Jung). El análisis jungiano: trabajo con sueños, activa imaginación, amplificación de imágenes. Las cuatro etapas: confrontación con la Persona → con la Sombra → con el Anima/Animus → con el Sí-mismo. La pregunta final: ¿qué historia está contando tu vida sin que tú lo sepas?',
+    draw: drawReturn
+  }
+];
+
+/* ══════════════════════════════════════
+   ESTADO Y NAVEGACIÓN
+══════════════════════════════════════ */
+let currentStep=-1, isAnimating=false;
+const canvas=document.getElementById('main-canvas');
+const ctx=canvas.getContext('2d');
+const DPR=window.devicePixelRatio||1;
+let W,H,CX,CY,animFrame,t=0;
+
+function resize(){
+  W=window.innerWidth;H=window.innerHeight;
+  canvas.width=W*DPR;canvas.height=H*DPR;
+  canvas.style.width=W+'px';canvas.style.height=H+'px';
+  CX=canvas.width/2;CY=canvas.height/2;
+}
+resize();window.addEventListener('resize',resize);
+
+const dotsEl=document.getElementById('dots');
+STEPS.forEach((_,i)=>{
+  const d=document.createElement('div');
+  d.className='dot';d.onclick=()=>goTo(i);dotsEl.appendChild(d);
+});
+function updateDots(){
+  document.querySelectorAll('.dot').forEach((d,i)=>d.classList.toggle('active',i===currentStep));
+}
+
+document.addEventListener('touchstart',()=>{try{getAC().resume();}catch(e){}},{once:true});
+document.addEventListener('click',()=>{try{getAC().resume();}catch(e){}},{once:true});
+
+function goTo(idx){
+  if(isAnimating)return;
+  if(idx>=STEPS.length){showFinal();return;}
+  if(idx<0){showIntro();return;}
+  isAnimating=true;
+  const panel=document.getElementById('step-panel');
+  panel.classList.add('hiding');
+  setTimeout(()=>{
+    currentStep=idx;const s=STEPS[idx];
+    playArchetype(ARCH_SOUNDS[idx]);
+    document.getElementById('s-era').textContent=s.era;
+    document.getElementById('s-title').textContent=s.title;
+    document.getElementById('s-author').textContent=s.author;
+    document.getElementById('s-left').textContent=s.left;
+    document.getElementById('s-right').textContent=s.right;
+    document.getElementById('s-nav').textContent=
+      idx<STEPS.length-1?'· toca para continuar ·':'· toca para cerrar ·';
+    document.getElementById('step-wrapper').style.display='block';
+    const intro=document.getElementById('intro-wrap');
+    intro.style.opacity='0';intro.style.pointerEvents='none';
+    t=0;if(animFrame)cancelAnimationFrame(animFrame);
+    startAnim(s.draw);
+    panel.classList.remove('hiding');updateDots();isAnimating=false;
+  },400);
+}
+function showIntro(){
+  currentStep=-1;
+  document.getElementById('step-wrapper').style.display='none';
+  const intro=document.getElementById('intro-wrap');
+  intro.style.opacity='1';intro.style.pointerEvents='all';
+  t=0;if(animFrame)cancelAnimationFrame(animFrame);
+  startAnim(drawIntroAnim);updateDots();
+  setTimeout(()=>playIntroSound(),300);
+}
+function showFinal(){
+  if(animFrame)cancelAnimationFrame(animFrame);
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  document.getElementById('final-screen').classList.add('show');
+  document.getElementById('step-wrapper').style.display='none';
+  setTimeout(()=>playArchetype('return'),200);
+}
+function restart(){
+  document.getElementById('final-screen').classList.remove('show');
+  setTimeout(()=>showIntro(),300);
+}
+function next(){
+  if(currentStep===-1){goTo(0);return;}
+  if(currentStep>=STEPS.length-1){showFinal();return;}
+  goTo(currentStep+1);
+}
+function prev(){
+  if(currentStep<=0){showIntro();return;}
+  goTo(currentStep-1);
+}
+document.addEventListener('click',()=>next());
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowRight'||e.key===' ')next();
+  if(e.key==='ArrowLeft')prev();
+});
+let tx0=0;
+document.addEventListener('touchstart',e=>{tx0=e.touches[0].clientX;},{passive:true});
+document.addEventListener('touchend',e=>{
+  const dx=e.changedTouches[0].clientX-tx0;
+  if(Math.abs(dx)<30)next();else if(dx>60)prev();
+},{passive:true});
+
+function startAnim(fn){
+  function loop(){t+=.011;ctx.clearRect(0,0,canvas.width,canvas.height);fn();animFrame=requestAnimationFrame(loop);}
+  animFrame=requestAnimationFrame(loop);
+}
+
+/* HELPERS */
+function dot(x,y,r,col){ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fillStyle=col;ctx.fill();}
+function circ(x,y,r,col,lw){ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.strokeStyle=col;ctx.lineWidth=lw||.8;ctx.stroke();}
+function ln(x1,y1,x2,y2,col,lw){ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.strokeStyle=col;ctx.lineWidth=lw||.8;ctx.stroke();}
+function glow(x,y,r,col){
+  const g=ctx.createRadialGradient(x,y,0,x,y,r);
+  g.addColorStop(0,col.replace(/[\d.]+\)$/,'.18)'));
+  g.addColorStop(1,col.replace(/[\d.]+\)$/,'0)'));
+  ctx.fillStyle=g;ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fill();
+}
+function txt(s,x,y,col,size,align){
+  ctx.save();ctx.font=`italic ${size||9*DPR}px 'Times New Roman'`;
+  ctx.fillStyle=col||'rgba(200,168,75,.25)';ctx.textAlign=align||'center';
+  ctx.fillText(s,x,y);ctx.restore();
+}
+function txtC(s,x,y,col,size){
+  ctx.save();ctx.font=`${size||10*DPR}px 'Cinzel Decorative',serif`;
+  ctx.fillStyle=col||'rgba(200,168,75,.35)';ctx.textAlign='center';ctx.textBaseline='middle';
+  ctx.fillText(s,x,y);ctx.restore();
+}
+
+/* ══════════════════════════════════════
+   ANIMACIONES
+══════════════════════════════════════ */
+
+/* INTRO — el símbolo ☉ con capas emergiendo */
+function drawIntroAnim(){
+  const R=Math.min(W,H)*.3*DPR;
+  for(let i=5;i>=1;i--){
+    const r=R*(i*.18+.05);
+    const alpha=.04+Math.sin(t*.4+i)*.02;
+    circ(CX,CY,r*(1+Math.sin(t*.3+i*.5)*.015),`rgba(200,168,75,${alpha})`,.6);
+  }
+  const ps=4+Math.sin(t*1.5)*1.5;
+  dot(CX,CY,ps*DPR,'rgba(200,168,75,.85)');
+  glow(CX,CY,R*.22,'rgba(200,168,75,.85)');
+  // Rayos del símbolo solar
+  for(let i=0;i<12;i++){
+    const a=i/12*Math.PI*2+t*.04;
+    const r1=R*.22,r2=R*.35+Math.sin(t*.8+i)*.02*R;
+    ln(CX+Math.cos(a)*r1,CY+Math.sin(a)*r1,
+       CX+Math.cos(a)*r2,CY+Math.sin(a)*r2,
+       `rgba(200,168,75,${.1+Math.sin(t+i)*.04})`,.8);
+  }
+}
+
+/* 0: INCONSCIENTE COLECTIVO */
+function drawCollective(){
+  const R=Math.min(W,H)*.29*DPR;
+  // Capas concéntricas — consciente, inconsciente personal, colectivo
+  const layers=[
+    {r:.25,label:'Yo consciente',col:'rgba(200,168,75,'},
+    {r:.52,label:'Inconsciente personal',col:'rgba(90,184,212,'},
+    {r:.85,label:'Inconsciente colectivo',col:'rgba(78,158,104,'},
+  ];
+  layers.forEach(({r,label,col},i)=>{
+    const pulse=1+Math.sin(t*.4+i*.7)*.018;
+    circ(CX,CY,R*r*pulse,col+(.2-i*.04)+')',1-i*.15);
+    const ag=ctx.createRadialGradient(CX,CY,R*(r-.08)*pulse,CX,CY,R*r*pulse);
+    ag.addColorStop(0,col+'0)');ag.addColorStop(1,col+'.04)');
+    ctx.fillStyle=ag;ctx.beginPath();ctx.arc(CX,CY,R*r*pulse,0,Math.PI*2);ctx.fill();
+    txt(label,CX,CY-R*r*pulse-R*.07,col+'.28)',8.5*DPR);
+  });
+  // Figuras míticas emergiendo desde las profundidades
+  const figures=['☉','☽','♂','♀','♃','♄'];
+  figures.forEach((f,i)=>{
+    const a=i/figures.length*Math.PI*2+t*.05;
+    const r=R*.75+Math.sin(t*.3+i)*.04*R;
+    ctx.save();ctx.font=`${12*DPR}px 'Times New Roman'`;
+    ctx.fillStyle=`rgba(200,168,75,${.18+Math.sin(t*.5+i)*.06})`;
+    ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText(f,CX+Math.cos(a)*r,CY+Math.sin(a)*r);ctx.restore();
+  });
+  dot(CX,CY,4*DPR,'rgba(200,168,75,.8)');
+  glow(CX,CY,R*.12,'rgba(200,168,75,.8)');
+  txt('tres capas · mismo origen · una psique',CX,CY+R*1.0,'rgba(200,168,75,.2)',8.5*DPR);
+}
+
+/* 1: LA SOMBRA */
+function drawShadow(){
+  const R=Math.min(W,H)*.29*DPR;
+  // La figura y su sombra
+  const lightA=t*.1;
+  const lightX=CX+Math.cos(lightA)*R*.5;
+  const lightY=CY-R*.6;
+  // La figura
+  const figX=CX, figY=CY+R*.1;
+  // La sombra proyectada
+  const shadowLen=1.6;
+  const dx=figX-lightX, dy=figY-lightY;
+  const norm=Math.sqrt(dx*dx+dy*dy);
+  const sx=figX+dx/norm*R*shadowLen, sy=figY+dy/norm*R*shadowLen;
+  // Gradiente de la sombra
+  const sg=ctx.createRadialGradient(figX,figY,0,sx,sy,R*.5);
+  sg.addColorStop(0,'rgba(3,6,10,.75)');sg.addColorStop(1,'rgba(3,6,10,0)');
+  ctx.fillStyle=sg;
+  ctx.beginPath();ctx.ellipse(sx,sy,R*.28,R*.12,-Math.atan2(dy,dx),0,Math.PI*2);
+  ctx.fill();
+  // La figura — círculo de luz
+  circ(figX,figY,R*.18,'rgba(200,168,75,.35)',1);
+  glow(figX,figY,R*.22,'rgba(200,168,75,.7)');
+  dot(figX,figY,5*DPR,'rgba(200,168,75,.85)');
+  // La luz
+  glow(lightX,lightY,R*.12,'rgba(200,168,75,.45)');
+  dot(lightX,lightY,3*DPR,'rgba(200,168,75,.6)');
+  // Lo que está en la sombra — figuras tenues
+  const shadowFigs=['ira','miedo','vergüenza','envidia','poder'];
+  shadowFigs.forEach((s,i)=>{
+    const a=Math.atan2(sy-figY,sx-figX)+(-0.4+i*.2);
+    const r=R*(.4+i*.12);
+    txt(s,figX+Math.cos(a)*r,figY+Math.sin(a)*r,'rgba(200,168,75,.18)',8*DPR);
+  });
+  txt('lo que más te irrita de otro · vive en ti',CX,CY+R*.85,'rgba(200,168,75,.2)',8.5*DPR);
+}
+
+/* 2: EL HÉROE */
+function drawHero(){
+  const R=Math.min(W,H)*.28*DPR;
+  // El viaje heroico como círculo
+  const stages=[
+    'Mundo ordinario','Llamada','Cruce del umbral',
+    'Pruebas','La cueva','La crisis suprema',
+    'La recompensa','El camino de vuelta','Retorno'
+  ];
+  const n=stages.length;
+  const progress=(t*.12)%1;
+  const heroAngle=progress*Math.PI*2-Math.PI/2;
+  stages.forEach((stage,i)=>{
+    const a=i/n*Math.PI*2-Math.PI/2;
+    const r=R*.72;
+    const px=CX+Math.cos(a)*r,py=CY+Math.sin(a)*r;
+    const isActive=Math.abs(((progress*n)-i+n)%n)<.8;
+    dot(px,py,(isActive?6:3.5)*DPR,`rgba(200,168,75,${isActive?.85:.3})`);
+    if(isActive) glow(px,py,R*.12,'rgba(200,168,75,.85)');
+    txt(stage,px+(px>CX?R*.1:-R*.1),py+(py>CY?R*.12:-R*.08),
+      `rgba(200,168,75,${isActive?.55:.2})`,(isActive?9:7.5)*DPR,
+      px>CX?'left':'right');
+  });
+  // El héroe viajando
+  const hx=CX+Math.cos(heroAngle)*R*.72;
+  const hy=CY+Math.sin(heroAngle)*R*.72;
+  dot(hx,hy,5*DPR,'rgba(200,168,75,.9)');
+  // Estela del héroe
+  for(let i=1;i<=15;i++){
+    const pa=(progress-.012*i)*Math.PI*2-Math.PI/2;
+    dot(CX+Math.cos(pa)*R*.72,CY+Math.sin(pa)*R*.72,
+      (3-i*.15)*DPR,`rgba(200,168,75,${.45-i*.028})`);
+  }
+  // La conexión al centro
+  ln(CX,CY,hx,hy,'rgba(200,168,75,.08)',.6);
+  dot(CX,CY,3*DPR,'rgba(200,168,75,.5)');
+  txt('el monomito · Campbell · la única historia',CX,CY+R*.06,'rgba(200,168,75,.2)',8.5*DPR);
+}
+
+/* 3: LA GRAN MADRE */
+function drawMother(){
+  const R=Math.min(W,H)*.29*DPR;
+  // El círculo maternal — todo lo contiene
+  const pulse=1+Math.sin(t*.5)*.025;
+  for(let i=3;i>=1;i--){
+    const r=R*(i*.28)*pulse;
+    circ(CX,CY,r,`rgba(200,168,75,${.14-i*.03})`,.8);
+    const mg=ctx.createRadialGradient(CX,CY,0,CX,CY,r);
+    mg.addColorStop(0,`rgba(200,168,75,0)`);mg.addColorStop(1,`rgba(200,168,75,.03)`);
+    ctx.fillStyle=mg;ctx.beginPath();ctx.arc(CX,CY,r,0,Math.PI*2);ctx.fill();
+  }
+  // Las dos caras: nutricia y terrible
+  const faces=[
+    {label:'Isis',sub:'Deméter·María',x:-.55,y:-.28,col:'rgba(200,168,75,',sym:'☽'},
+    {label:'Kali',sub:'Hécate·Medusa',x:.55,y:-.28,col:'rgba(196,122,106,',sym:'✦'},
+  ];
+  faces.forEach(({label,sub,x,y,col,sym})=>{
+    const px=CX+x*R,py=CY+y*R;
+    const isLit=Math.floor(t*.3)%2===(x<0?0:1);
+    glow(px,py,R*.18,col+(isLit?.7:.4)+')');
+    ctx.save();ctx.font=`${(isLit?16:12)*DPR}px 'Times New Roman'`;
+    ctx.fillStyle=col+(isLit?.75:.35)+')';
+    ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText(sym,px,py-R*.04);ctx.restore();
+    txt(label,px,py+R*.14,col+(isLit?.5:.25)+')',(isLit?10:9)*DPR);
+    txt(sub,px,py+R*.28,col+(isLit?.3:.15)+')',7.5*DPR);
+  });
+  // La Venus de Willendorf en el centro
+  dot(CX,CY,5*DPR,'rgba(200,168,75,.8)');
+  glow(CX,CY,R*.15,'rgba(200,168,75,.8)');
+  txt('~28,000 a.C.',CX,CY+R*.12,'rgba(200,168,75,.25)',7.5*DPR);
+  // Las semillas que germinan
+  for(let i=0;i<8;i++){
+    const a=i/8*Math.PI*2+t*.06;
+    const r=R*.5+Math.sin(t*.4+i)*.04*R;
+    dot(CX+Math.cos(a)*r,CY+Math.sin(a)*r,2*DPR,'rgba(78,158,104,.35)');
+  }
+  txt('la madre que nutre y devora · el ciclo completo',CX,CY+R*.75,'rgba(200,168,75,.2)',8.5*DPR);
+}
+
+/* 4: EL PADRE / ANCIANO SABIO */
+function drawFather(){
+  const R=Math.min(W,H)*.28*DPR;
+  // El pilar — la columna que sostiene
+  const pillarW=R*.1, pillarH=R*.9;
+  ctx.beginPath();ctx.rect(CX-pillarW/2,CY-pillarH/2,pillarW,pillarH);
+  ctx.fillStyle='rgba(200,168,75,.06)';ctx.fill();
+  ctx.strokeStyle='rgba(200,168,75,.28)';ctx.lineWidth=1;ctx.stroke();
+  // Capital y base
+  ctx.beginPath();ctx.rect(CX-pillarW,CY-pillarH/2,pillarW*2,pillarH*.08);
+  ctx.fillStyle='rgba(200,168,75,.12)';ctx.fill();
+  ctx.beginPath();ctx.rect(CX-pillarW,CY+pillarH/2-pillarH*.08,pillarW*2,pillarH*.08);
+  ctx.fillStyle='rgba(200,168,75,.12)';ctx.fill();
+  // Las dos manifestaciones
+  const aspects=[
+    {label:'El Rey',sub:'Zeus · Odin · Yahwé',x:-.55,y:-.1,col:'rgba(200,168,75,',sym:'♔'},
+    {label:'El Sabio',sub:'Merlín · Gandalf · Virgilio',x:.55,y:-.1,col:'rgba(90,184,212,',sym:'☿'},
+  ];
+  aspects.forEach(({label,sub,x,y,col,sym},i)=>{
+    const px=CX+x*R,py=CY+y*R;
+    const isLit=Math.floor(t*.35)%2===i;
+    glow(px,py,R*.15,col+(isLit?.65:.35)+')');
+    ctx.save();ctx.font=`${(isLit?15:12)*DPR}px 'Times New Roman'`;
+    ctx.fillStyle=col+(isLit?.7:.3)+')';
+    ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText(sym,px,py);ctx.restore();
+    txt(label,px,py+R*.18,col+(isLit?.5:.25)+')',(isLit?10:9)*DPR);
+    txt(sub,px,py+R*.32,col+(isLit?.28:.15)+')',7.5*DPR);
+    ln(CX,CY,px,py,'rgba(200,168,75,.07)',.6);
+  });
+  // La ley — líneas de orden
+  for(let i=-3;i<=3;i++){
+    if(i===0) continue;
+    const lx=CX+i*R*.22;
+    ln(lx,CY-R*.42,lx,CY+R*.42,`rgba(200,168,75,${.04+Math.abs(i)*.01})`,.4);
+  }
+  txt('la ley que hace posible la estructura',CX,CY+R*.72,'rgba(200,168,75,.2)',8.5*DPR);
+}
+
+/* 5: EL NIÑO DIVINO */
+function drawChild(){
+  const R=Math.min(W,H)*.28*DPR;
+  // El niño emergiendo — la estrella
+  const starR=R*.55+Math.sin(t*.6)*.02*R;
+  const nPoints=8;
+  ctx.beginPath();
+  for(let i=0;i<nPoints*2;i++){
+    const a=i/nPoints*Math.PI-Math.PI/2;
+    const r=i%2===0?starR:starR*.42;
+    i===0?ctx.moveTo(CX+Math.cos(a)*r,CY+Math.sin(a)*r):
+           ctx.lineTo(CX+Math.cos(a)*r,CY+Math.sin(a)*r);
+  }
+  ctx.closePath();
+  ctx.strokeStyle='rgba(200,168,75,.3)';ctx.lineWidth=.8;ctx.stroke();
+  ctx.fillStyle='rgba(200,168,75,.04)';ctx.fill();
+  // El niño en el centro — punto luminoso creciendo
+  const ps=5+Math.sin(t*2)*2;
+  dot(CX,CY,ps*DPR,'rgba(200,168,75,.88)');
+  glow(CX,CY,R*.25,'rgba(200,168,75,.88)');
+  // Las circunstancias imposibles de su nacimiento
+  const births=['en un establo','en el río','en la oscuridad','en el exilio'];
+  births.forEach((b,i)=>{
+    const a=i/births.length*Math.PI*2-Math.PI/2;
+    txt(b,CX+Math.cos(a)*R*.82,CY+Math.sin(a)*R*.82,'rgba(200,168,75,.22)',8*DPR);
+  });
+  // Las semillas del futuro
+  for(let i=0;i<16;i++){
+    const a=i/16*Math.PI*2+t*.08;
+    const r=R*(.28+(t*.1+i/16)%1*.5);
+    const alpha=.15*(1-(r-R*.28)/(R*.5));
+    if(alpha>0.01) dot(CX+Math.cos(a)*r,CY+Math.sin(a)*r,1.5*DPR,`rgba(200,168,75,${alpha})`);
+  }
+  txt('nace donde el orden no puede nacer · y lo transforma',CX,CY+R*.82,'rgba(200,168,75,.2)',8.5*DPR);
+}
+
+/* 6: ANIMA / ANIMUS */
+function drawAnima(){
+  const R=Math.min(W,H)*.28*DPR;
+  // Dos espirales entrelazadas — el yin-yang
+  const phase=t*.3;
+  // Espiral femenina — Anima
+  ctx.beginPath();let first=true;
+  for(let i=0;i<=400;i++){
+    const angle=i/400*Math.PI*6+phase;
+    const r=(i/400)*R*.65;
+    const x=CX+Math.cos(angle)*r*Math.cos(Math.PI*.15);
+    const y=CY+Math.sin(angle)*r;
+    first?(ctx.moveTo(x,y),first=false):ctx.lineTo(x,y);
+  }
+  ctx.strokeStyle='rgba(200,168,75,.35)';ctx.lineWidth=.9;ctx.stroke();
+  // Espiral masculina — Animus
+  ctx.beginPath();first=true;
+  for(let i=0;i<=400;i++){
+    const angle=i/400*Math.PI*6+phase+Math.PI;
+    const r=(i/400)*R*.65;
+    const x=CX+Math.cos(angle)*r*Math.cos(Math.PI*.15);
+    const y=CY+Math.sin(angle)*r;
+    first?(ctx.moveTo(x,y),first=false):ctx.lineTo(x,y);
+  }
+  ctx.strokeStyle='rgba(90,184,212,.3)';ctx.lineWidth=.9;ctx.stroke();
+  // Los puntos polares
+  const femX=CX+R*.45,masX=CX-R*.45;
+  dot(femX,CY,5*DPR,'rgba(200,168,75,.7)');
+  dot(masX,CY,5*DPR,'rgba(90,184,212,.65)');
+  glow(femX,CY,R*.12,'rgba(200,168,75,.7)');
+  glow(masX,CY,R*.12,'rgba(90,184,212,.65)');
+  txt('Anima',femX,CY-R*.18,'rgba(200,168,75,.4)',9.5*DPR);
+  txt('Animus',masX,CY-R*.18,'rgba(90,184,212,.38)',9.5*DPR);
+  // Los niveles de la Anima
+  ['Eva','Helena','María','Sofía'].forEach((l,i)=>{
+    txt(l,femX+R*.15,CY-R*.3+i*R*.2,`rgba(200,168,75,${.15+i*.04})`,8*DPR,'left');
+  });
+  // El hierogamos — la unión
+  dot(CX,CY,3.5*DPR,'rgba(200,168,75,.6)');
+  txt('el matrimonio interior',CX,CY+R*.75,'rgba(200,168,75,.2)',8.5*DPR);
+}
+
+/* 7: EL EMBAUCADOR */
+function drawTrickster(){
+  const R=Math.min(W,H)*.28*DPR;
+  // El Embaucador — formas que cambian, límites cruzados
+  const nShapes=7;
+  for(let i=0;i<nShapes;i++){
+    const baseA=i/nShapes*Math.PI*2+t*(0.08+i*.015);
+    const r=R*(.45+Math.sin(t*.5+i)*.15);
+    const px=CX+Math.cos(baseA)*r,py=CY+Math.sin(baseA)*r;
+    // Cada forma cambia de tipo aleatoriamente
+    const shapeType=Math.floor((t*.4+i)%3);
+    const col=i%3===0?'rgba(200,168,75,':i%3===1?'rgba(78,158,104,':'rgba(196,122,106,';
+    if(shapeType===0){
+      circ(px,py,R*.08,col+'.45)',.8);
+    } else if(shapeType===1){
+      ctx.save();ctx.translate(px,py);ctx.rotate(t*.3+i);
+      ctx.beginPath();ctx.rect(-R*.06,-R*.06,R*.12,R*.12);
+      ctx.strokeStyle=col+'.4)';ctx.lineWidth=.8;ctx.stroke();ctx.restore();
+    } else {
+      ctx.save();ctx.translate(px,py);ctx.rotate(t*.2+i);
+      ctx.beginPath();
+      for(let k=0;k<3;k++){const a=k/3*Math.PI*2-Math.PI/2;k===0?ctx.moveTo(Math.cos(a)*R*.08,Math.sin(a)*R*.08):ctx.lineTo(Math.cos(a)*R*.08,Math.sin(a)*R*.08);}
+      ctx.closePath();ctx.strokeStyle=col+'.38)';ctx.lineWidth=.8;ctx.stroke();ctx.restore();
+    }
+    // Nombre del Trickster
+    const names=['Loki','Coyote','Anansi','Hermes','Wakdjunkaga','Raven','Elegba'];
+    txt(names[i],px,py-R*.14,col+'.25)',7.5*DPR);
+  }
+  // El Embaucador en el centro — inestable
+  const jitter=Math.sin(t*7)*.8*DPR;
+  dot(CX+jitter,CY+Math.cos(t*5)*.6*DPR,4*DPR,'rgba(200,168,75,.75)');
+  glow(CX,CY,R*.12,'rgba(200,168,75,.55)');
+  txt('sin el caos · el cosmos se petrifica',CX,CY+R*.78,'rgba(200,168,75,.2)',8.5*DPR);
+}
+
+/* 8: EL SÍ-MISMO */
+function drawSelf(){
+  const R=Math.min(W,H)*.29*DPR;
+  // El mandala del Sí-mismo — cuatro cuadrantes
+  const cols=['rgba(200,168,75,','rgba(90,184,212,','rgba(78,158,104,','rgba(196,122,106,'];
+  // Los cuatro cuadrantes
+  for(let i=0;i<4;i++){
+    const a1=i/4*Math.PI*2-Math.PI/2, a2=(i+1)/4*Math.PI*2-Math.PI/2;
+    ctx.beginPath();ctx.moveTo(CX,CY);
+    ctx.arc(CX,CY,R*.72,a1,a2);ctx.closePath();
+    ctx.fillStyle=cols[i]+'0.04)';ctx.fill();
+    ctx.strokeStyle=cols[i]+'0.2)';ctx.lineWidth=.7;ctx.stroke();
+  }
+  // Círculos concéntricos del mandala
+  [.25,.48,.72].forEach(r=>{
+    const pulse=1+Math.sin(t*.4+r)*.015;
+    circ(CX,CY,R*r*pulse,'rgba(200,168,75,.18)',.7);
+  });
+  // Los cuatro funciones — en los ejes
+  const funcs=[
+    {label:'pensamiento',a:-Math.PI/2,col:cols[0]},
+    {label:'sentimiento',a:0,col:cols[1]},
+    {label:'sensación',a:Math.PI/2,col:cols[2]},
+    {label:'intuición',a:Math.PI,col:cols[3]},
+  ];
+  funcs.forEach(({label,a,col})=>{
+    txt(label,CX+Math.cos(a)*R*.9,CY+Math.sin(a)*R*.9,col+'.3)',8.5*DPR);
+  });
+  // El punto central — el Self
+  const ps=5+Math.sin(t*1.2)*2;
+  dot(CX,CY,ps*DPR,'rgba(200,168,75,.9)');
+  glow(CX,CY,R*.18,'rgba(200,168,75,.9)');
+  txt('Self',CX,CY-R*.04,'rgba(200,168,75,.45)',9.5*DPR);
+  txt('centro y totalidad · no conquista · rendición',CX,CY+R*.85,'rgba(200,168,75,.2)',8.5*DPR);
+}
+
+/* 9: PLATÓN */
+function drawPlato(){
+  const R=Math.min(W,H)*.28*DPR;
+  // El mito de la caverna — tres planos
+  const planos=[
+    {y:-.55,label:'Las Ideas · lo eterno',col:'rgba(200,168,75,',r:1},
+    {y:-.05,label:'Los objetos · lo físico',col:'rgba(90,184,212,',r:.65},
+    {y:.5,label:'Las sombras · las copias',col:'rgba(78,158,104,',r:.4},
+  ];
+  planos.forEach(({y,label,col,r},i)=>{
+    const py=CY+y*R;
+    // El plano horizontal
+    const lg=ctx.createLinearGradient(CX-R*.8,py,CX+R*.8,py);
+    lg.addColorStop(0,col+'0)');lg.addColorStop(.15,col+(r*.3)+')');
+    lg.addColorStop(.85,col+(r*.3)+')');lg.addColorStop(1,col+'0)');
+    ctx.beginPath();ctx.moveTo(CX-R*.8,py);ctx.lineTo(CX+R*.8,py);
+    ctx.strokeStyle=lg;ctx.lineWidth=.8;ctx.stroke();
+    // Los objetos en ese plano
+    const nObj=Math.floor(3+i);
+    for(let j=0;j<nObj;j++){
+      const ox=CX-R*.55+j*(R*1.1/(nObj-1));
+      const isLit=Math.floor(t*.5+i)%(nObj)===j;
+      circ(ox,py,R*(.06*r),col+(isLit?.5:.2)+(isLit?.8:.4)+')',isLit?.8:.5);
+    }
+    txt(label,CX+R*.68,py,col+'.3)',8.5*DPR,'left');
+  });
+  // Las líneas de proyección — de Ideas a sombras
+  for(let j=0;j<3;j++){
+    const ox=CX-R*.3+j*R*.3;
+    ln(ox,CY-R*.55,ox+R*.1,CY+R*.5,'rgba(200,168,75,.06)',.5);
+  }
+  // La luz — el Bien
+  glow(CX,CY-R*.72,'rgba(200,168,75,.45)');
+  dot(CX,CY-R*.72,3.5*DPR,'rgba(200,168,75,.7)');
+  txt('☉ El Bien · el sol del mundo inteligible',CX,CY-R*.82,'rgba(200,168,75,.3)',9*DPR);
+}
+
+/* 10: LA CÁBALA */
+function drawKabbalah(){
+  const R=Math.min(W,H)*.28*DPR;
+  const seph=[
+    {name:'Keter',x:0,y:-.88,col:'rgba(200,168,75,.8)',r:.07},
+    {name:'Chokmah',x:.38,y:-.52,col:'rgba(200,168,75,.65)',r:.06},
+    {name:'Binah',x:-.38,y:-.52,col:'rgba(90,184,212,.6)',r:.06},
+    {name:'Chesed',x:.38,y:-.02,col:'rgba(90,184,212,.55)',r:.055},
+    {name:'Gevurah',x:-.38,y:-.02,col:'rgba(196,122,106,.55)',r:.055},
+    {name:'Tiferet',x:0,y:.22,col:'rgba(200,168,75,.7)',r:.07},
+    {name:'Netzach',x:.38,y:.52,col:'rgba(78,158,104,.55)',r:.055},
+    {name:'Hod',x:-.38,y:.52,col:'rgba(200,168,75,.5)',r:.055},
+    {name:'Yesod',x:0,y:.78,col:'rgba(200,168,75,.55)',r:.06},
+    {name:'Malkut',x:0,y:1.02,col:'rgba(78,158,104,.5)',r:.06},
+  ];
+  const paths=[[0,1],[0,2],[0,5],[1,2],[1,3],[1,5],[2,4],[2,5],[3,4],[3,5],[3,6],[4,5],[4,7],[5,6],[5,7],[5,8],[6,7],[6,8],[7,8],[8,9]];
+  // Senderos
+  const litPath=Math.floor(t*.4)%paths.length;
+  paths.forEach(([a,b],i)=>{
+    const sa=seph[a],sb=seph[b];
+    ln(CX+sa.x*R,CY+sa.y*R*.82,CX+sb.x*R,CY+sb.y*R*.82,
+      `rgba(200,168,75,${i===litPath?.35:.08})`,i===litPath?1:.4);
+  });
+  // Sefirot
+  const litSeph=Math.floor(t*.35)%10;
+  seph.forEach(({name,x,y,col,r},i)=>{
+    const px=CX+x*R,py=CY+y*R*.82;
+    const isLit=i===litSeph;
+    circ(px,py,r*R*1.5,col.replace(/[\d.]+\)$/,(isLit?.5:.2)+')'),.8);
+    if(isLit) glow(px,py,r*R*2.5,col);
+    dot(px,py,(isLit?5:3)*DPR,col.replace(/[\d.]+\)$/,(isLit?.9:.45)+')'));
+    if(isLit) txt(name,px,py-r*R*2,'rgba(200,168,75,.55)',9*DPR);
+  });
+  txt('10 sefirot · el mapa de la psique y el cosmos',CX,CY+R*1.04,'rgba(200,168,75,.18)',8*DPR);
+}
+
+/* 11: LOS MITOS */
+function drawMyths(){
+  const R=Math.min(W,H)*.28*DPR;
+  // El mismo mito en distintas culturas
+  const myths=[
+    {name:'Osiris',culture:'Egipto',x:-.72,y:-.35,col:'rgba(200,168,75,'},
+    {name:'Dioniso',culture:'Grecia',x:.0,y:-.62,col:'rgba(90,184,212,'},
+    {name:'Tammuz',culture:'Babilonia',x:.72,y:-.35,col:'rgba(78,158,104,'},
+    {name:'Perséfone',culture:'Grecia',x:.65,y:.35,col:'rgba(196,122,106,'},
+    {name:'Inanna',culture:'Sumer',x:0,y:.65,col:'rgba(200,168,75,'},
+    {name:'Jesús',culture:'Palestina',x:-.65,y:.35,col:'rgba(90,184,212,'},
+  ];
+  // El arquetipo central — muerte y resurrección
+  dot(CX,CY,5*DPR,'rgba(200,168,75,.8)');
+  glow(CX,CY,R*.18,'rgba(200,168,75,.8)');
+  txt('muerte',CX,CY-R*.08,'rgba(200,168,75,.4)',9*DPR);
+  txt('y renacimiento',CX,CY+R*.08,'rgba(200,168,75,.3)',8.5*DPR);
+  const litM=Math.floor(t*.4)%myths.length;
+  myths.forEach(({name,culture,x,y,col},i)=>{
+    const px=CX+x*R,py=CY+y*R;
+    const isLit=i===litM;
+    dot(px,py,(isLit?6:3.5)*DPR,col+(isLit?.85:.35)+')');
+    if(isLit) glow(px,py,R*.15,col+'.85)');
+    ln(CX,CY,px,py,'rgba(200,168,75,'+(isLit?.12:.04)+')',.6);
+    txt(name,px,py-R*.14,col+(isLit?.55:.25)+')',(isLit?10:8.5)*DPR);
+    txt(culture,px,py+R*.06,col+(isLit?.35:.18)+')',7.5*DPR);
+  });
+  txt('el mismo arquetipo · culturas sin contacto · una psique',CX,CY+R*.88,'rgba(200,168,75,.18)',8.5*DPR);
+}
+
+/* 12: EL MANDALA */
+function drawMandala(){
+  const R=Math.min(W,H)*.29*DPR;
+  const rot=t*.025;
+  // El mandala — capas de simetría
+  // Capa exterior — 8 pétalos
+  for(let i=0;i<8;i++){
+    const a=i/8*Math.PI*2+rot;
+    const px=CX+Math.cos(a)*R*.78, py=CY+Math.sin(a)*R*.78;
+    ctx.beginPath();ctx.arc(px,py,R*.15,0,Math.PI*2);
+    ctx.strokeStyle=`rgba(200,168,75,.12)`;ctx.lineWidth=.6;ctx.stroke();
+    ctx.fillStyle='rgba(200,168,75,.03)';ctx.fill();
+  }
+  // Capa media — cuadrado rotado
+  ctx.save();ctx.translate(CX,CY);ctx.rotate(rot*.5+Math.PI/4);
+  ctx.beginPath();ctx.rect(-R*.5,-R*.5,R,R);
+  ctx.strokeStyle='rgba(200,168,75,.18)';ctx.lineWidth=.8;ctx.stroke();
+  ctx.restore();
+  // Círculos concéntricos
+  [.25,.45,.65,.82].forEach((r,i)=>{
+    circ(CX,CY,R*r,`rgba(200,168,75,${.18-i*.03})`,.7);
+  });
+  // Triángulos entrelazados (Estrella de David generalizada)
+  for(let tri=0;tri<2;tri++){
+    ctx.beginPath();
+    for(let k=0;k<3;k++){
+      const a=k/3*Math.PI*2+tri*Math.PI/3+rot*.3;
+      const r=R*.52;
+      k===0?ctx.moveTo(CX+Math.cos(a)*r,CY+Math.sin(a)*r):
+             ctx.lineTo(CX+Math.cos(a)*r,CY+Math.sin(a)*r);
+    }
+    ctx.closePath();
+    ctx.strokeStyle=tri===0?'rgba(200,168,75,.3)':'rgba(90,184,212,.25)';
+    ctx.lineWidth=.8;ctx.stroke();
+    ctx.fillStyle=tri===0?'rgba(200,168,75,.04)':'rgba(90,184,212,.03)';ctx.fill();
+  }
+  // El centro — el punto del Sí-mismo
+  const ps=4+Math.sin(t*1.5)*1.5;
+  dot(CX,CY,ps*DPR,'rgba(200,168,75,.9)');
+  glow(CX,CY,R*.16,'rgba(200,168,75,.9)');
+  txt('aparece espontáneamente en sueños de transformación',CX,CY+R*.98,'rgba(200,168,75,.18)',8.5*DPR);
+}
+
+/* 13: LA SINCRONICIDAD */
+function drawSynchronicity(){
+  const R=Math.min(W,H)*.28*DPR;
+  // El escarabajo de Jung — ejemplo paradigmático
+  // Plano interior — la psique
+  ctx.beginPath();ctx.rect(CX-R*.65,CY-R*.62,R*.58,R*.58);
+  ctx.strokeStyle='rgba(200,168,75,.2)';ctx.lineWidth=.7;ctx.stroke();
+  txt('psique',CX-R*.36,CY-R*.65,'rgba(200,168,75,.2)',7.5*DPR);
+  // El sueño dentro
+  const dreamA=t*.3;
+  ctx.save();ctx.font=`${16*DPR}px 'Times New Roman'`;
+  ctx.fillStyle=`rgba(200,168,75,${.3+Math.sin(t*.8)*.1})`;
+  ctx.textAlign='center';ctx.textBaseline='middle';
+  ctx.fillText('𓆣',CX-R*.36,CY-R*.33); // escarabajo
+  ctx.restore();
+  txt('el sueño',CX-R*.36,CY-R*.15,'rgba(200,168,75,.22)',7.5*DPR);
+  // El plano exterior — la realidad
+  ctx.beginPath();ctx.rect(CX+R*.08,CY-R*.62,R*.58,R*.58);
+  ctx.strokeStyle='rgba(90,184,212,.2)';ctx.lineWidth=.7;ctx.stroke();
+  txt('realidad',CX+R*.37,CY-R*.65,'rgba(90,184,212,.2)',7.5*DPR);
+  // El escarabeo real
+  ctx.save();ctx.font=`${16*DPR}px 'Times New Roman'`;
+  ctx.fillStyle=`rgba(90,184,212,${.25+Math.sin(t*.8+Math.PI)*.1})`;
+  ctx.textAlign='center';ctx.textBaseline='middle';
+  ctx.fillText('𓆣',CX+R*.37,CY-R*.33);
+  ctx.restore();
+  txt('la ventana',CX+R*.37,CY-R*.15,'rgba(90,184,212,.22)',7.5*DPR);
+  // La conexión — sin causa, con significado
+  ctx.save();ctx.setLineDash([4,6]);
+  ln(CX-R*.08,CY-R*.33,CX+R*.08,CY-R*.33,'rgba(200,168,75,.35)',1.2);
+  ctx.setLineDash([]);ctx.restore();
+  txt('sin causa · con significado',CX,CY-R*.33,'rgba(200,168,75,.2)',7.5*DPR);
+  // La ecuación de Jung-Pauli
+  txt('tiempo × espacio × causalidad × sincronicidad',CX,CY+R*.2,'rgba(200,168,75,.25)',8.5*DPR);
+  // La unus mundus — la profundidad compartida
+  const ug=ctx.createRadialGradient(CX,CY+R*.7,0,CX,CY+R*.7,R*.5);
+  ug.addColorStop(0,'rgba(200,168,75,.08)');ug.addColorStop(1,'rgba(200,168,75,0)');
+  ctx.fillStyle=ug;ctx.fillRect(CX-R*.6,CY+R*.3,R*1.2,R*.5);
+  txt('unus mundus · sustrato unificado de materia y psique',CX,CY+R*.72,'rgba(200,168,75,.22)',8.5*DPR);
+}
+
+/* 14: ARQUETIPOS EN LA CULTURA */
+function drawCulture(){
+  const R=Math.min(W,H)*.28*DPR;
+  // Los 12 arquetipos de marca / cultura pop
+  const archs=[
+    {name:'Héroe',sym:'⚔',x:.0,y:-.72,col:'rgba(200,168,75,'},
+    {name:'Rebelde',sym:'✦',x:.55,y:-.52,col:'rgba(196,122,106,'},
+    {name:'Mago',sym:'☿',x:.88,y:-.1,col:'rgba(90,184,212,'},
+    {name:'Inocente',sym:'☽',x:.72,y:.42,col:'rgba(200,168,75,'},
+    {name:'Explorador',sym:'✦',x:.15,y:.82,col:'rgba(78,158,104,'},
+    {name:'Sabio',sym:'☉',x:-.38,y:.75,col:'rgba(200,168,75,'},
+    {name:'Amante',sym:'♀',x:-.8,y:.35,col:'rgba(196,122,106,'},
+    {name:'Bufón',sym:'✦',x:-.88,y:-.15,col:'rgba(78,158,104,'},
+    {name:'Cuidador',sym:'♃',x:-.65,y:-.55,col:'rgba(90,184,212,'},
+    {name:'Gobernante',sym:'♔',x:-.2,y:-.82,col:'rgba(200,168,75,'},
+    {name:'Creador',sym:'✦',x:.38,y:-.75,col:'rgba(200,168,75,'},
+    {name:'Héroe·Sombra',sym:'♄',x:.85,y:.18,col:'rgba(196,122,106,'},
+  ];
+  const lit=Math.floor(t*.4)%archs.length;
+  archs.forEach(({name,sym,x,y,col},i)=>{
+    const px=CX+x*R*.75,py=CY+y*R*.75;
+    const isLit=i===lit;
+    if(isLit) glow(px,py,R*.14,col+'.7)');
+    ctx.save();ctx.font=`${(isLit?13:10)*DPR}px 'Times New Roman'`;
+    ctx.fillStyle=col+(isLit?.7:.3)+')';
+    ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText(sym,px,py);ctx.restore();
+    txt(name,px,py+R*.13,col+(isLit?.45:.18)+')',(isLit?8.5:7)*DPR);
+    ln(CX,CY,px,py,'rgba(200,168,75,.04)',.4);
+  });
+  dot(CX,CY,3.5*DPR,'rgba(200,168,75,.55)');
+  txt('marcas · cine · política · los mismos patrones',CX,CY+R*.08,'rgba(200,168,75,.2)',8*DPR);
+}
+
+/* 15: EL RETORNO */
+function drawReturn(){
+  const R=Math.min(W,H)*.3*DPR;
+  // El mandala del Sí-mismo con todos los arquetipos en órbita
+  // Mandala central
+  [.15,.32,.5,.7,.9].forEach((r,i)=>{
+    const pulse=1+Math.sin(t*.3+i*.6)*.018;
+    circ(CX,CY,R*r*pulse,`rgba(200,168,75,${.18-i*.025})`,.6+(i===0?.4:0));
+  });
+  // Rayos
+  for(let i=0;i<12;i++){
+    const a=i/12*Math.PI*2+t*.03;
+    ln(CX+Math.cos(a)*R*.15,CY+Math.sin(a)*R*.15,
+       CX+Math.cos(a)*R*.88,CY+Math.sin(a)*R*.88,
+       `rgba(200,168,75,.04)`,.5);
+  }
+  // Los arquetipos en órbita
+  const archNames=['Sombra','Héroe','Madre','Padre','Niño','Anima','Trickster'];
+  archNames.forEach((name,i)=>{
+    const a=i/archNames.length*Math.PI*2+t*.05;
+    const r=R*.72;
+    const px=CX+Math.cos(a)*r,py=CY+Math.sin(a)*r;
+    dot(px,py,3.5*DPR,'rgba(200,168,75,.45)');
+    txt(name,px,py-R*.12,'rgba(200,168,75,.25)',8*DPR);
+    circ(px,py,R*.1,'rgba(200,168,75,.08)',.5);
+  });
+  // El yo consciente — en el centro
+  dot(CX,CY,5*DPR,'rgba(200,168,75,.9)');
+  glow(CX,CY,R*.18,'rgba(200,168,75,.9)');
+  txt('tú',CX,CY-R*.06,'rgba(200,168,75,.5)',11*DPR);
+  txt('¿qué historia está contando tu vida sin que lo sepas?',CX,CY+R*.95,'rgba(200,168,75,.22)',8.5*DPR);
+}
+
+showIntro();
+</script>
+</body>
+</html>
